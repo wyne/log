@@ -6,9 +6,6 @@
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
   <script type="text/javascript" src="http://static.stackmob.com/js/stackmob-js-0.7.0-bundled-min.js"></script>
 
-  <!-- Example Dependencies -->
-  <script type="text/javascript" src="http://static.stackmob.com/resources/js/jsonFormatter-0.1.0-min.js"></script>
-
   <!-- Example Code -->
   <script type="text/javascript">
     StackMob.init({
@@ -22,6 +19,21 @@
       window.location="/login.html";
     }
 
+    $(document).ready( function(){
+      var Coffee = StackMob.Model.extend({ schemaName: 'coffee' });
+      var Coffees = StackMob.Collection.extend({ model: Coffee });
+      var q = new StackMob.Collection.Query();
+      var coffees = new Coffees();
+      coffees.query(q, {
+        success: function(c){
+          c.each(function(m){
+            $(".coffees").append("<li>" + m.get('name') + "</li>");
+          })
+          console.log( JSON.stringify(c)); },
+        error: function(){ console.log("bad"); }
+      });
+    });
+
   </script>
 
   <style type="text/css">
@@ -34,6 +46,7 @@
 
 </head>
 <body>
-  stuff
+  <h2>Coffees</h2>
+  <ul class="coffees"></ul>
 </body>
 </html>
