@@ -18,7 +18,10 @@
         apiVersion: 0
     });
 
-    
+    if(StackMob.isLoggedOut()){
+      window.location="/login.html";
+    }
+
   </script>
 
   <style type="text/css">
