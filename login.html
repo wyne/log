@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Login</title>
+  <title>Main</title>
 
   <!-- StackMob Dependencies -->
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
@@ -18,7 +18,23 @@
         apiVersion: 0
     });
 
-    
+    if(StackMob.isLoggedOut()){
+      window.location="/login.html";
+    }
+
+    $(document).ready(function(){
+      $(".login").click(function(){
+        var user = new StackMob.User({username: $(".username").val(), password: $(".password").val()});
+        user.login(true, {
+          success: function(){
+            console.log("logged in!");
+          },
+          error: function(){
+            console.log("error logging in!");
+          }
+        });
+      });
+    });
   </script>
 
   <style type="text/css">
@@ -31,6 +47,8 @@
 
 </head>
 <body>
-  stuff
+  Username: <input name="username" type="text"></input><br />
+  Password: <input name="password" type="text"></input><br />
+  <input class="login" type="submit"></input>
 </body>
 </html>
