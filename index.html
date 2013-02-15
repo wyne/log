@@ -20,18 +20,50 @@
     }
 
     $(document).ready( function(){
+      // Locations
+      var Loc = StackMob.Model.extend({ schemaName: 'location' });
+      var Locs = StackMob.Collection.extend({ model: Loc });
+      var locations = new Locs();
+
+      // Coffees
       var Coffee = StackMob.Model.extend({ schemaName: 'coffee' });
       var Coffees = StackMob.Collection.extend({ model: Coffee });
-      var q = new StackMob.Collection.Query();
       var coffees = new Coffees();
-      coffees.query(q, {
-        success: function(c){
-          c.each(function(m){
-            $(".coffees").append("<li>" + m.get('name') + "</li>");
+
+      // Roasts
+      var Roast = StackMob.Model.extend({ schemaName: 'roast' });
+      var Roasts = StackMob.Collection.extend({ model: Roast });
+      var roasts = new Roasts();
+
+      var qAll = new StackMob.Collection.Query();
+
+      locations.query(qAll, {
+        success: function(col){
+          col.each(function(model){
+            $(".locations").append("<li>" + model.get('name') + "</li>");
           })
-          console.log( JSON.stringify(c)); },
+        },
         error: function(){ console.log("bad"); }
       });
+
+      coffees.query(qAll, {
+        success: function(col){
+          col.each(function(model){
+            $(".coffees").append("<li>" + model.get('name') + "</li>");
+          })
+        },
+        error: function(){ console.log("bad"); }
+      });
+
+      roasts.query(qAll, {
+        success: function(col){
+          col.each(function(model){
+            $(".roasts").append("<li>" + (new Date(model.get('date'))) + "</li>");
+          })
+        },
+        error: function(){ console.log("bad"); }
+      });
+
     });
 
   </script>
@@ -46,7 +78,13 @@
 
 </head>
 <body>
+  <h2>Locations</h2>
+  <ul class="locations"></ul>
+
   <h2>Coffees</h2>
   <ul class="coffees"></ul>
+
+  <h2>Roasts</h2>
+  <ul class="roasts"></ul>
 </body>
 </html>
