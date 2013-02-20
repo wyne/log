@@ -1,60 +1,67 @@
 <html>
 <head>
-  <title>Main</title>
+  <title>Admin</title>
 
   <!-- StackMob Dependencies -->
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-  <script type="text/javascript" src="http://static.stackmob.com/js/stackmob-js-0.7.0-bundled-min.js"></script>
+  <script type="text/javascript" src="http://static.stackmob.com/js/stackmob-js-0.8.0-bundled-min.js"></script>
 
-  <!-- Example Dependencies -->
-  <script type="text/javascript" src="http://static.stackmob.com/resources/js/jsonFormatter-0.1.0-min.js"></script>
+  <!-- Site Dependencies -->
+  <script type="text/javascript" src="site.js"></script>
+  <link rel="stylesheet" href="site.css">
 
-  <!-- Example Code -->
+  <!-- Page Code -->
   <script type="text/javascript">
-    StackMob.init({
-        appName: "coffeelog",
-        clientSubdomain: "bennettbluebottlecoffeecom",
-        publicKey: "8480bb0b-99bc-4acc-abc9-0a19bd5eab1e",
-        apiVersion: 0
-    });
-
+  /* <![CDATA[ */
     $(document).ready(function(){
-      function submitForm(){
-        var user = new StackMob.User({username: $(".username").val(), password: $(".password").val()});
-        user.login(true, {
-          success: function(){
-            console.log("logged in!");
-            window.location = "/";
-          },
-          error: function(){
-            console.log("error logging in!");
-          }
-        });
-      }
-      $(".login").click(function(){
-        submitForm();
+    
+		locations.query(qAll, {
+    		success: function(col){
+      			col.each(function(model){
+        			$(".locationsList").append(
+        				$('<option></option>').val(model.get('location_id')).html(model.get('name'))
+        		)	;
+   	   			})
+   	 		},
+	   	 	error: function(){ console.log("bad"); }
+	  	});
+	  	
+	$('#newuser').click(function(){
+    	var newUser = new StackMob.User({
+        username : $('.username').val(),
+        password : $('.password').val(),
+        location : $('.locationsList').val()
       });
-      $("form").submit(function(e){
-        e.preventDefault();
-        submitForm();
-      });
+    	console.log(newUser);
+    	newUser.create({
+    	
+    		success: function(model){
+    			$("#status").html('Successfully created user ' + model.get('username') + ' who works at ' + $('.locationsList option:selected').text() + '.');
+    		},
+    		error: function(){ console.log("bad"); }
+    	});
     });
-  </script>
 
-  <style type="text/css">
-    /* <![CDATA[ */
-    body {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    }
-    /* ]]> */
-  </style>
+    });
+    
+    
+    
+  /* ]]> */
+  </script>
 
 </head>
 <body>
-  <form>
+  <div id="status"></div>
+  New User:<br /><br />
     Username: <input name="username" class="username" type="text"></input><br />
     Password: <input name="password" class="password" type="password"></input><br />
-    <input class="login" type="submit"></input>
-  </form>
+    Location:
+    <select class="locationsList">
+    </select>
+    <br />
+    <input id="newuser" type="button" value="Submit"></input>
+    <br />
+    <br />
+    New Location:<br />
 </body>
 </html>
