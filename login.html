@@ -1,23 +1,18 @@
 <html>
 <head>
-  <title>Main</title>
+  <title>Coffee Log</title>
 
   <!-- StackMob Dependencies -->
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-  <script type="text/javascript" src="http://static.stackmob.com/js/stackmob-js-0.7.0-bundled-min.js"></script>
+  <script type="text/javascript" src="http://static.stackmob.com/js/stackmob-js-0.8.0-bundled-min.js"></script>
 
-  <!-- Example Dependencies -->
-  <script type="text/javascript" src="http://static.stackmob.com/resources/js/jsonFormatter-0.1.0-min.js"></script>
+  <!-- Site Dependencies -->
+  <script type="text/javascript" src="site.js"></script>
+  <link rel="stylesheet" href="site.css">
 
-  <!-- Example Code -->
+  <!-- Page Code -->
   <script type="text/javascript">
-    StackMob.init({
-        appName: "coffeelog",
-        clientSubdomain: "bennettbluebottlecoffeecom",
-        publicKey: "8480bb0b-99bc-4acc-abc9-0a19bd5eab1e",
-        apiVersion: 0
-    });
-
+  /* <![CDATA[ */
     $(document).ready(function(){
       function submitForm(){
         var user = new StackMob.User({username: $(".username").val(), password: $(".password").val()});
@@ -39,15 +34,8 @@
         submitForm();
       });
     });
+  /* ]]> */
   </script>
-
-  <style type="text/css">
-    /* <![CDATA[ */
-    body {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    }
-    /* ]]> */
-  </style>
 
 </head>
 <body>
