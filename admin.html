@@ -13,55 +13,93 @@
   <!-- Page Code -->
   <script type="text/javascript">
   /* <![CDATA[ */
-    $(document).ready(function(){
-    
-		locations.query(qAll, {
-    		success: function(col){
-      			col.each(function(model){
-        			$(".locationsList").append(
-        				$('<option></option>').val(model.get('location_id')).html(model.get('name'))
-        		)	;
-   	   			})
-   	 		},
-	   	 	error: function(){ console.log("bad"); }
-	  	});
-	  	
-	$('#newuser').click(function(){
+  $(document).ready(function(){
+
+    locations.query(qAll, {
+      success: function(col){
+       col.each(function(model){
+         $("#locationsList").append(
+          $('<option></option>').val(model.get('location_id')).html(model.get('name'))
+          )	;
+       })
+     },
+     error: function(){ console.log("bad"); }
+   });
+
+    $('#newUser').click(function(){
     	var newUser = new StackMob.User({
-        username : $('.username').val(),
-        password : $('.password').val(),
-        location : $('.locationsList').val()
+        username : $('#username').val(),
+        password : $('#password').val(),
+        location : $('#locationsList').val()
       });
     	console.log(newUser);
     	newUser.create({
-    	
+
     		success: function(model){
-    			$("#status").html('Successfully created user ' + model.get('username') + ' who works at ' + $('.locationsList option:selected').text() + '.');
+    			$("#status").html('Successfully created user ' + model.get('username') + ' who works at ' + $('#locationsList option:selected').text() + '.');
     		},
     		error: function(){ console.log("bad"); }
     	});
     });
 
+    $('#newLocation').click(function(){
+      var newLocation = new Loc({
+        name : $('#locationName').val(),
+        address : $('#locationAddress').val()
+      });
+      console.log(newLocation);
+      newLocation.create({
+
+        success: function(model){
+          $("#status").html('Successfully created Location ' + model.get('name') + ' at ' + model.get('address') + '.');
+        },
+        error: function(){ console.log("bad"); }
+      });
     });
-    
-    
-    
-  /* ]]> */
-  </script>
+
+    $('#newCoffee').click(function(){
+      var newCoffee = new Coffee({
+        name : $('#coffeeName').val(),
+        origin : $('#coffeeOrigin').val()
+      });
+      console.log(newCoffee);
+      newCoffee.create({
+
+        success: function(model){
+          $("#status").html('Successfully created Coffee ' + model.get('name') + ' from ' + model.get('origin') + '.');
+        },
+        error: function(){ console.log("bad"); }
+      });
+    });
+  });
+
+/* ]]> */
+</script>
 
 </head>
 <body>
   <div id="status"></div>
-  New User:<br /><br />
-    Username: <input name="username" class="username" type="text"></input><br />
-    Password: <input name="password" class="password" type="password"></input><br />
-    Location:
-    <select class="locationsList">
-    </select>
-    <br />
-    <input id="newuser" type="button" value="Submit"></input>
-    <br />
-    <br />
-    New Location:<br />
+  Add Coffee:<br /><br />
+  Name: <input id="coffeeName" type="text"></input><br />
+  Origin: <input id="coffeeOrigin" type="text"></input><br />
+  <input id="newCoffee" type="button" value="Submit"></input>
+  <br />
+  <br />
+  Add Location:<br /><br />
+  Name: <input id="locationName" type="text"></input><br />
+  Address: <input id="locationOrigin" type="text"></input><br />
+  <input id="newLocation" type="button" value="Submit"></input>
+  <br />
+  <br />
+  Add User:<br /><br />
+  Username: <input id="username" type="text"></input><br />
+  Password: <input id="password" type="password"></input><br />
+  Location:
+  <select id="locationsList">
+  </select>
+  <br />
+  <input id="newUser" type="button" value="Submit"></input>
+  <br />
+  <br />
 </body>
 </html>
