@@ -23,7 +23,7 @@
       success: function(col){
        col.each(function(model){
         /* Add location for new user */
-        $("#locationsList").append(
+        $("#locationsListForUser").append(
           $('<option></option>').val(model.get('location_id')).html(model.get('name'))
         );
         /* Add locations list for new coffee */
@@ -51,7 +51,7 @@
     	var newUser = new StackMob.User({
         username : $('#username').val(),
         password : $('#password').val(),
-        location : $('#locationsList').val()
+        location : $('#locationsListForUser').val()
       });
     	console.log(newUser);
     	newUser.create({
@@ -102,6 +102,8 @@
 </head>
 <body>
   <div id="status"></div>
+
+
   Add Coffee:
   <br /><br />
   Name: <input id="coffeeName" type="text"></input>
@@ -114,7 +116,11 @@
   </select>
   <br />
   <input id="newCoffee" type="button" value="Submit"></input>
+
+
   <br /><br />
+
+
   Add Location:
   <br /><br />
   Name: <input id="locationName" type="text"></input>
@@ -127,8 +133,12 @@
   </select>
   <br />
   <input id="newLocation" type="button" value="Submit"></input>
+
+
   <br />
   <br />
+
+
   Add User:
   <br /><br />
   Username: <input id="username" type="text"></input>
@@ -136,11 +146,20 @@
   Password: <input id="password" type="password"></input>
   <br />
   Works At:
-  <select id="locationsList">
+  <select id="locationsListForUser">
   </select>
   <br />
   <input id="newUser" type="button" value="Submit"></input>
-  <br />
-  <br />
+
+
+  Remove Coffee:
+
+
+  Remove Location:
+
+  Remove User:
+
+
+
 </body>
 </html>
