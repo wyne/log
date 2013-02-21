@@ -101,46 +101,43 @@
 
 </head>
 <body>
-  <div id="status"></div>
-  Add Coffee:
-  <br /><br />
-  Name: <input id="coffeeName" type="text"></input>
-  <br />
-  Origin: <input id="coffeeOrigin" type="text"></input>
-  <br />
-  Add To Locations:
-  <br />
-  <select size='10' id="locationsListForCoffee" multiple>
-  </select>
-  <br />
-  <input id="newCoffee" type="button" value="Submit"></input>
-  <br /><br />
-  Add Location:
-  <br /><br />
-  Name: <input id="locationName" type="text"></input>
-  <br />
-  Address: <input id="locationAddress" type="text"></input>
-  <br /><br />
-  Add Coffees for this Location:
-  <br />
-  <select size='10' id="coffeesListForLocation" multiple>
-  </select>
-  <br />
-  <input id="newLocation" type="button" value="Submit"></input>
-  <br />
-  <br />
-  Add User:
-  <br /><br />
-  Username: <input id="username" type="text"></input>
-  <br />
-  Password: <input id="password" type="password"></input>
-  <br />
-  Works At:
-  <select id="locationsList">
-  </select>
-  <br />
-  <input id="newUser" type="button" value="Submit"></input>
-  <br />
-  <br />
+
+  
+  <div class="container">
+    <div class="row-fluid">
+
+      <div class="span12">
+        <div id="status" class="alert"></div>
+      </div>
+
+      <div class="span4">
+        <h2>Add Coffee:</h2>
+        <label>Name:</label> <input id="coffeeName" type="text"></input>
+        <label>Origin:</label> <input id="coffeeOrigin" type="text"></input>
+        <label>Add To Locations:</label>
+        <select size='10' id="locationsListForCoffee" multiple></select><br />
+        <input id="newCoffee" class="btn btn-primary" type="button" value="Submit"></input>
+      </div>
+
+      <div class="span4">
+        <h2>Add Location:</h2>
+        <label>Name:</label> <input id="locationName" type="text"></input>
+        <label>Address:</label> <input id="locationAddress" type="text"></input>
+        <label>Add Coffees for this Location:</label>
+        <select size='10' id="coffeesListForLocation" multiple></select><br />
+        <input id="newLocation" class="btn btn-primary" type="button" value="Submit"></input>
+      </div>
+
+      <div class="span4">
+        <h2>Add User:</h2>
+        <label>Username:</label> <input id="username" type="text"></input>
+        <label>Password:</label> <input id="password" type="password"></input>
+        <label>Works At:</label>
+        <select id="locationsList"></select><br />
+        <input id="newUser" class="btn btn-primary" type="button" value="Submit"></input>
+      </div>
+
+    </div>
+  </div>
 </body>
 </html>
