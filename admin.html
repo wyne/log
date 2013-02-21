@@ -19,15 +19,23 @@
   /* <![CDATA[ */
   $(document).ready(function(){
 
+    /* On Page Load */
+    $("#status").html(getParameterByName('message'));
+
     locations.query(qAll, {
       success: function(col){
        col.each(function(model){
         /* Add location for new user */
-        $("#locationsListForUser").append(
+        $("#locationsListForAddUser").append(
           $('<option></option>').val(model.get('location_id')).html(model.get('name'))
         );
         /* Add locations list for new coffee */
-        $("#locationsListForCoffee").append(
+        $("#locationsListForAddCoffee").append(
+          $('<option></option>').val(model.get('location_id')).html(model.get('name'))
+        );
+
+        /* Add locations list for remove location */
+        $("#locationsListForRemoveLocation").append(
           $('<option></option>').val(model.get('location_id')).html(model.get('name'))
         );
        })
@@ -39,41 +47,87 @@
       success: function(col){
        col.each(function(model){
         /* Add coffees list for new location */
-        $("#coffeesListForLocation").append(
+        $("#coffeesListForAddLocation").append(
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
         );
+
+        /* Add coffees list for remove coffee */
+        $('#coffeesListForRemoveCoffee').append(
+          $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
+          );
        })
      },
      error: function(){ console.log("bad coffee query"); }
+   });
+
+  users.query(qAll, {
+      success: function(col){
+       col.each(function(model){
+        /* Add coffees list for new location */
+        $("#usersListForRemoveUser").append(
+          $('<option></option>').val(model.get('username')).html(model.get('username'))
+        );
+       })
+     },
+     error: function(){ console.log("bad users query"); }
    });
 
     $('#newUser').click(function(){
     	var newUser = new StackMob.User({
         username : $('#username').val(),
         password : $('#password').val(),
-        location : $('#locationsListForUser').val()
+        location : $('#locationsListForAddUser').val()
       });
     	console.log(newUser);
     	newUser.create({
 
     		success: function(model){
-    			$("#status").html('Successfully created user ' + model.get('username') + ' who works at ' + $('#locationsList option:selected').text() + '.<br /><br />');
+          window.location = '?message=Successfully created user ' + model.get('username') + ' who works at ' + $('#locationsList option:selected').text() + '.';
     		},
     		error: function(){ console.log("bad"); }
     	});
+    });
+
+    $('#removeUser').click(function(){
+      var newUser = new StackMob.User({
+        username : $('#usersListForRemoveUser').val(),
+      });
+      console.log(newUser);
+      newUser.destroy({
+
+        success: function(model){
+          window.location = '?message=Successfully removed user.';
+        },
+        error: function(){ console.log("bad"); }
+      });
     });
 
     $('#newLocation').click(function(){
       var newLocation = new Loc({
         name : $('#locationName').val(),
         address : $('#locationAddress').val(),
-        coffees : $('#coffeesListForLocation').val()
+        coffees : $('#coffeesListForAddLocation').val()
       });
       console.log(newLocation);
       newLocation.create({
 
         success: function(model){
-          $("#status").html('Successfully created Location ' + model.get('name') + ' at ' + model.get('address') + '.<br /><br />');
+          window.location = '?message=Successfully created location ' + model.get('name') + ' at ' + model.get('address') + '.';
+        },
+        error: function(){ console.log("bad"); }
+      });
+    });
+
+    $('#removeLocation').click(function(){
+      var newLocation = new Loc({
+        location_id : $('#locationsListForRemoveLocation').val(),
+      });
+      newLocation.destroy({
+
+        success: function(model){
+
+          window.location = '?message=Successfully removed location.';
+          
         },
         error: function(){ console.log("bad"); }
       });
@@ -83,13 +137,28 @@
       var newCoffee = new Coffee({
         name : $('#coffeeName').val(),
         origin : $('#coffeeOrigin').val(),
-        locations : $('#locationsListForCoffee').val()
+        locations : $('#locationsListForAddCoffee').val()
       });
       console.log(newCoffee);
       newCoffee.create({
 
         success: function(model){
-          $("#status").html('Successfully created Coffee ' + model.get('name') + ' from ' + model.get('origin') + '.<br /><br />');
+          window.location = '?message=Successfully created coffee ' + model.get('name') + ' from ' + model.get('origin') + '.';
+        },
+        error: function(){ console.log("bad"); }
+      });
+    });
+
+    $('#removeCoffee').click(function(){
+      var newCoffee = new Coffee({
+        coffee_id : $('#coffeesListForRemoveCoffee').val(),
+      });
+      newCoffee.destroy({
+
+        success: function(model){
+
+          window.location = '?message=Successfully removed coffee.';
+          
         },
         error: function(){ console.log("bad"); }
       });
@@ -114,8 +183,14 @@
         <label>Name:</label> <input id="coffeeName" type="text"></input>
         <label>Origin:</label> <input id="coffeeOrigin" type="text"></input>
         <label>Add To Locations:</label>
-        <select size='10' id="locationsListForCoffee" multiple></select><br />
+        <select size='10' id="locationsListForAddCoffee" multiple></select><br />
         <input id="newCoffee" class="btn btn-primary" type="button" value="Submit"></input>
+      </div>
+
+      <div class="span4">
+        <h2>Remove Coffee:</h2>
+        <select id="coffeesListForRemoveCoffee"></select><br />
+        <input id="removeCoffee" class="btn btn-primary" type="button" value="Submit"></input>
       </div>
 
       <div class="span4">
@@ -123,8 +198,14 @@
         <label>Name:</label> <input id="locationName" type="text"></input>
         <label>Address:</label> <input id="locationAddress" type="text"></input>
         <label>Add Coffees for this Location:</label>
-        <select size='10' id="coffeesListForLocation" multiple></select><br />
+        <select size='10' id="coffeesListForAddLocation" multiple></select><br />
         <input id="newLocation" class="btn btn-primary" type="button" value="Submit"></input>
+      </div>
+
+      <div class="span4">
+        <h2>Remove Location:</h2>
+        <select id="locationsListForRemoveLocation"></select><br />
+        <input id="removeLocation" class="btn btn-primary" type="button" value="Submit"></input>
       </div>
 
       <div class="span4">
@@ -132,8 +213,14 @@
         <label>Username:</label> <input id="username" type="text"></input>
         <label>Password:</label> <input id="password" type="password"></input>
         <label>Works At:</label>
-        <select id="locationsList"></select><br />
+        <select id="locationsListForAddUser"></select><br />
         <input id="newUser" class="btn btn-primary" type="button" value="Submit"></input>
+      </div>
+
+      <div class="span4">
+        <h2>Remove User:</h2>
+        <select id="usersListForRemoveUser"></select><br />
+        <input id="removeUser" class="btn btn-primary" type="button" value="Submit"></input>
       </div>
 
     </div>

@@ -28,6 +28,9 @@ if(StackMob.isLoggedOut()){
 var username = StackMob.getLoggedInUser();
 var user = new StackMob.User({'username': username});
 
+// Users
+var users = new StackMob.Users();
+
 // Locations
 var Loc = StackMob.Model.extend({ schemaName: 'location' });
 var Locs = StackMob.Collection.extend({ model: Loc });
