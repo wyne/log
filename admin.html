@@ -18,12 +18,29 @@
     locations.query(qAll, {
       success: function(col){
        col.each(function(model){
-         $("#locationsList").append(
+        /* Add location for new user */
+        $("#locationsList").append(
           $('<option></option>').val(model.get('location_id')).html(model.get('name'))
-          )	;
+        );
+        /* Add locations list for new coffee */
+        $("#locationsListForCoffee").append(
+          $('<option></option>').val(model.get('location_id')).html(model.get('name'))
+        );
        })
      },
-     error: function(){ console.log("bad"); }
+     error: function(){ console.log("bad locations query"); }
+   });
+
+  coffees.query(qAll, {
+      success: function(col){
+       col.each(function(model){
+        /* Add coffees list for new location */
+        $("#coffeesListForLocation").append(
+          $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
+        );
+       })
+     },
+     error: function(){ console.log("bad coffee query"); }
    });
 
     $('#newUser').click(function(){
@@ -36,7 +53,7 @@
     	newUser.create({
 
     		success: function(model){
-    			$("#status").html('Successfully created user ' + model.get('username') + ' who works at ' + $('#locationsList option:selected').text() + '.');
+    			$("#status").html('Successfully created user ' + model.get('username') + ' who works at ' + $('#locationsList option:selected').text() + '.<br /><br />');
     		},
     		error: function(){ console.log("bad"); }
     	});
@@ -45,13 +62,14 @@
     $('#newLocation').click(function(){
       var newLocation = new Loc({
         name : $('#locationName').val(),
-        address : $('#locationAddress').val()
+        address : $('#locationAddress').val(),
+        coffees : $('#coffeesListForLocation').val()
       });
       console.log(newLocation);
       newLocation.create({
 
         success: function(model){
-          $("#status").html('Successfully created Location ' + model.get('name') + ' at ' + model.get('address') + '.');
+          $("#status").html('Successfully created Location ' + model.get('name') + ' at ' + model.get('address') + '.<br /><br />');
         },
         error: function(){ console.log("bad"); }
       });
@@ -60,13 +78,14 @@
     $('#newCoffee').click(function(){
       var newCoffee = new Coffee({
         name : $('#coffeeName').val(),
-        origin : $('#coffeeOrigin').val()
+        origin : $('#coffeeOrigin').val(),
+        locations : $('#locationsListForCoffee').val()
       });
       console.log(newCoffee);
       newCoffee.create({
 
         success: function(model){
-          $("#status").html('Successfully created Coffee ' + model.get('name') + ' from ' + model.get('origin') + '.');
+          $("#status").html('Successfully created Coffee ' + model.get('name') + ' from ' + model.get('origin') + '.<br /><br />');
         },
         error: function(){ console.log("bad"); }
       });
@@ -79,22 +98,40 @@
 </head>
 <body>
   <div id="status"></div>
-  Add Coffee:<br /><br />
-  Name: <input id="coffeeName" type="text"></input><br />
-  Origin: <input id="coffeeOrigin" type="text"></input><br />
+  Add Coffee:
+  <br /><br />
+  Name: <input id="coffeeName" type="text"></input>
+  <br />
+  Origin: <input id="coffeeOrigin" type="text"></input>
+  <br />
+  Add To Locations:
+  <br />
+  <select size='10' id="locationsListForCoffee" multiple>
+  </select>
+  <br />
   <input id="newCoffee" type="button" value="Submit"></input>
+  <br /><br />
+  Add Location:
+  <br /><br />
+  Name: <input id="locationName" type="text"></input>
   <br />
+  Address: <input id="locationAddress" type="text"></input>
+  <br /><br />
+  Add Coffees for this Location:
   <br />
-  Add Location:<br /><br />
-  Name: <input id="locationName" type="text"></input><br />
-  Address: <input id="locationOrigin" type="text"></input><br />
+  <select size='10' id="coffeesListForLocation" multiple>
+  </select>
+  <br />
   <input id="newLocation" type="button" value="Submit"></input>
   <br />
   <br />
-  Add User:<br /><br />
-  Username: <input id="username" type="text"></input><br />
-  Password: <input id="password" type="password"></input><br />
-  Location:
+  Add User:
+  <br /><br />
+  Username: <input id="username" type="text"></input>
+  <br />
+  Password: <input id="password" type="password"></input>
+  <br />
+  Works At:
   <select id="locationsList">
   </select>
   <br />
