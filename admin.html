@@ -23,7 +23,7 @@
       success: function(col){
        col.each(function(model){
         /* Add location for new user */
-        $("#locationsList").append(
+        $("#locationsListForUser").append(
           $('<option></option>').val(model.get('location_id')).html(model.get('name'))
         );
         /* Add locations list for new coffee */
@@ -51,7 +51,7 @@
     	var newUser = new StackMob.User({
         username : $('#username').val(),
         password : $('#password').val(),
-        location : $('#locationsList').val()
+        location : $('#locationsListForUser').val()
       });
     	console.log(newUser);
     	newUser.create({
@@ -102,7 +102,6 @@
 </head>
 <body>
 
-  
   <div class="container">
     <div class="row-fluid">
 
@@ -139,5 +138,6 @@
 
     </div>
   </div>
+
 </body>
 </html>
