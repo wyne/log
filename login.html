@@ -19,6 +19,14 @@
   <script type="text/javascript">
   /* <![CDATA[ */
     $(document).ready(function(){
+
+      if (getParameterByName("logout")=="true"){
+        var user = new StackMob.User({});
+        user.logout({
+          success: function(){ window.location="" }
+        })
+      }
+
       function submitForm(){
         var user = new StackMob.User({username: $(".username").val(), password: $(".password").val()});
         user.login(true, {
