@@ -46,9 +46,6 @@ var roasts = new Roasts();
 var qAll = new StackMob.Collection.Query();
 
 // ===== HELPER METHODS
-function getUserLocation() {
-}
-
 function getAllLocations() {
   locations.query(qAll, {
     success: function(col){
