@@ -22,9 +22,12 @@ if(StackMob.isLoggedOut()){
   }
 }
 
+// ===== SCHEMA SETUP
+
 // User
 var username = StackMob.getLoggedInUser();
-// var user = new StackMob.User({
+var user = new StackMob.User({'username': username});
+
 // Locations
 var Loc = StackMob.Model.extend({ schemaName: 'location' });
 var Locs = StackMob.Collection.extend({ model: Loc });
@@ -42,8 +45,10 @@ var roasts = new Roasts();
 
 var qAll = new StackMob.Collection.Query();
 
+// ===== HELPER METHODS
 function getUserLocation() {
 }
+
 function getAllLocations() {
   locations.query(qAll, {
     success: function(col){
