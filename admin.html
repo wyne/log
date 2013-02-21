@@ -21,7 +21,9 @@
   $(document).ready(function(){
 
     /* On Page Load */
-    $("#status").html(getParameterByName('message'));
+    if (getParameterByName('message')!=""){
+      $("#status").addClass("alert").html(getParameterByName('message'));
+    }
 
     locations.query(qAll, {
       success: function(col){
@@ -234,7 +236,7 @@ $('#removeCoffee').click(function(){
     <div class="row-fluid">
 
       <div class="span12">
-        <div id="status" class="alert"></div>
+        <div id="status"></div>
       </div>
 
     </div>
