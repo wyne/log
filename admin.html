@@ -243,62 +243,76 @@ $('#removeCoffee').click(function(){
     <div class="row-fluid">
 
       <div class="span4">
-        <h2>Create New Coffee:</h2>
-        <label>Name:</label> <input id="coffeeName" type="text"></input>
-        <label>Origin:</label> <input id="coffeeOrigin" type="text"></input>
-        <label>Add To Locations:</label>
-        <select size='10' id="locationsListForAddCoffee" multiple></select><br />
-        <input id="newCoffee" class="btn btn-primary" type="button" value="Submit"></input>
+        <div class="well">
+          <h2>Create New Coffee:</h2>
+          <label>Name:</label> <input id="coffeeName" type="text"></input>
+          <label>Origin:</label> <input id="coffeeOrigin" type="text"></input>
+          <label>Add To Locations:</label>
+          <select size='10' id="locationsListForAddCoffee" multiple></select><br />
+          <input id="newCoffee" class="btn btn-primary" type="button" value="Submit"></input>
+        </div>
       </div>
 
       <div class="span4">
-        <h2>Create New Location:</h2>
-        <label>Name:</label> <input id="locationName" type="text"></input>
-        <label>Address:</label> <input id="locationAddress" type="text"></input>
-        <label>Add Coffees for this Location:</label>
-        <select size='10' id="coffeesListForAddLocation" multiple></select><br />
-        <input id="newLocation" class="btn btn-primary" type="button" value="Submit"></input>
+        <div class="well">
+          <h2>Create New Location:</h2>
+          <label>Name:</label> <input id="locationName" type="text"></input>
+          <label>Address:</label> <input id="locationAddress" type="text"></input>
+          <label>Add Coffees for this Location:</label>
+          <select size='10' id="coffeesListForAddLocation" multiple></select><br />
+          <input id="newLocation" class="btn btn-primary" type="button" value="Submit"></input>
+        </div>
       </div>
 
       <div class="span4">
-        <h2>Create New User:</h2>
-        <label>Username:</label> <input id="username" type="text"></input>
-        <label>Password:</label> <input id="password" type="password"></input>
-        <label>Works At:</label>
-        <select id="locationsListForAddUser"></select><br />
-        <input id="newUser" class="btn btn-primary" type="button" value="Submit"></input>
-      </div>
-
-    </div>
-    <div class="row-fluid">
-
-      <div class="span4">
-        <h2>Add Coffee:</h2>
-        <select id="coffeesListForAddSingleCoffee"></select><br />
-        <h2>To Location:</h2>
-        <select id="locationsListForAddSingleCoffee"></select><br />
-        <input id="addCoffeeToLocation" class="btn btn-primary" type="button" value="Submit"></input>
+        <div class="well">
+          <h2>Create New User:</h2>
+          <label>Username:</label> <input id="username" type="text"></input>
+          <label>Password:</label> <input id="password" type="password"></input>
+          <label>Works At:</label>
+          <select id="locationsListForAddUser"></select><br />
+          <input id="newUser" class="btn btn-primary" type="button" value="Submit"></input>
+        </div>
       </div>
 
     </div>
     <div class="row-fluid">
 
       <div class="span4">
-        <h2>Remove Coffee:</h2>
-        <select id="coffeesListForRemoveCoffee"></select><br />
-        <input id="removeCoffee" class="btn btn-primary" type="button" value="Submit"></input>
+        <div class="well">
+          <h2>Add Coffee:</h2>
+          <select id="coffeesListForAddSingleCoffee"></select><br />
+          <h2>To Location:</h2>
+          <select id="locationsListForAddSingleCoffee"></select><br />
+          <input id="addCoffeeToLocation" class="btn btn-primary" type="button" value="Submit"></input>
+        </div>
       </div>
 
       <div class="span4">
-        <h2>Remove Location:</h2>
-        <select id="locationsListForRemoveLocation"></select><br />
-        <input id="removeLocation" class="btn btn-primary" type="button" value="Submit"></input>
+        <div class="well">
+          <h2>Remove Location:</h2>
+          <select id="locationsListForRemoveLocation"></select><br />
+          <input id="removeLocation" class="btn btn-primary" type="button" value="Submit"></input>
+        </div>
       </div>
 
       <div class="span4">
-        <h2>Remove User:</h2>
-        <select id="usersListForRemoveUser"></select><br />
-        <input id="removeUser" class="btn btn-primary" type="button" value="Submit"></input>
+        <div class="well">
+          <h2>Remove User:</h2>
+          <select id="usersListForRemoveUser"></select><br />
+          <input id="removeUser" class="btn btn-primary" type="button" value="Submit"></input>
+        </div>
+      </div>
+
+    </div>
+    <div class="row-fluid">
+
+      <div class="span4">
+        <div class="well">
+          <h2>Remove Coffee:</h2>
+          <select id="coffeesListForRemoveCoffee"></select><br />
+          <input id="removeCoffee" class="btn btn-primary" type="button" value="Submit"></input>
+        </div>
       </div>
 
     </div>
