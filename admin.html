@@ -49,6 +49,10 @@
           $('#locationsListForAddSingleCoffee').append(
             $('<option></option>').val(model.get('location_id')).html(model.get('name'))
           );
+
+          $('#locationsListForRemovingSingleCoffee').append(
+            $('<option></option>').val(model.get('location_id')).html(model.get('name'))
+          );
        });
      },
      error: function(){ console.log("bad locations query"); }
@@ -71,6 +75,10 @@
         );
 
         $('#coffeesListForAddSingleCoffee').append(
+          $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
+        );
+
+        $('#coffeesListForRemovingSingleCoffee').append(
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
         );
       })
@@ -127,13 +135,19 @@
     $('#newLocation').click(function(){
       var newLocation = new Loc({
         name : $('#locationName').val(),
-        address : $('#locationAddress').val(),
         coffees : $('#coffeesListForAddLocation').val()
       });
       console.log(newLocation);
       newLocation.create({
 
         success: function(model){
+          var location_id = model.location_id;
+          $('#coffeesListForAddLocation').val().each(function(coffee_id){
+
+            /* Send request for each coffee to append location */
+            
+          });
+
           window.location = '?message=Successfully created location ' + model.get('name') + ' at ' + model.get('address') + '.';
         },
         error: function(){ console.log("bad"); }
@@ -158,7 +172,6 @@
     $('#newCoffee').click(function(){
       var newCoffee = new Coffee({
         name : $('#coffeeName').val(),
-        origin : $('#coffeeOrigin').val(),
         locations : $('#locationsListForAddCoffee').val()
       });
       console.log(newCoffee);
@@ -200,20 +213,48 @@
 
     });
 
-$('#removeCoffee').click(function(){
-  var newCoffee = new Coffee({
-    coffee_id : $('#coffeesListForRemoveCoffee').val(),
-  });
-  newCoffee.destroy({
+    $('#removeCoffeeFromLocation').click(function(){
+      var newLocation = new Loc({
+        location_id : $('#locationsListForRemovingSingleCoffee').val()
+      });
+      newLocation.deleteAndSave('coffees', [$('#coffeesListForRemovingSingleCoffee').val()], StackMob.SOFT_DELETE, {
 
-    success: function(model){
+        success: function(model){
+          var newCoffee = new Coffee({
+            coffee_id : $('#coffeesListForRemovingSingleCoffee').val()
+          });
+          newCoffee.deleteAndSave('locations', [$('#locationsListForRemovingSingleCoffee').val()], StackMob.SOFT_DELETE, {
 
-      window.location = '?message=Successfully removed coffee.';
+            success: function(model2){
+              window.location = '?message=Removed ' + model2.name + ' from ' + model.name + '.';
+            },
+            error: function(){ 
+              console.log("bad"); 
+            }
+          });
+        },
+        error: function(){ 
+          console.log("bad"); 
+        } 
+      });
 
-    },
-    error: function(){ console.log("bad"); }
-  });
-});
+    });
+
+
+    $('#removeCoffee').click(function(){
+      var newCoffee = new Coffee({
+        coffee_id : $('#coffeesListForRemoveCoffee').val(),
+      });
+      newCoffee.destroy({
+
+        success: function(model){
+
+          window.location = '?message=Successfully removed coffee.';
+
+        },
+        error: function(){ console.log("bad"); }
+      });
+    });
 });
 
 /* ]]> */
@@ -257,7 +298,6 @@ $('#removeCoffee').click(function(){
         <div class="well">
           <h2>Create New Coffee:</h2>
           <label>Name:</label> <input id="coffeeName" type="text"></input>
-          <label>Origin:</label> <input id="coffeeOrigin" type="text"></input>
           <label>Add To Locations:</label>
           <select size='10' id="locationsListForAddCoffee" multiple></select><br />
           <input id="newCoffee" class="btn btn-primary" type="button" value="Submit"></input>
@@ -268,7 +308,6 @@ $('#removeCoffee').click(function(){
         <div class="well">
           <h2>Create New Location:</h2>
           <label>Name:</label> <input id="locationName" type="text"></input>
-          <label>Address:</label> <input id="locationAddress" type="text"></input>
           <label>Add Coffees for this Location:</label>
           <select size='10' id="coffeesListForAddLocation" multiple></select><br />
           <input id="newLocation" class="btn btn-primary" type="button" value="Submit"></input>
@@ -296,6 +335,16 @@ $('#removeCoffee').click(function(){
           <h2>To Location:</h2>
           <select id="locationsListForAddSingleCoffee"></select><br />
           <input id="addCoffeeToLocation" class="btn btn-primary" type="button" value="Submit"></input>
+        </div>
+      </div>
+
+      <div class="span4">
+        <div class="well">
+          <h2>Remove Coffee:</h2>
+          <select id="coffeesListForRemovingSingleCoffee"></select><br />
+          <h2>From Location:</h2>
+          <select id="locationsListForRemovingSingleCoffee"></select><br />
+          <input id="removeCoffeeFromLocation" class="btn btn-primary" type="button" value="Submit"></input>
         </div>
       </div>
 
