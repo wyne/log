@@ -97,7 +97,7 @@ roasts.query(qAll, {
 });
 
 
-// Objects
+// ===== Objects
 
 function createNewLocation(locName, locCoffees){
   var dfd = new jQuery.Deferred();
@@ -115,12 +115,15 @@ function createNewLocation(locName, locCoffees){
   return dfd.promise();
 };
 
-function assignLocationToCoffee(coffee, location){
+function createNewCoffee(coffeeName, coffeeLocations){
   var dfd = new jQuery.Deferred();
 
-  var coffee = new Coffee({coffee_id: coffee});
+  var newCoffee = new Coffee({
+    name : coffeeName,
+    locations : coffeeLocations || undefined
+  });
 
-  coffee.appendAndSave('locations', [location], {
+  newCoffee.create({
     success: function(model){ dfd.resolve(model) },
     error: function(model){ dfd.reject(model) }
   });
@@ -128,7 +131,51 @@ function assignLocationToCoffee(coffee, location){
   return dfd.promise();
 };
 
-// Misc
+function assignLocationToCoffee(coffee, location){
+  var dfd = new jQuery.Deferred();
+
+  var coffee = new Coffee({coffee_id: coffee});
+
+  coffee.fetch({
+    success: function(model){
+      model.save({ locations: _.union(model.get('locations') || new Array(), [location]) }, {
+        success: function(){
+          dfd.resolve(model);
+        },
+        error : function(){
+          dfd.reject(model);
+        }
+      });
+    },
+    error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
+
+function assignCoffeeToLocation(location, coffee){
+  var dfd = new jQuery.Deferred();
+
+  var location = new Loc({location_id: location});
+
+  location.fetch({
+    success: function(model){
+      model.save({ coffees: _.union(model.get('coffees') || new Array(), [coffee]) }, {
+        success: function(){
+          dfd.resolve(model);
+        },
+        error : function(){
+          dfd.reject(model);
+        }
+      });
+    },
+    error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
+
+// ===== Misc
 function redirectWithMessage(loc, msg){
   window.location = loc + "?message=" + msg;
 }
