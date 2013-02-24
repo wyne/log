@@ -115,6 +115,21 @@ function createNewLocation(locName, locCoffees){
   return dfd.promise();
 };
 
+function removeLocation(locID){
+  var dfd = new jQuery.Deferred();
+
+  var newLocation = new Loc({
+    location_id : locID,
+  });
+
+  newLocation.destroy({
+    success: function(model){ dfd.resolve(model) },
+    error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
+
 function createNewCoffee(coffeeName, coffeeLocations){
   var dfd = new jQuery.Deferred();
 
