@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Coffee Log</title>
+
+  <!-- Libraries -->
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
+
+  <!-- StackMob Dependencies -->
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <script type="text/javascript" src="http://static.stackmob.com/js/stackmob-js-0.8.0-bundled-min.js"></script>
+
+  <!-- Site Dependencies -->
+  <script type="text/javascript" src="site.js"></script>
+  <link rel="stylesheet" href="site.css">
+
+  <!-- Page Code -->
+  <script type="text/javascript">
+  /* <![CDATA[ */
+    $(document).ready(function(){
+
+      var locationCoffees;
+
+      StackMob.getLoggedInUser( {
+        success: function(name){
+          console.log('Name is');
+          console.log(name);
+          var user = new StackMob.User({
+            username : name
+          });
+          user.fetchExpanded(2, {
+
+            success : function(model){
+              var locationObject = new Loc(model.get('location'));
+              console.log("locationObject")
+              console.log(locationObject);
+              if (typeof locationObject !== 'undefined') {
+                // Display Location of user
+                $('#usersLocation').append(
+                  "Logged in as " + model.get('username') + " at " + locationObject.get("name")
+                );
+                // Get all coffees for that location and display
+                locationCoffees = locationObject.get("coffees");
+                console.log("locationCoffees");
+                console.log(locationCoffees);
+                if (typeof locationCoffees !== 'undefined') {
+                  
+                  console.log('Got here');
+                  _.sortBy(locationCoffees, function(model) {
+                    return model.name;
+                  });
+
+                  _.each(locationCoffees, function(model) {
+                    console.log(model.name);
+                    $("#coffeesListForLocation").append(
+                      $('<option></option>').val(model.coffee_id).html(model.name)
+                    );
+                  })
+                }
+              } else {
+                console.log('No Location object found');
+              }
+
+            },
+            error : function(model, response){
+              console.log(response);
+            }
+
+          });
+        },
+        error : function(model, response) { 
+          console.log(response);
+        }
+      });
+
+    });
+  /* ]]> */
+  </script>
+
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Coffee Log</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li class="active"><a href="/">Home</a></li>
+            <li><a href="/admin.html">Admin</a></li>
+            <li><a href="/login.html">Login</a></li>
+            <li><a href="/login.html?logout=true">Logout</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+  </div>
+
+  <h2 class="current-location"></h2>
+  <h2 id="usersLocation"></h2>
+  <h2>Pick your coffee:</h2>
+  <select id="coffeesListForLocation"></select><br />
+  <label>Espresso:</label><input type="radio" name="group1" value="espresso" checked>
+  <label>Drip:</label><input type="radio" name="group1" value="drip">
+  <label>Siphon:</label><input type="radio" name="group1" value="siphon">
+
+  <div id="espresso_note">
+    <br/>REMOVE ME: ESPRESSO<br />
+    <form id="espresso_note_form">
+      <label>Roast Date:</label> <input type="date" class="roast_date">
+      <label>Preparation Date:</label> <input type="date" class="prep_date">
+      <label>Weight Of Dose:</label> <input type="number" class="dose_weight">
+      <label>Weight Of Yield:</label> <input type="number" class="yield_weight">
+      <label>Preinfuse Time:</label> <input type="number" class="preinfuse_time">
+      <label>Preinfuse Pressure:</label> <input type="number" class="preinfuse_pressure">
+      <label>Total Extraction Time:</label> <input type="number" class="total_extraction_time">
+      <label>Fragrance Aroma:</label> <input type="text" class="fragrance_aroma">
+      <label>Acidity:</label> <input type="text" class="acitdity">
+      <label>Mouthfeel:</label> <input type="text" class="mouthfeel">
+      <label>Flavor:</label> <input type="text" class="flavor">
+      <label>Aftertaste:</label> <input type="text" class="aftertaste">
+      <label>Positive Notes:</label> <input type="text" class="postitive_notes">
+      <label>Negative Notes:</label> <input type="text" class="negative_notes">
+    </form>
+  </div>
+  <div id="drip_note">
+    <br/>REMOVE ME: DRIP<br />
+    <form id="drip_note_form">
+      <label>Roast Date:</label> <input type="date" class="roast_date">
+      <label>Preparation Date:</label> <input type="date" class="prep_date">
+    </form>
+  </div>
+  <div id="siphon_note">
+    <br/>REMOVE ME: SIPHON<br />
+    <form id="siphon_note_form">
+      <label>Roast Date:</label> <input type="date" class="roast_date">
+      <label>Preparation Date:</label> <input type="date" class="prep_date">
+    </form>
+  </div>
+</body>
+</html>
