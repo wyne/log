@@ -78,25 +78,25 @@
 
     };
 
-    $('#coffeesList').change(function(){
-      console.log('Changes');
-      populateRoasts();
-    });
-
-    $('#getNotesFromRoast').click(function(){
+    function queryEspressoNotesBasedOnRoast(){
       if ($('#espresso_checkbox').is(':checked')) {
         console.log("Querying all espresso notes for roast date");
         var espressoNotesQuery = new StackMob.Collection.Query();
         espressoNotesQuery.equals('roast', $('#roastsList').val());
         espressoNotes.query(espressoNotesQuery, {
           success : function(model){
+
             console.log('Successfully got all espresso notes');
+            queryDripNotesBasedOnRoast();
           },
           error : function(model, response){
             console.log(response);
           }
         });
       }
+    };
+
+    function queryDripNotesBasedOnRoast(){
       if ($('#drip_checkbox').is(':checked')) {
         console.log("Querying all drip notes for roast date");
         var dripNotesQuery = new StackMob.Collection.Query();
@@ -104,12 +104,16 @@
         dripNotes.query(dripNotesQuery, {
           success : function(model){
             console.log('Successfully got all drip notes');
+            querySiphonNotesBasedOnRoast();
           },
           error : function(model, response){
             console.log(response);
           }
         });
       }
+    };
+
+    function querySiphonNotesBasedOnRoast(){
       if ($('#siphon_checkbox').is(':checked')) {
         console.log("Querying all siphon notes for roast date");
         var siphonNotesQuery = new StackMob.Collection.Query();
@@ -123,6 +127,17 @@
           }
         });
       }
+    }
+
+    $('#coffeesList').change(function(){
+      console.log('Changes');
+      populateRoasts();
+    });
+
+    $('#getNotesFromRoast').click(function(){
+      
+      queryEspressoNotesBasedOnRoast();
+      
     });
 
   });
@@ -153,17 +168,30 @@
     </div>
   </div>
 
-  <h2>All notes from a specific coffee's roast:</h2>
+  <h2>Get notes from a coffee's roast:</h2>
   <label>Choose Coffee:</label><select id="coffeesList"></select><br />
   <label>Choose Roast:</label><select id="roastsList"></select><br />
-  <label>Type:</label>
+  <label>Type Of Note:</label>
     <input id="espresso_checkbox" type="checkbox">Espresso</input><br />
     <input id="drip_checkbox" type="checkbox">Drip</input><br />
     <input id="siphon_checkbox" type="checkbox">Siphon</input><br />
   <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Submit"></input>
+  <br/>
+  <br/>
+  <br/>
+  <table border=1 id="tableData">
 
+    <tr>
+      <th>Note ID</th>
+      <th>Prep Date</th>
+    </tr>
+
+  </table>
+
+  <!--
   <label>Locations:</label><select size='10' id="locationsList" multiple><option value="None">N/A</option></select><br />
   <label>Type:</label><select size='10' id="typeList" multiple><option value="None">N/A</option><option value="Espresso">Espresso</option><option value="Drip">Drip</option><option value="Siphon">Siphon</option></select><br />
   <label>Data:</label><select size='10' id="dataList" multiple></select><br />
+-->
 </body>
 </html>
