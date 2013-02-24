@@ -40,12 +40,12 @@
       success: function(col){
         col.comparator = function(model) {
             return model.get('name');
-        }
+        };
        col.sort().each(function(model){
         $("#coffeesList").append(
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
         );
-      })
+       });
        populateRoasts();
      },
      error: function(){ console.log("bad coffee query"); }
@@ -61,7 +61,7 @@
         success : function(col) {
           col.comparator = function(model) {
             return model.get('date');
-        }
+          }
         console.log(col);
        col.sort().each(function(model){
         var newDate = new Date(parseInt(model.get('date')));
@@ -84,9 +84,21 @@
         var espressoNotesQuery = new StackMob.Collection.Query();
         espressoNotesQuery.equals('roast', $('#roastsList').val());
         espressoNotes.query(espressoNotesQuery, {
-          success : function(model){
-
+          success : function(col){
+            col.comparator = function(model) {
+            return model.get('espresso_note_id');
+            };
+            col.sort().each(function(model){
+              $("#tableData").append(
+                $('<tr></tr>').append(
+                  $('<td></td>').html(model.get('espresso_note_id'))
+                ).append(
+                  $('<td></td>').html(model.get('prep_date'))
+                )
+              )
+            });
             console.log('Successfully got all espresso notes');
+
             queryDripNotesBasedOnRoast();
           },
           error : function(model, response){
@@ -136,6 +148,14 @@
 
     $('#getNotesFromRoast').click(function(){
       
+      $('#tableData').html("");
+      $('#tableData').append(
+        $('<tr></tr>').append(
+            $('<td></td>').html("Note ID")
+        ).append(
+            $('<td></td>').html("Prep Date")
+        )
+      )
       queryEspressoNotesBasedOnRoast();
       
     });
@@ -181,11 +201,6 @@
   <br/>
   <br/>
   <table border=1 id="tableData">
-
-    <tr>
-      <th>Note ID</th>
-      <th>Prep Date</th>
-    </tr>
 
   </table>
 
