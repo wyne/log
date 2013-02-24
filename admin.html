@@ -106,7 +106,7 @@
     	var newUser = new StackMob.User({
         username : $('#username').val(),
         password : $('#password').val(),
-        location : $('#locationsListForAddUser').val()
+        location : $('#locationsListForAddUser').val() || undefined
       });
     	console.log(newUser);
     	newUser.create({
@@ -132,26 +132,83 @@
       });
     });
 
-    $('#newLocation').click(function(){
+    function createNewLocation(){
+      var dfd = new jQuery.Deferred();
+
       var newLocation = new Loc({
         name : $('#locationName').val(),
-        coffees : $('#coffeesListForAddLocation').val()
+        coffees : $('#coffeesListForAddLocation').val() || undefined
       });
-      console.log(newLocation);
+
       newLocation.create({
-
-        success: function(model){
-          var location_id = model.location_id;
-          $('#coffeesListForAddLocation').val().each(function(coffee_id){
-
-            /* Send request for each coffee to append location */
-            
-          });
-
-          window.location = '?message=Successfully created location ' + model.get('name') + ' at ' + model.get('address') + '.';
-        },
-        error: function(){ console.log("bad"); }
+        success: function(model){ dfd.resolve(model) },
+        error: function(model){ dfd.reject(model) }
       });
+
+      return dfd.promise();
+    };
+
+    function assignLocationToCoffee(coffee, location){
+      var dfd = new jQuery.Deferred();
+      var coffee = new Coffee({coffee_id: coffee});
+      coffee.appendAndSave('locations', [location], {
+        success: function(model){ dfd.resolve(model) },
+        error: function(model){ dfd.reject(model) }
+      });
+      return dfd.promise();
+    };
+
+    $('#newLocation').click(function(){
+      $.when(createNewLocation())
+      .then(
+        function(status){
+          // Done
+          var locationId = status.id;
+          if ( $('#coffeesListForAddLocation').val() != null ){
+            var deferreds = $('#coffeesListForAddLocation').val().map(function(coffeeId) {
+              return assignLocationToCoffee(coffeeId, locationId);
+            });
+
+            $.when.apply(null, deferreds)
+            .then(
+              function(status) {
+                // Done
+                window.location = '?message=Successfully created location ' + status.get('name') + ' at ' + status.get('address') + '.';
+              },
+              function(status) {
+                // Fail
+                console.log("Error");
+              }
+            );
+          }
+        },
+        function(status){
+          // Fail
+          console.log("Error");
+        }
+      );
+      // .pipe (function() {
+      //     return $.get('pages/test.html'); // the return value creates a new Deferred object
+      // })
+      // .done (function(args)
+      // {
+      //     alert (args);
+      // });
+
+      // newLocation.create({
+
+      //   success: function(model){
+      //     var location_id = model.location_id;
+      //     $('#coffeesListForAddLocation').val().each(function(coffee_id){
+
+      //        Send request for each coffee to append location
+      //     });
+
+      //     window.location = '?message=Successfully created location ' + model.get('name') + ' at ' + model.get('address') + '.';
+      //   },
+      //   error: function(){ console.log("bad"); }
+      // });
+
     });
 
     $('#removeLocation').click(function(){
@@ -172,7 +229,7 @@
     $('#newCoffee').click(function(){
       var newCoffee = new Coffee({
         name : $('#coffeeName').val(),
-        locations : $('#locationsListForAddCoffee').val()
+        locations : $('#locationsListForAddCoffee').val() || undefined
       });
       console.log(newCoffee);
       newCoffee.create({
