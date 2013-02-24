@@ -79,3 +79,40 @@ roasts.query(qAll, {
   },
   error: function(){ console.log("bad"); }
 });
+
+
+// Objects
+
+function createNewLocation(locName, locCoffees){
+  var dfd = new jQuery.Deferred();
+
+  var newLocation = new Loc({
+    name : locName,
+    coffees : locCoffees || undefined
+  });
+
+  newLocation.create({
+    success: function(model){ dfd.resolve(model) },
+    error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
+
+function assignLocationToCoffee(coffee, location){
+  var dfd = new jQuery.Deferred();
+
+  var coffee = new Coffee({coffee_id: coffee});
+
+  coffee.appendAndSave('locations', [location], {
+    success: function(model){ dfd.resolve(model) },
+    error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
+
+// Misc
+function redirectWithMessage(loc, msg){
+  window.location = loc + "?message=" + msg;
+}

@@ -106,7 +106,7 @@
     	var newUser = new StackMob.User({
         username : $('#username').val(),
         password : $('#password').val(),
-        location : $('#locationsListForAddUser').val()
+        location : $('#locationsListForAddUser').val() || undefined
       });
     	console.log(newUser);
     	newUser.create({
@@ -126,32 +126,63 @@
       newUser.destroy({
 
         success: function(model){
-          window.location = '?message=Successfully removed user.';
+          redirectWithMessage("", "Successfully removed user.");
         },
         error: function(){ console.log("bad"); }
       });
     });
 
     $('#newLocation').click(function(){
-      var newLocation = new Loc({
-        name : $('#locationName').val(),
-        coffees : $('#coffeesListForAddLocation').val()
-      });
-      console.log(newLocation);
-      newLocation.create({
+      $.when(createNewLocation($('#locationName').val(), $('#coffeesListForAddLocation').val()))
+      .then(
+        function(status){
+          // Done
+          var locationId = status.id;
+          if ( $('#coffeesListForAddLocation').val() != null ){
+            var deferreds = $('#coffeesListForAddLocation').val().map(function(coffeeId) {
+              return assignLocationToCoffee(coffeeId, locationId);
+            });
 
-        success: function(model){
-          var location_id = model.location_id;
-          $('#coffeesListForAddLocation').val().each(function(coffee_id){
-
-            /* Send request for each coffee to append location */
-            
-          });
-
-          window.location = '?message=Successfully created location ' + model.get('name') + ' at ' + model.get('address') + '.';
+            $.when.apply(null, deferreds)
+            .then(
+              function(status) {
+                // Done
+                redirectWithMessage("", "Successfully created location " + status.get('name') + " at " + status.get('address') + ".");
+              },
+              function(status) {
+                // Fail
+                console.log("Error");
+              }
+            );
+          }
         },
-        error: function(){ console.log("bad"); }
-      });
+        function(status){
+          // Fail
+          console.log("Error");
+        }
+      );
+      // .pipe (function() {
+      //     return $.get('pages/test.html'); // the return value creates a new Deferred object
+      // })
+      // .done (function(args)
+      // {
+      //     alert (args);
+      // });
+
+      // newLocation.create({
+
+      //   success: function(model){
+      //     var location_id = model.location_id;
+      //     $('#coffeesListForAddLocation').val().each(function(coffee_id){
+
+      //        Send request for each coffee to append location
+      //     });
+
+      //     window.location = '?message=Successfully created location ' + model.get('name') + ' at ' + model.get('address') + '.';
+      //   },
+      //   error: function(){ console.log("bad"); }
+      // });
+
     });
 
     $('#removeLocation').click(function(){
@@ -161,9 +192,7 @@
       newLocation.destroy({
 
         success: function(model){
-
-          window.location = '?message=Successfully removed location.';
-          
+          redirectWithMessage("", "Successfully removed location.";
         },
         error: function(){ console.log("bad"); }
       });
@@ -172,13 +201,13 @@
     $('#newCoffee').click(function(){
       var newCoffee = new Coffee({
         name : $('#coffeeName').val(),
-        locations : $('#locationsListForAddCoffee').val()
+        locations : $('#locationsListForAddCoffee').val() || undefined
       });
       console.log(newCoffee);
       newCoffee.create({
 
         success: function(model){
-          window.location = '?message=Successfully created coffee ' + model.get('name') + ' from ' + model.get('origin') + '.';
+          redirectWithMessage("","?message=Successfully created coffee " + model.get('name') + " from " + model.get('origin') + ".");
         },
         error: function(){ console.log("bad"); }
       });
@@ -198,17 +227,17 @@
           newCoffee.appendAndSave('locations', [$('#locationsListForAddSingleCoffee').val()], {
 
             success: function(model2){
-              window.location = '?message=Added ' + model2.name + ' to ' + model.name + '.';
+              redirectWithMessage("","?message=Added " + model2.name + " to " + model.name + ".");
             },
-            error: function(){ 
-              console.log("bad"); 
+            error: function(){
+              console.log("bad");
             }
           });
-          
+
         },
-        error: function(){ 
-          console.log("bad"); 
-        } 
+        error: function(){
+          console.log("bad");
+        }
       });
 
     });
