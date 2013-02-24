@@ -20,22 +20,59 @@
   /* <![CDATA[ */
     $(document).ready(function(){
 
-      // locations.query(qAll, {
-      //   success: function(col){
-      //     col.each(function(model){
-      //       $(".locations").append(
-      //         $("<a></a>").html(model.get('name')).click();
-      //       );
-      //     })
-      //   },
-      //   error: function(){ console.log("bad"); }
-      // });
+      var locationCoffees;
 
-      user.fetchExpanded(1, {
-        success: function(model){
-          $(".current-location").html("Location: " + model.get("location").name);
+      StackMob.getLoggedInUser( {
+        success: function(name){
+          console.log('Name is');
+          console.log(name);
+          var user = new StackMob.User({
+            username : name
+          });
+          user.fetchExpanded(2, {
+
+            success : function(model){
+              var locationObject = new Loc(model.get('location'));
+              console.log("locationObject")
+              console.log(locationObject);
+              if (typeof locationObject !== 'undefined') {
+                // Display Location of user
+                $('#usersLocation').append(
+                  "Logged in as " + model.get('username') + " at " + locationObject.get("name")
+                );
+                // Get all coffees for that location and display
+                locationCoffees = locationObject.get("coffees");
+                console.log("locationCoffees");
+                console.log(locationCoffees);
+                if (typeof locationCoffees !== 'undefined') {
+                  
+                  console.log('Got here');
+                  _.sortBy(locationCoffees, function(model) {
+                    return model.name;
+                  });
+
+                  _.each(locationCoffees, function(model) {
+                    console.log(model.name);
+                    $("#coffeesListForLocation").append(
+                      $('<option></option>').val(model.coffee_id).html(model.name)
+                    );
+                  })
+                }
+              } else {
+                console.log('No Location object found');
+              }
+
+            },
+            error : function(model, response){
+              console.log(response);
+            }
+
+          });
+        },
+        error : function(model, response) { 
+          console.log(response);
         }
-      })
+      });
 
     });
   /* ]]> */
@@ -66,11 +103,45 @@
   </div>
 
   <h2 class="current-location"></h2>
+  <h2 id="usersLocation"></h2>
+  <h2>Pick your coffee:</h2>
+  <select id="coffeesListForLocation"></select><br />
+  <label>Espresso:</label><input type="radio" name="group1" value="espresso" checked>
+  <label>Drip:</label><input type="radio" name="group1" value="drip">
+  <label>Siphon:</label><input type="radio" name="group1" value="siphon">
 
-  <h2>Coffees</h2>
-  <ul class="coffees"></ul>
-
-  <h2>Roasts</h2>
-  <ul class="roasts"></ul>
+  <div id="espresso_note">
+    <br/>REMOVE ME: ESPRESSO<br />
+    <form id="espresso_note_form">
+      <label>Roast Date:</label> <input type="date" class="roast_date">
+      <label>Preparation Date:</label> <input type="date" class="prep_date">
+      <label>Weight Of Dose:</label> <input type="number" class="dose_weight">
+      <label>Weight Of Yield:</label> <input type="number" class="yield_weight">
+      <label>Preinfuse Time:</label> <input type="number" class="preinfuse_time">
+      <label>Preinfuse Pressure:</label> <input type="number" class="preinfuse_pressure">
+      <label>Total Extraction Time:</label> <input type="number" class="total_extraction_time">
+      <label>Fragrance Aroma:</label> <input type="text" class="fragrance_aroma">
+      <label>Acidity:</label> <input type="text" class="acitdity">
+      <label>Mouthfeel:</label> <input type="text" class="mouthfeel">
+      <label>Flavor:</label> <input type="text" class="flavor">
+      <label>Aftertaste:</label> <input type="text" class="aftertaste">
+      <label>Positive Notes:</label> <input type="text" class="postitive_notes">
+      <label>Negative Notes:</label> <input type="text" class="negative_notes">
+    </form>
+  </div>
+  <div id="drip_note">
+    <br/>REMOVE ME: DRIP<br />
+    <form id="drip_note_form">
+      <label>Roast Date:</label> <input type="date" class="roast_date">
+      <label>Preparation Date:</label> <input type="date" class="prep_date">
+    </form>
+  </div>
+  <div id="siphon_note">
+    <br/>REMOVE ME: SIPHON<br />
+    <form id="siphon_note_form">
+      <label>Roast Date:</label> <input type="date" class="roast_date">
+      <label>Preparation Date:</label> <input type="date" class="prep_date">
+    </form>
+  </div>
 </body>
 </html>
