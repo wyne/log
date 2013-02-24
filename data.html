@@ -46,11 +46,86 @@
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
         );
       })
+       populateRoasts();
      },
      error: function(){ console.log("bad coffee query"); }
    });
 
+    function populateRoasts(){
+      $('#roastsList').html("");
+      var selectedCoffee = $('#coffeesList').val();
+
+      var roastsQuery = new StackMob.Collection.Query();
+      roastsQuery.equals('coffee', selectedCoffee);
+      roasts.query(roastsQuery, {
+        success : function(col) {
+          col.comparator = function(model) {
+            return model.get('date');
+        }
+        console.log(col);
+       col.sort().each(function(model){
+        var newDate = new Date(parseInt(model.get('date')));
+        console.log(newDate);
+        $("#roastsList").append(
+          $('<option></option>').val(model.get('roast_id')).html(newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear())
+        );
+      })
+        },
+        error : function(model, response) {
+          console.log(response);
+        }
+      });
+
+    };
+
+    $('#coffeesList').change(function(){
+      console.log('Changes');
+      populateRoasts();
     });
+
+    $('#getNotesFromRoast').click(function(){
+      if ($('#espresso_checkbox').is(':checked')) {
+        console.log("Querying all espresso notes for roast date");
+        var espressoNotesQuery = new StackMob.Collection.Query();
+        espressoNotesQuery.equals('roast', $('#roastsList').val());
+        espressoNotes.query(espressoNotesQuery, {
+          success : function(model){
+            console.log('Successfully got all espresso notes');
+          },
+          error : function(model, response){
+            console.log(response);
+          }
+        });
+      }
+      if ($('#drip_checkbox').is(':checked')) {
+        console.log("Querying all drip notes for roast date");
+        var dripNotesQuery = new StackMob.Collection.Query();
+        dripNotesQuery.equals('roast', $('#roastsList').val());
+        dripNotes.query(dripNotesQuery, {
+          success : function(model){
+            console.log('Successfully got all drip notes');
+          },
+          error : function(model, response){
+            console.log(response);
+          }
+        });
+      }
+      if ($('#siphon_checkbox').is(':checked')) {
+        console.log("Querying all siphon notes for roast date");
+        var siphonNotesQuery = new StackMob.Collection.Query();
+        siphonNotesQuery.equals('roast', $('#roastsList').val());
+        siphonNotes.query(siphonNotesQuery, {
+          success : function(model){
+            console.log('Successfully got all siphon notes');
+          },
+          error : function(model, response){
+            console.log(response);
+          }
+        });
+      }
+    });
+
+  });
   /* ]]> */
   </script>
 
@@ -82,9 +157,9 @@
   <label>Choose Coffee:</label><select id="coffeesList"></select><br />
   <label>Choose Roast:</label><select id="roastsList"></select><br />
   <label>Type:</label>
-    <input type="checkbox" value="espresso">Espresso</input><br />
-    <input type="checkbox" value="drip">Drip</input><br />
-    <input type="checkbox" value="siphon">Siphon</input><br />
+    <input id="espresso_checkbox" type="checkbox">Espresso</input><br />
+    <input id="drip_checkbox" type="checkbox">Drip</input><br />
+    <input id="siphon_checkbox" type="checkbox">Siphon</input><br />
   <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Submit"></input>
 
   <label>Locations:</label><select size='10' id="locationsList" multiple><option value="None">N/A</option></select><br />
