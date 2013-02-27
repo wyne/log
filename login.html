@@ -3,13 +3,15 @@
 <head>
   <title>Coffee Log</title>
 
-  <!-- Libraries -->
-  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
-  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
-
   <!-- StackMob Dependencies -->
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
   <script type="text/javascript" src="http://static.stackmob.com/js/stackmob-js-0.8.0-bundled-min.js"></script>
+
+  <!-- Libraries -->
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
+  <link href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" rel="stylesheet">
+  <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
 
   <!-- Site Dependencies -->
   <script type="text/javascript" src="site.js"></script>
@@ -35,13 +37,13 @@
             window.location = "/";
           },
           error: function(){
+            $('#badcredentials').html("");
+            $('#badcredentials').append("Bad Credentials!");
             console.log("error logging in!");
           }
         });
       }
-      $(".login").click(function(){
-        submitForm();
-      });
+      
       $("form").submit(function(e){
         e.preventDefault();
         submitForm();
@@ -79,6 +81,7 @@
     <div class="row-fluid">
       <div class="span6 offset3">
         <h2>Login</h2>
+        <p id="badcredentials"></p>
         <form>
           Username: <input name="username" class="username" type="text"></input><br />
           Password: <input name="password" class="password" type="password"></input><br />

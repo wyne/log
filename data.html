@@ -3,13 +3,15 @@
 <head>
   <title>Coffee Log</title>
 
-  <!-- Libraries -->
-  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
-  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
-
   <!-- StackMob Dependencies -->
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
   <script type="text/javascript" src="http://static.stackmob.com/js/stackmob-js-0.8.0-bundled-min.js"></script>
+
+  <!-- Libraries -->
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
+  <link href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" rel="stylesheet">
+  <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
 
   <!-- Site Dependencies -->
   <script type="text/javascript" src="site.js"></script>
@@ -59,7 +61,7 @@
         success : function(results) {
         console.log(results);
        results.each(function(model){
-        var newDate = new Date(parseInt(model.get('date')));
+        var newDate = new Date(model.get('date'));
         console.log(newDate);
         $("#roastsList").append(
           $('<option></option>').val(model.get('roast_id')).html(newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear())
@@ -73,7 +75,11 @@
 
     };
 
-    var arrayOfEspressoFields = ['espresso_note_id', 'prep_date', 'dose_weight', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'preinfuse_pressure', 'preinfuse_time', 'prep_date', 'total_extraction_time', 'yield_weight'];
+    var arrayOfEspressoFields = _.union(['espresso_note_id'], _.sortBy(['prep_date', 'dose_weight', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'preinfuse_pressure', 'preinfuse_time', 'total_extraction_time', 'yield_weight', 'aftertaste'], function(a){ return a }));
+
+    var arrayOfDripFields = _.union(['drip_note_id'], _.sortBy(['prep_date', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes','total_extraction_time', 'milk', 'aftertaste', 'coffee_dose', 'water_dose', 'grind_setting', 'bloom_time'], function(a){ return a }));
+
+    var arrayOfSiphonFields = _.union(['siphon_note_id'], _.sortBy(['prep_date', 'dose_weight', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'preinfuse_pressure', 'preinfuse_time', 'prep_date', 'total_extraction_time', 'yield_weight'], function(a){ return a }));
 
     function queryEspressoNotesBasedOnRoast(){
       if ($('#espresso_checkbox').is(':checked')) {
@@ -86,17 +92,19 @@
         });
         espressoNotes.query(qEspressoNotes, {
           success : function(results){
+            populateTableWithHeadersFromList(arrayOfEspressoFields);
             results.each(function(model){
-              arrayOfEspressoFields.each(function(idx, item){
-                  $("#tableData").append(
-                    $('<tr></tr>').append(
-                      $('<td></td>').html(model.get(arrayOfEspressoFields[i]))
-                    )
-                  )
+              var columnData = [];
+              _.each(arrayOfEspressoFields, function(idx, item){
+                columnData.push($('<td></td>').html(model.get(arrayOfEspressoFields[item])));
               });
+              $('#tableData').append(
+                $('<tr></tr>').append(
+                  columnData
+                )
+              )
             });
             console.log('Successfully got all espresso notes');
-
             queryDripNotesBasedOnRoast();
           },
           error : function(model, response){
@@ -114,8 +122,9 @@
         qDripNotes.orderAsc('drip_note_id');
         dripNotes.query(qDripNotes, {
           success : function(model){
-            // TODO FILL IN
             console.log('Successfully got all drip notes');
+            populateTableWithHeadersFromList(arrayOfDripFields);
+            
             querySiphonNotesBasedOnRoast();
           },
           error : function(model, response){
@@ -135,6 +144,7 @@
           success : function(model){
             // TODO FILL IN
             console.log('Successfully got all siphon notes');
+            populateTableWithHeadersFromList(arrayOfSiphonFields);
           },
           error : function(model, response){
             console.log(response);
@@ -148,18 +158,21 @@
       populateRoasts();
     });
 
-    $('#getNotesFromRoast').click(function(){
+    function populateTableWithHeadersFromList(list) {
       var columnHeaders = [];
-      _.each(arrayOfEspressoFields, function(idx, item){
-        columnHeaders.push($('<td></td>').html(arrayOfEspressoFields[item]));
+      _.each(list, function(idx, item){
+        columnHeaders.push($('<th></th>').html(list[item]));
       })
-
-      $('#tableData').html("");
       $('#tableData').append(
         $('<tr></tr>').append(
           columnHeaders
         )
       )
+    };
+
+    $('#getNotesFromRoast').click(function(e){
+      e.preventDefault();
+      $('#tableData').html("");
       queryEspressoNotesBasedOnRoast();
     });
 
@@ -259,12 +272,13 @@
     <label class="checkbox inline">
         <input id="yield_date_checkbox" class="sort_checkbox" type="checkbox" value="yield_weight">Yield Weight</input>
     </label>
-    </div>
-
+    </p></div>
     <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Submit"></input>
 
-    <table border=1 id="tableData"></table>
-
+    <div class="table-wrapper">
+    <p>&nbsp;</p>
+    <table border="1" id="tableData" class="table table-bordered table-hover"></table>
+    </div>
   </div>
 
   <!--
