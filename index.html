@@ -9,6 +9,9 @@
 
   <!-- Libraries -->
   <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+  <link href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" rel="stylesheet">
+  <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+
   <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
 
   <!-- Site Dependencies -->
@@ -166,8 +169,8 @@
               <form id="espresso_note_form">
                 <div class="row-fluid">
                   <div class="span6">
-                    <label>Roast Date:</label> <input type="date" name="roast_date">
-                    <label>Preparation Date:</label> <input type="date" name="prep_date">
+                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Preparation Date:</label> <input type="text" name="prep_date" class="date-input">
                     <label>Weight Of Dose:</label> <input type="number" name="dose_weight">
                     <label>Weight Of Yield:</label> <input type="number" name="yield_weight">
                     <label>Preinfuse Time:</label> <input type="number" name="preinfuse_time">
@@ -193,8 +196,8 @@
 
             <div id="drip_note">
               <form id="drip_note_form">
-                <label>Roast Date:</label> <input type="date" class="roast_date">
-                <label>Preparation Date:</label> <input type="date" class="prep_date">
+                <label>Roast Date:</label> <input type="text" class="date-input roast_date">
+                <label>Preparation Date:</label> <input type="text" class="date-input prep_date">
               </form>
             </div>
 
@@ -203,8 +206,8 @@
 
             <div id="siphon_note">
               <form id="siphon_note_form">
-                <label>Roast Date:</label> <input type="date" class="roast_date">
-                <label>Preparation Date:</label> <input type="date" class="prep_date">
+                <label>Roast Date:</label> <input type="text" class="date-input roast_date">
+                <label>Preparation Date:</label> <input type="text" class="date-input prep_date">
               </form>
             </div>
 

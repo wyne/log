@@ -216,3 +216,8 @@ function removeCoffeeFromAllLocations(coffee){
 function redirectWithMessage(loc, msg){
   window.location = loc + "?message=" + msg;
 }
+
+
+$(document).ready(function(){
+  $(".date-input").datepicker();
+});
