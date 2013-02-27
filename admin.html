@@ -25,13 +25,12 @@
       $("#status").addClass("alert").html(getParameterByName('message'));
     }
 
-    locations.query(qAll, {
-      success: function(col){
+    var qLocations = new StackMob.Collection.Query();
+    qLocations.orderAsc('name');
+    locations.query(qLocations, {
+      success: function(results){
 
-        col.comparator = function(model) {
-            return model.get('name');
-        }
-       col.sort().each(function(model){
+        results.each(function(model){
           /* Add location for new user */
           $("#locationsListForAddUser").append(
             $('<option></option>').val(model.get('location_id')).html(model.get('name'))
@@ -58,12 +57,11 @@
      error: function(){ console.log("bad locations query"); }
    });
 
-    coffees.query(qAll, {
-      success: function(col){
-        col.comparator = function(model) {
-            return model.get('name');
-        }
-       col.sort().each(function(model){
+    var qCoffees = new StackMob.Collection.Query();
+    qCoffees.orderAsc('name');
+    coffees.query(qCoffees, {
+      success: function(results){
+       results.each(function(model){
         /* Add coffees list for new location */
         $("#coffeesListForAddLocation").append(
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
@@ -86,13 +84,12 @@
      error: function(){ console.log("bad coffee query"); }
    });
 
-    users.query(qAll, {
-      success: function(col){
+    var qUsers = new StackMob.Collection.Query();
+    qUsers.orderAsc('username');
+    users.query(qUsers, {
+      success: function(results){
 
-        col.comparator = function(model) {
-            return model.get('username');
-        }
-       col.sort().each(function(model){
+        results.each(function(model){
         /* Add coffees list for new location */
         $("#usersListForRemoveUser").append(
           $('<option></option>').val(model.get('username')).html(model.get('username'))
@@ -166,6 +163,40 @@
     });
 
     $('#removeLocation').click(function(){
+      // $.when(function(){
+      //   if ( $('#locationsListForAddCoffee').val() != null ){
+      //     var deferreds = $('#locationsListForAddCoffee').val().map(function(locationId) {
+      //       return assignCoffeeToLocation(locationId, coffeeId);
+      //     });
+      //     return deferreds;
+
+      //     $.when.apply(null, deferreds)
+      //     .then(
+      //       function(status2) {
+      //         // Done
+      //         redirectWithMessage("", "Successfully created coffee " + status.get('name'));
+      //       },
+      //       function(status2) {
+      //         // Fail
+      //         console.log("Error");
+      //       }
+      //     );
+
+      //   }
+      //   removeLocation($('#locationsListForRemoveLocation').val())
+      // }).then(
+      //   function(status){
+      //     // Done
+      //     var locationId = status.id;
+
+      //   },
+      //   function(failStatus){
+      //     // Fail
+      //     console.log("Error");
+      //   }
+
+      // );
+
       var newLocation = new Loc({
         location_id : $('#locationsListForRemoveLocation').val(),
       });
@@ -253,14 +284,14 @@
             success: function(model2){
               window.location = '?message=Removed ' + model2.name + ' from ' + model.name + '.';
             },
-            error: function(){ 
-              console.log("bad"); 
+            error: function(){
+              console.log("bad");
             }
           });
         },
-        error: function(){ 
-          console.log("bad"); 
-        } 
+        error: function(){
+          console.log("bad");
+        }
       });
 
     });

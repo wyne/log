@@ -19,29 +19,26 @@
   <script type="text/javascript">
   /* <![CDATA[ */
     $(document).ready(function(){
+      var qLocations = new StackMob.Collection.Query();
+      qLocations.orderAsc('name');
+      locations.query(qLocations, {
+      success: function(results){
 
-      locations.query(qAll, {
-      success: function(col){
-
-        col.comparator = function(model) {
-            return model.get('name');
-        }
-       col.sort().each(function(model){
+       results.each(function(model){
           $("#locationsList").append(
             $('<option></option>').val(model.get('location_id')).html(model.get('name'))
           );
-          
+
        });
      },
      error: function(){ console.log("bad locations query"); }
    });
 
-    coffees.query(qAll, {
-      success: function(col){
-        col.comparator = function(model) {
-            return model.get('name');
-        };
-       col.sort().each(function(model){
+    var qCoffees = new StackMob.Collection.Query();
+      qCoffees.orderAsc('name');
+    coffees.query(qCoffees, {
+      success: function(results){
+       results.each(function(model){
         $("#coffeesList").append(
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
         );
@@ -55,15 +52,13 @@
       $('#roastsList').html("");
       var selectedCoffee = $('#coffeesList').val();
 
-      var roastsQuery = new StackMob.Collection.Query();
-      roastsQuery.equals('coffee', selectedCoffee);
-      roasts.query(roastsQuery, {
-        success : function(col) {
-          col.comparator = function(model) {
-            return model.get('date');
-          }
-        console.log(col);
-       col.sort().each(function(model){
+      var qRoasts = new StackMob.Collection.Query();
+      qRoasts.equals('coffee', selectedCoffee);
+      qRoasts.orderAsc('date');
+       roasts.query(qRoasts, {
+        success : function(results) {
+        console.log(results);
+       results.each(function(model){
         var newDate = new Date(parseInt(model.get('date')));
         console.log(newDate);
         $("#roastsList").append(
@@ -78,24 +73,27 @@
 
     };
 
+    var arrayOfEspressoFields = ['espresso_note_id', 'prep_date', 'dose_weight', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'preinfuse_pressure', 'preinfuse_time', 'prep_date', 'total_extraction_time', 'yield_weight'];
+
     function queryEspressoNotesBasedOnRoast(){
       if ($('#espresso_checkbox').is(':checked')) {
         console.log("Querying all espresso notes for roast date");
-        var espressoNotesQuery = new StackMob.Collection.Query();
-        espressoNotesQuery.equals('roast', $('#roastsList').val());
-        espressoNotes.query(espressoNotesQuery, {
-          success : function(col){
-            col.comparator = function(model) {
-            return model.get('espresso_note_id');
-            };
-            col.sort().each(function(model){
-              $("#tableData").append(
-                $('<tr></tr>').append(
-                  $('<td></td>').html(model.get('espresso_note_id'))
-                ).append(
-                  $('<td></td>').html(model.get('prep_date'))
-                )
-              )
+        var qEspressoNotes = new StackMob.Collection.Query();
+        qEspressoNotes.equals('roast', $('#roastsList').val());
+        //qEspressoNotes.orderAsc('espresso_note_id');
+        $('input:checkbox:checked.sort_checkbox').each(function(idx,obj){ 
+          qEspressoNotes.orderAsc($(obj).val()); 
+        });
+        espressoNotes.query(qEspressoNotes, {
+          success : function(results){
+            results.each(function(model){
+              arrayOfEspressoFields.each(function(idx, item){
+                  $("#tableData").append(
+                    $('<tr></tr>').append(
+                      $('<td></td>').html(model.get(arrayOfEspressoFields[i]))
+                    )
+                  )
+              });
             });
             console.log('Successfully got all espresso notes');
 
@@ -111,10 +109,12 @@
     function queryDripNotesBasedOnRoast(){
       if ($('#drip_checkbox').is(':checked')) {
         console.log("Querying all drip notes for roast date");
-        var dripNotesQuery = new StackMob.Collection.Query();
-        dripNotesQuery.equals('roast', $('#roastsList').val());
-        dripNotes.query(dripNotesQuery, {
+        var qDripNotes = new StackMob.Collection.Query();
+        qDripNotes.equals('roast', $('#roastsList').val());
+        qDripNotes.orderAsc('drip_note_id');
+        dripNotes.query(qDripNotes, {
           success : function(model){
+            // TODO FILL IN
             console.log('Successfully got all drip notes');
             querySiphonNotesBasedOnRoast();
           },
@@ -128,10 +128,12 @@
     function querySiphonNotesBasedOnRoast(){
       if ($('#siphon_checkbox').is(':checked')) {
         console.log("Querying all siphon notes for roast date");
-        var siphonNotesQuery = new StackMob.Collection.Query();
-        siphonNotesQuery.equals('roast', $('#roastsList').val());
-        siphonNotes.query(siphonNotesQuery, {
+        var qSiphonNotes = new StackMob.Collection.Query();
+        qSiphonNotes.equals('roast', $('#roastsList').val());
+        qSiphonNotes.orderAsc('siphon_note_id');
+        siphonNotes.query(qSiphonNotes, {
           success : function(model){
+            // TODO FILL IN
             console.log('Successfully got all siphon notes');
           },
           error : function(model, response){
@@ -147,17 +149,18 @@
     });
 
     $('#getNotesFromRoast').click(function(){
-      
+      var columnHeaders = [];
+      _.each(arrayOfEspressoFields, function(idx, item){
+        columnHeaders.push($('<td></td>').html(arrayOfEspressoFields[item]));
+      })
+
       $('#tableData').html("");
       $('#tableData').append(
         $('<tr></tr>').append(
-            $('<td></td>').html("Note ID")
-        ).append(
-            $('<td></td>').html("Prep Date")
+          columnHeaders
         )
       )
       queryEspressoNotesBasedOnRoast();
-      
     });
 
   });
@@ -189,20 +192,80 @@
     </div>
   </div>
 
-  <h2>Get notes from a coffee's roast:</h2>
-  <label>Choose Coffee:</label><select id="coffeesList"></select><br />
-  <label>Choose Roast:</label><select id="roastsList"></select><br />
-  <label>Type Of Note:</label>
-    <input id="espresso_checkbox" type="checkbox">Espresso</input><br />
-    <input id="drip_checkbox" type="checkbox">Drip</input><br />
-    <input id="siphon_checkbox" type="checkbox">Siphon</input><br />
-  <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Submit"></input>
-  <br/>
-  <br/>
-  <br/>
-  <table border=1 id="tableData">
+  <div class="container">
+    <h2>Get notes from a coffee's roast:</h2>
+    <div class="row-fluid">
+      <div class="span6">
+        <label>Choose Coffee:</label><select id="coffeesList"></select>
+      </div>
+      <div class="span6">
+        <label>Choose Roast:</label><select size="10" id="roastsList" multiple></select>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <label>Type Of Note:</label>
+      <label class="checkbox inline">
+        <input id="espresso_checkbox" type="checkbox">Espresso</input>
+      </label>
+      <label class="checkbox inline">
+        <input id="drip_checkbox" type="checkbox">Drip</input>
+      </label>
+      <label class="checkbox inline">
+        <input id="siphon_checkbox" type="checkbox">Siphon</input>
+      </label>
+    </div>
 
-  </table>
+    <div class="row-fluid">
+    <p></p>
+    <label>Sort By:</label>
+    <label class="checkbox inline">
+        <input id="acidity_checkbox" class="sort_checkbox" type="checkbox" value="acidity">Acidity</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="aftertaste_checkbox" class="sort_checkbox" type="checkbox" value="aftertaste">Aftertaste</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="dose_weight_checkbox" class="sort_checkbox" type="checkbox" value="dose_weight">Dose Weight</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="flavor_checkbox" class="sort_checkbox" type="checkbox" value="flavor">Flavor</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="fragrance_aroma_checkbox" class="sort_checkbox" type="checkbox" value="fragrance_aroma">Fragrance Aroma</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="mouthfeel_checkbox" class="sort_checkbox" type="checkbox" value="mouthfeel">Mouthfeel</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="positive_notes_checkbox" class="sort_checkbox" type="checkbox" value="positive_notes">Positive Notes</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="negative_notes_checkbox" class="sort_checkbox" type="checkbox" value="negative_notes">Negative Notes</input>
+    </label>
+    <!--
+    <label class="checkbox inline">
+        <input id="preinfuse_pressure_checkbox" class="sort_checkbox" type="checkbox" value="preinfuse_pressure">Preinfuse Pressure</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="preinfuse_time_checkbox" class="sort_checkbox" type="checkbox" value="preinfuse_time">Preinfuse Time</input>
+    </label>
+  -->
+    <label class="checkbox inline">
+        <input id="prep_date_checkbox" class="sort_checkbox" type="checkbox" value="prep_date">Prep Date</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="total_extraction_time_checkbox" class="sort_checkbox" type="checkbox" value="total_extraction_time">Total Extraction Time</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="yield_date_checkbox" class="sort_checkbox" type="checkbox" value="yield_weight">Yield Weight</input>
+    </label>
+    </div>
+
+    <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Submit"></input>
+
+    <table border=1 id="tableData"></table>
+
+  </div>
 
   <!--
   <label>Locations:</label><select size='10' id="locationsList" multiple><option value="None">N/A</option></select><br />
