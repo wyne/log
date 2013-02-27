@@ -56,7 +56,7 @@
      },
      error: function(){ console.log("bad locations query"); }
    });
-
+    
     var qCoffees = new StackMob.Collection.Query();
     qCoffees.orderAsc('name');
     coffees.query(qCoffees, {
@@ -136,7 +136,7 @@
           // Done
           var locationId = status.id;
           if ( $('#coffeesListForAddLocation').val() != null ){
-            var deferreds = $('#coffeesListForAddLocation').val().map(function(coffeeId) {
+            var deferreds = $('#coffeesListForAddLocation').val().map(function(coffeeId) {  
               return assignLocationToCoffee(coffeeId, locationId);
             });
 
@@ -163,40 +163,45 @@
     });
 
     $('#removeLocation').click(function(){
-      // $.when(function(){
-      //   if ( $('#locationsListForAddCoffee').val() != null ){
-      //     var deferreds = $('#locationsListForAddCoffee').val().map(function(locationId) {
-      //       return assignCoffeeToLocation(locationId, coffeeId);
-      //     });
-      //     return deferreds;
+      /*
+      $.when.apply
+      $.when(removeLocation($('#locationsListForRemoveLocation').val()))
+      .then(
+        function(successStatus){
+          // Done
+          var locationId = status.id;
 
-      //     $.when.apply(null, deferreds)
-      //     .then(
-      //       function(status2) {
-      //         // Done
-      //         redirectWithMessage("", "Successfully created coffee " + status.get('name'));
-      //       },
-      //       function(status2) {
-      //         // Fail
-      //         console.log("Error");
-      //       }
-      //     );
 
-      //   }
-      //   removeLocation($('#locationsListForRemoveLocation').val())
-      // }).then(
-      //   function(status){
-      //     // Done
-      //     var locationId = status.id;
+          if ( $('#locationsListForAddCoffee').val() != null ){
+            var deferreds = $('#locationsListForAddCoffee').val().map(function(locationId) {
+              return assignCoffeeToLocation(locationId, coffeeId);
+            });
 
-      //   },
-      //   function(failStatus){
-      //     // Fail
-      //     console.log("Error");
-      //   }
+            $.when.apply(null, deferreds)
+            .then(
+              function(status2) {
+                // Done
+                redirectWithMessage("", "Successfully created coffee " + status.get('name'));
+              },
+              function(status2) {
+                // Fail
+                console.log("Error");
+              }
+            );
 
-      // );
+          }
 
+
+
+        },
+        function(failStatus){
+          // Fail
+          console.log("Error");
+        }
+
+      );*/
+
+      
       var newLocation = new Loc({
         location_id : $('#locationsListForRemoveLocation').val(),
       });
@@ -284,14 +289,14 @@
             success: function(model2){
               window.location = '?message=Removed ' + model2.name + ' from ' + model.name + '.';
             },
-            error: function(){
-              console.log("bad");
+            error: function(){ 
+              console.log("bad"); 
             }
           });
         },
-        error: function(){
-          console.log("bad");
-        }
+        error: function(){ 
+          console.log("bad"); 
+        } 
       });
 
     });
