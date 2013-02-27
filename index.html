@@ -38,7 +38,7 @@
               if (typeof locationObject !== 'undefined') {
                 // Display Location of user
                 $('#usersLocation').append(
-                  "Logged in as " + model.get('username') + " at " + locationObject.get("name")
+                  "Logged in at " + locationObject.get("name")
                 );
                 // Get all coffees for that location and display
                 locationCoffees = locationObject.get("coffees");

@@ -35,13 +35,13 @@
             window.location = "/";
           },
           error: function(){
+            $('#badcredentials').html("");
+            $('#badcredentials').append("Bad Credentials!");
             console.log("error logging in!");
           }
         });
       }
-      $(".login").click(function(){
-        submitForm();
-      });
+      
       $("form").submit(function(e){
         e.preventDefault();
         submitForm();
@@ -79,6 +79,7 @@
     <div class="row-fluid">
       <div class="span6 offset3">
         <h2>Login</h2>
+        <p id="badcredentials"></p>
         <form>
           Username: <input name="username" class="username" type="text"></input><br />
           Password: <input name="password" class="password" type="password"></input><br />
