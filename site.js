@@ -176,7 +176,11 @@ function removeLocationFromAllCoffees(location){
   var hasLocation = new StackMob.Collection.Query();
   hasLocation.mustBeOneOf('location', location);
   coffees.query(hasLocation, {
-    success: function(){
+    success: function(col){
+      var deferreds = col.get('coffee_id').map(function(coffeeId) {
+              return removeLocationReferenceFromCoffee(location, coffeeId);
+      });
+      
     },
     error: function(){}
   })

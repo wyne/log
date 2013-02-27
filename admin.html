@@ -165,6 +165,10 @@
     });
 
     $('#removeLocation').click(function(){
+
+      removeLocationFromAllCoffees($('#locationsListForRemoveLocation').val());
+
+      
       /*
       $.when.apply
       $.when(removeLocation($('#locationsListForRemoveLocation').val()))

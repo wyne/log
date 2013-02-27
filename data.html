@@ -169,7 +169,9 @@
         )
       )
     };
-    $('#getNotesFromRoast').click(function(){
+
+    $('#getNotesFromRoast').click(function(e){
+      e.preventDefault();
       $('#tableData').html("");
       queryEspressoNotesBasedOnRoast();
     });
