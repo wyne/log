@@ -73,22 +73,27 @@
 
     };
 
+    var arrayOfEspressoFields = ['espresso_note_id', 'prep_date', 'dose_weight', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'preinfuse_pressure', 'preinfuse_time', 'prep_date', 'total_extraction_time', 'yield_weight'];
+
     function queryEspressoNotesBasedOnRoast(){
       if ($('#espresso_checkbox').is(':checked')) {
         console.log("Querying all espresso notes for roast date");
         var qEspressoNotes = new StackMob.Collection.Query();
         qEspressoNotes.equals('roast', $('#roastsList').val());
-        qEspressoNotes.orderAsc('espresso_note_id');
+        //qEspressoNotes.orderAsc('espresso_note_id');
+        $('input:checkbox:checked.sort_checkbox').each(function(idx,obj){ 
+          qEspressoNotes.orderAsc($(obj).val()); 
+        });
         espressoNotes.query(qEspressoNotes, {
           success : function(results){
             results.each(function(model){
-              $("#tableData").append(
-                $('<tr></tr>').append(
-                  $('<td></td>').html(model.get('espresso_note_id'))
-                ).append(
-                  $('<td></td>').html(model.get('prep_date'))
-                )
-              )
+              arrayOfEspressoFields.each(function(idx, item){
+                  $("#tableData").append(
+                    $('<tr></tr>').append(
+                      $('<td></td>').html(model.get(arrayOfEspressoFields[i]))
+                    )
+                  )
+              });
             });
             console.log('Successfully got all espresso notes');
 
@@ -144,13 +149,15 @@
     });
 
     $('#getNotesFromRoast').click(function(){
+      var columnHeaders = [];
+      _.each(arrayOfEspressoFields, function(idx, item){
+        columnHeaders.push($('<td></td>').html(arrayOfEspressoFields[item]));
+      })
 
       $('#tableData').html("");
       $('#tableData').append(
         $('<tr></tr>').append(
-            $('<td></td>').html("Note ID")
-        ).append(
-            $('<td></td>').html("Prep Date")
+          columnHeaders
         )
       )
       queryEspressoNotesBasedOnRoast();
@@ -192,22 +199,67 @@
         <label>Choose Coffee:</label><select id="coffeesList"></select>
       </div>
       <div class="span6">
-        <label>Choose Roast:</label><select id="roastsList"></select>
+        <label>Choose Roast:</label><select size="10" id="roastsList" multiple></select>
       </div>
     </div>
+    <div class="row-fluid">
+      <label>Type Of Note:</label>
+      <label class="checkbox inline">
+        <input id="espresso_checkbox" type="checkbox">Espresso</input>
+      </label>
+      <label class="checkbox inline">
+        <input id="drip_checkbox" type="checkbox">Drip</input>
+      </label>
+      <label class="checkbox inline">
+        <input id="siphon_checkbox" type="checkbox">Siphon</input>
+      </label>
+    </div>
 
-    <label>Type Of Note:</label>
+    <div class="row-fluid">
+    <p></p>
+    <label>Sort By:</label>
     <label class="checkbox inline">
-      <input id="espresso_checkbox" type="checkbox">Espresso</input>
+        <input id="acidity_checkbox" class="sort_checkbox" type="checkbox" value="acidity">Acidity</input>
     </label>
     <label class="checkbox inline">
-      <input id="drip_checkbox" type="checkbox">Drip</input>
+        <input id="aftertaste_checkbox" class="sort_checkbox" type="checkbox" value="aftertaste">Aftertaste</input>
     </label>
     <label class="checkbox inline">
-      <input id="siphon_checkbox" type="checkbox">Siphon</input>
+        <input id="dose_weight_checkbox" class="sort_checkbox" type="checkbox" value="dose_weight">Dose Weight</input>
     </label>
-
-    <br />
+    <label class="checkbox inline">
+        <input id="flavor_checkbox" class="sort_checkbox" type="checkbox" value="flavor">Flavor</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="fragrance_aroma_checkbox" class="sort_checkbox" type="checkbox" value="fragrance_aroma">Fragrance Aroma</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="mouthfeel_checkbox" class="sort_checkbox" type="checkbox" value="mouthfeel">Mouthfeel</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="positive_notes_checkbox" class="sort_checkbox" type="checkbox" value="positive_notes">Positive Notes</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="negative_notes_checkbox" class="sort_checkbox" type="checkbox" value="negative_notes">Negative Notes</input>
+    </label>
+    <!--
+    <label class="checkbox inline">
+        <input id="preinfuse_pressure_checkbox" class="sort_checkbox" type="checkbox" value="preinfuse_pressure">Preinfuse Pressure</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="preinfuse_time_checkbox" class="sort_checkbox" type="checkbox" value="preinfuse_time">Preinfuse Time</input>
+    </label>
+  -->
+    <label class="checkbox inline">
+        <input id="prep_date_checkbox" class="sort_checkbox" type="checkbox" value="prep_date">Prep Date</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="total_extraction_time_checkbox" class="sort_checkbox" type="checkbox" value="total_extraction_time">Total Extraction Time</input>
+    </label>
+    <label class="checkbox inline">
+        <input id="yield_date_checkbox" class="sort_checkbox" type="checkbox" value="yield_weight">Yield Weight</input>
+    </label>
+    </div>
 
     <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Submit"></input>
 
