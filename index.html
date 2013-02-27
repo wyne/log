@@ -76,19 +76,33 @@
         }
       });
 
-      function submitEspressoNote(roast_id, json){
-        console.log('roast exists');
+      function submitEspressoNote(json){
+        console.log('submitting espresso note');
+        json.roast_date = undefined;
+        var newNote = new EspressoNote(json);
+        newNote.create({
+          success : function (model) {
+            console.log("good, new roast");
+          },
+          error : function(model, response) {
+            console.log("bad");
+          }
+        })
       };
 
       $("#espresso_note_form").submit(function(e){
         e.preventDefault();
         var jsonForm = {};//$(this).serializeArray();
         $(this).find('input').each(function(){
-          if ($(this).val() != "") {
+          if ($(this).val() != "" && $(this).attr("type") != "submit") {
             if ($(this).attr('type') == "number") {
               jsonForm[$(this).attr("name")] = parseInt($(this).val());
             } else if ($(this).hasClass("date-input") ) {
               jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
+            } else if ($(this).attr("type") == "radio") {
+              if ($(this).is(":checked")) {
+                jsonForm[$(this).attr("name")] = $(this).val();
+              }
             } else {
               jsonForm[$(this).attr("name")] = $(this).val();
             }
@@ -115,13 +129,15 @@
               });
               newRoast.create({
                 success : function(model){
-                  submitEspressoNote(model.get('roast_id'), jsonForm);
+                  jsonForm["roast"] = model.get('roast_id');
+                  submitEspressoNote(jsonForm);
                 },
                 error : function(model, response){}
               });
             } else {
               // make check for 1 item only
-              submitEspressoNote(col.at(0).get('roast_id'), jsonForm);
+              jsonForm["roast"] = col.at(0).get('roast_id');
+              submitEspressoNote(jsonForm);
             }
           },
           error : function(model, response){}
@@ -183,7 +199,7 @@
                     <label>Shift:</label>
                   
                     <label class="radio inline">AM
-                      <input type="radio" name="shift" value="AM" class="shift">
+                      <input type="radio" name="shift" value="AM" class="shift" checked="true">
                     </label>
                     <label class="radio inline">PM
                       <input type="radio" name="shift" value="PM" class="shift">
