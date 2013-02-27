@@ -84,12 +84,14 @@
         e.preventDefault();
         var jsonForm = {};//$(this).serializeArray();
         $(this).find('input').each(function(){
-          if ($(this).attr('type') == "number") {
-            jsonForm[$(this).attr("name")] = parseInt($(this).val());
-          } else if ($(this).hasClass("date-input") ) {
-            jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
-          } else {
-            jsonForm[$(this).attr("name")] = $(this).val();
+          if ($(this).val() != "") {
+            if ($(this).attr('type') == "number") {
+              jsonForm[$(this).attr("name")] = parseInt($(this).val());
+            } else if ($(this).hasClass("date-input") ) {
+              jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
+            } else {
+              jsonForm[$(this).attr("name")] = $(this).val();
+            }
           }
         });
         console.log(jsonForm);
