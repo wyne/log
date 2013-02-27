@@ -108,8 +108,9 @@
               });
 
               console.log("create new roast");
+            } else {
+              submitEspressoNote(model.get('roast_id'), jsonForm);
             }
-            submitEspressoNote(model.get('roast_id'), jsonForm);
           },
           error : function(model, response){
 
