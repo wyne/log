@@ -161,13 +161,53 @@
 
         <div class="tab-content">
           <div class="tab-pane active" id="espresso">
-            espresso
+
+            <div id="espresso_note">
+              <form id="espresso_note_form">
+                <div class="row-fluid">
+                  <div class="span6">
+                    <label>Roast Date:</label> <input type="date" name="roast_date">
+                    <label>Preparation Date:</label> <input type="date" name="prep_date">
+                    <label>Weight Of Dose:</label> <input type="number" name="dose_weight">
+                    <label>Weight Of Yield:</label> <input type="number" name="yield_weight">
+                    <label>Preinfuse Time:</label> <input type="number" name="preinfuse_time">
+                    <label>Preinfuse Pressure:</label> <input type="number" name="preinfuse_pressure">
+                    <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
+                  </div>
+                  <div class="span6">
+                    <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
+                    <label>Acidity:</label> <input type="text" name="acitdity">
+                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
+                    <label>Flavor:</label> <input type="text" name="flavor">
+                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
+                    <label>Positive Notes:</label> <input type="text" name="postitive_notes">
+                    <label>Negative Notes:</label> <input type="text" name="negative_notes">
+                  </div>
+                  <input class="login btn btn-primary" type="submit" value="Submit Espresso Note"></input>
+                </div>
+              </form>
+            </div>
+
           </div>
           <div class="tab-pane" id="drip">
-            drip
+
+            <div id="drip_note">
+              <form id="drip_note_form">
+                <label>Roast Date:</label> <input type="date" class="roast_date">
+                <label>Preparation Date:</label> <input type="date" class="prep_date">
+              </form>
+            </div>
+
           </div>
           <div class="tab-pane" id="siphon">
-            siphon
+
+            <div id="siphon_note">
+              <form id="siphon_note_form">
+                <label>Roast Date:</label> <input type="date" class="roast_date">
+                <label>Preparation Date:</label> <input type="date" class="prep_date">
+              </form>
+            </div>
+
           </div>
         </div>
 
@@ -181,46 +221,6 @@
           });
         </script>
 
-        <div id="espresso_note">
-          <h4>ESPRESSO</h4>
-          <form id="espresso_note_form">
-            <div class="row-fluid">
-              <div class="span6">
-                <label>Roast Date:</label> <input type="date" name="roast_date">
-                <label>Preparation Date:</label> <input type="date" name="prep_date">
-                <label>Weight Of Dose:</label> <input type="number" name="dose_weight">
-                <label>Weight Of Yield:</label> <input type="number" name="yield_weight">
-                <label>Preinfuse Time:</label> <input type="number" name="preinfuse_time">
-                <label>Preinfuse Pressure:</label> <input type="number" name="preinfuse_pressure">
-                <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
-              </div>
-              <div class="span6">
-                <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
-                <label>Acidity:</label> <input type="text" name="acitdity">
-                <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                <label>Flavor:</label> <input type="text" name="flavor">
-                <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                <label>Positive Notes:</label> <input type="text" name="postitive_notes">
-                <label>Negative Notes:</label> <input type="text" name="negative_notes">
-              </div>
-              <input class="login btn btn-primary" type="submit" value="Submit Espresso Note"></input>
-            </div>
-          </form>
-        </div>
-        <div id="drip_note">
-          <h4>DRIP Note</h4>
-          <form id="drip_note_form">
-            <label>Roast Date:</label> <input type="date" class="roast_date">
-            <label>Preparation Date:</label> <input type="date" class="prep_date">
-          </form>
-        </div>
-        <div id="siphon_note">
-          <h4>SIPHON Note</h4>
-          <form id="siphon_note_form">
-            <label>Roast Date:</label> <input type="date" class="roast_date">
-            <label>Preparation Date:</label> <input type="date" class="prep_date">
-          </form>
-        </div>
       </div>
     </div>
 
