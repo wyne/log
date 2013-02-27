@@ -151,44 +151,66 @@ function assignLocationToCoffee(coffee, location){
 
   var coffee = new Coffee({coffee_id: coffee});
 
-  coffee.fetch({
-    success: function(model){
-      model.save({ locations: _.union(model.get('locations') || new Array(), [location]) }, {
-        success: function(){
-          dfd.resolve(model);
-        },
-        error : function(){
-          dfd.reject(model);
-        }
-      });
-    },
+  coffee.appendAndSave('locations', [location], {
+    success: function(model){ dfd.resolve(model) },
     error: function(model){ dfd.reject(model) }
   });
 
   return dfd.promise();
 };
+
+function removeLocationFromCoffee(coffee, location){
+  var dfd = new jQuery.Deferred();
+
+  var coffee = new Coffee({coffee_id: coffee});
+
+  coffee.deleteAndSave('locations', [location], {
+    success: function(model){ dfd.resolve(model) },
+    error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
+
+function removeLocationFromAllCoffees(location){
+  var hasLocation = new StackMob.Collection.Query();
+  hasLocation.mustBeOneOf('location', location);
+  coffees.query(hasLocation, {
+    success: function(){
+    },
+    error: function(){}
+  })
+}
 
 function assignCoffeeToLocation(location, coffee){
   var dfd = new jQuery.Deferred();
 
   var location = new Loc({location_id: location});
 
-  location.fetch({
-    success: function(model){
-      model.save({ coffees: _.union(model.get('coffees') || new Array(), [coffee]) }, {
-        success: function(){
-          dfd.resolve(model);
-        },
-        error : function(){
-          dfd.reject(model);
-        }
-      });
-    },
+  location.appendAndSave('coffees', [coffee], {
+    success: function(model){ dfd.resolve(model) },
     error: function(model){ dfd.reject(model) }
   });
 
   return dfd.promise();
 };
+
+function removeCoffeeFromLocation(location, coffee){
+  var dfd = new jQuery.Deferred();
+
+  var location = new Loc({location_id: location});
+
+  location.deleteAndSave('coffees', [coffee], {
+    success: function(model){ dfd.resolve(model) },
+    error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
+
+function removeCoffeeFromAllLocations(coffee){
+
+}
 
 // ===== Misc
 function redirectWithMessage(loc, msg){
