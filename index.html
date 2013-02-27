@@ -74,6 +74,50 @@
         }
       });
 
+      function submitEspressoNote(roast_id, json){
+        console.log('roast exists');
+      };
+
+      $("#espresso_note_form").submit(function(e){
+        e.preventDefault();
+        var jsonForm = $(this).serializeArray();
+        console.log(jsonForm);
+        var roastQuery = new StackMob.Collection.Query();
+        var roastDateValue = _.find(jsonForm, function(item){ return item["name"] == "roast_date" });
+        if (!roastDateValue && !roastDateValue["value"]) {
+          // Handle error
+        }
+
+        roastDateValue = roastDateValue["value"];
+        console.log(roastDateValue);
+        roastQuery.equals('date', roastDateValue).equals('coffee', $("#coffeesListForLocation").val());
+
+
+        roasts.query(roastQuery, function(){
+          success: function(model){
+            if (model.toJSON().length == 0) {
+              // Create new roast
+              var newRoast = new Roast({
+                date : roastDateValue
+              });
+              newRoast.create({
+                success : function(model){
+                  submitEspressoNote(model.get('roast_id'), jsonForm);
+                },
+                error : function(model, response){}
+              });
+
+              console.log("create new roast");
+            }
+            submitEspressoNote(model.get('roast_id'), jsonForm);
+          },
+          error : function(model, response){
+
+          }
+        });
+        
+
+      });
     });
   /* ]]> */
   </script>
@@ -129,23 +173,24 @@
           <form id="espresso_note_form">
             <div class="row-fluid">
               <div class="span6">
-                <label>Roast Date:</label> <input type="date" class="roast_date">
-                <label>Preparation Date:</label> <input type="date" class="prep_date">
-                <label>Weight Of Dose:</label> <input type="number" class="dose_weight">
-                <label>Weight Of Yield:</label> <input type="number" class="yield_weight">
-                <label>Preinfuse Time:</label> <input type="number" class="preinfuse_time">
-                <label>Preinfuse Pressure:</label> <input type="number" class="preinfuse_pressure">
-                <label>Total Extraction Time:</label> <input type="number" class="total_extraction_time">
+                <label>Roast Date:</label> <input type="date" name="roast_date">
+                <label>Preparation Date:</label> <input type="date" name="prep_date">
+                <label>Weight Of Dose:</label> <input type="number" name="dose_weight">
+                <label>Weight Of Yield:</label> <input type="number" name="yield_weight">
+                <label>Preinfuse Time:</label> <input type="number" name="preinfuse_time">
+                <label>Preinfuse Pressure:</label> <input type="number" name="preinfuse_pressure">
+                <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
               </div>
               <div class="span6">
-                <label>Fragrance Aroma:</label> <input type="text" class="fragrance_aroma">
-                <label>Acidity:</label> <input type="text" class="acitdity">
-                <label>Mouthfeel:</label> <input type="text" class="mouthfeel">
-                <label>Flavor:</label> <input type="text" class="flavor">
-                <label>Aftertaste:</label> <input type="text" class="aftertaste">
-                <label>Positive Notes:</label> <input type="text" class="postitive_notes">
-                <label>Negative Notes:</label> <input type="text" class="negative_notes">
+                <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
+                <label>Acidity:</label> <input type="text" name="acitdity">
+                <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
+                <label>Flavor:</label> <input type="text" name="flavor">
+                <label>Aftertaste:</label> <input type="text" name="aftertaste">
+                <label>Positive Notes:</label> <input type="text" name="postitive_notes">
+                <label>Negative Notes:</label> <input type="text" name="negative_notes">
               </div>
+              <input class="login btn btn-primary" type="submit" value="Submit Espresso Note"></input>
             </div>
           </form>
         </div>
