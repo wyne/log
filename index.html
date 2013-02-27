@@ -82,25 +82,34 @@
 
       $("#espresso_note_form").submit(function(e){
         e.preventDefault();
-        var jsonForm = $(this).serializeArray();
+        var jsonForm = {};//$(this).serializeArray();
+        $(this).find('input').each(function(){
+          if ($(this).attr('type') == "number") {
+            jsonForm[$(this).attr("name")] = parseInt($(this).val());
+          } else if ($(this).hasClass("date-input") ) {
+            jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
+          } else {
+            jsonForm[$(this).attr("name")] = $(this).val();
+          }
+        });
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
-        var roastDateValue = _.find(jsonForm, function(item){ return item["name"] == "roast_date" });
-        if (!roastDateValue && !roastDateValue["value"]) {
+
+        if (!jsonForm.roast_date) {
           // Handle error
         }
 
-        roastDateValue = roastDateValue["value"];
-        console.log(roastDateValue);
-        roastQuery.equals('date', roastDateValue).equals('coffee', $("#coffeesListForLocation").val());
+        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
 
 
         roasts.query(roastQuery, {
-          success: function(model){
-            if (model.toJSON().length == 0) {
+          success: function(col){
+            if (col.length == 0) {
               // Create new roast
+              console.log("creating new roast");
               var newRoast = new Roast({
-                date : roastDateValue
+                date : jsonForm.roast_date,
+                coffee : $("#coffeesListForLocation").val()
               });
               newRoast.create({
                 success : function(model){
@@ -108,10 +117,9 @@
                 },
                 error : function(model, response){}
               });
-
-              console.log("create new roast");
             } else {
-              submitEspressoNote(model.get('roast_id'), jsonForm);
+              // make check for 1 item only
+              submitEspressoNote(col.at(0).get('roast_id'), jsonForm);
             }
           },
           error : function(model, response){}

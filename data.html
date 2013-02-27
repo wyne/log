@@ -61,7 +61,7 @@
         success : function(results) {
         console.log(results);
        results.each(function(model){
-        var newDate = new Date(parseInt(model.get('date')));
+        var newDate = new Date(model.get('date'));
         console.log(newDate);
         $("#roastsList").append(
           $('<option></option>').val(model.get('roast_id')).html(newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear())
