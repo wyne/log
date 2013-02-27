@@ -93,7 +93,7 @@
         roastQuery.equals('date', roastDateValue).equals('coffee', $("#coffeesListForLocation").val());
 
 
-        roasts.query(roastQuery, function(){
+        roasts.query(roastQuery, {
           success: function(model){
             if (model.toJSON().length == 0) {
               // Create new roast
@@ -112,11 +112,8 @@
               submitEspressoNote(model.get('roast_id'), jsonForm);
             }
           },
-          error : function(model, response){
-
-          }
+          error : function(model, response){}
         });
-        
 
       });
     });
@@ -168,6 +165,35 @@
           <input type="radio" name="group1" value="siphon">
           Siphon
         </label>
+
+        <ul class="nav nav-tabs" id="myTab" data-tabs="tabs">
+          <li class="active"><a href="#espresso" data-toggle="tab">Espresso</a></li>
+          <li><a href="#drip" data-toggle="tab">Drip</a></li>
+          <li><a href="#siphon" data-toggle="tab">Siphon</a></li>
+        </ul>
+
+        <div class="tab-content">
+          <div class="tab-pane active" id="espresso">
+            espresso
+          </div>
+          <div class="tab-pane" id="drip">
+            drip
+          </div>
+          <div class="tab-pane" id="siphon">
+            siphon
+          </div>
+        </div>
+
+        <script>
+          $(document).ready(function(){
+            // $('#myTab').tab();
+            // $('#myTab a').click(function (e) {
+            //   e.preventDefault();
+            //   $(this).tab('show');
+            // });
+
+          });
+        </script>
 
         <div id="espresso_note">
           <h4>ESPRESSO</h4>
