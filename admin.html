@@ -132,32 +132,14 @@
     });
 
     $('#newLocation').click(function(){
-      $.when(createNewLocation($('#locationName').val(), $('#coffeesListForAddLocation').val()))
+      createNewLocation( $('#locationName').val(), $('#coffeesListForAddLocation').val() )
       .then(
         function(status){
-          // Done
-          var locationId = status.id;
-          if ( $('#coffeesListForAddLocation').val() != null ){
-            var deferreds = $('#coffeesListForAddLocation').val().map(function(coffeeId) {  
-              return assignLocationToCoffee(coffeeId, locationId);
-            });
-
-            $.when.apply(null, deferreds)
-            .then(
-              function(status2) {
-                // Done
-                redirectWithMessage("", "Successfully created location " + status.get('name'));
-              },
-              function(status2) {
-                // Fail
-                console.log("Error");
-              }
-            );
-
-          }
+          // Success
+          assignLocationToCoffees( $('#coffeesListForAddLocation').val(), status.id );
         },
         function(status){
-          // Fail
+          // Failure
           console.log("Error");
         }
       );
@@ -166,57 +148,18 @@
 
     $('#removeLocation').click(function(){
 
-      removeLocationFromAllCoffees($('#locationsListForRemoveLocation').val());
-
-      
-      /*
-      $.when.apply
-      $.when(removeLocation($('#locationsListForRemoveLocation').val()))
+      removeLocationFromAllCoffees( $('#locationsListForRemoveLocation').val() )
+      .then(removeLocation)
       .then(
-        function(successStatus){
-          // Done
-          var locationId = status.id;
-
-
-          if ( $('#locationsListForAddCoffee').val() != null ){
-            var deferreds = $('#locationsListForAddCoffee').val().map(function(locationId) {
-              return assignCoffeeToLocation(locationId, coffeeId);
-            });
-
-            $.when.apply(null, deferreds)
-            .then(
-              function(status2) {
-                // Done
-                redirectWithMessage("", "Successfully created coffee " + status.get('name'));
-              },
-              function(status2) {
-                // Fail
-                console.log("Error");
-              }
-            );
-
-          }
-
-
-
+        function(status){
+          // redirectWithMessage("", "Successfully removed location: " + status);
+          console.log("done removing location");
         },
-        function(failStatus){
-          // Fail
-          console.log("Error");
+        function(){
+          console.log("Error removing location.");
         }
+      );
 
-      );*/
-
-      
-      var newLocation = new Loc({
-        location_id : $('#locationsListForRemoveLocation').val(),
-      });
-      newLocation.destroy({
-        success: function(model){
-          redirectWithMessage("", "Successfully removed location.");
-        },
-        error: function(){ console.log("bad"); }
-      });
     });
 
     $('#newCoffee').click(function(){

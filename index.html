@@ -196,15 +196,17 @@
                   <div class="span6">
                     <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="prep_date" class="date-input">
-                    <label>Shift:</label>
-                  
-                    <label class="radio inline">AM
-                      <input type="radio" name="shift" value="AM" class="shift" checked="true">
+
+                    <div class="clear"></div>
+                    <span style="float:left;">Shift:<span>
+
+                    <label class="radio inline">
+                      <input type="radio" name="shift" value="AM" class="shift" checked="true"> AM
                     </label>
-                    <label class="radio inline">PM
-                      <input type="radio" name="shift" value="PM" class="shift">
+                    <label class="radio inline">
+                      <input type="radio" name="shift" value="PM" class="shift"> PM
                     </label>
-                  
+
                     <label>Weight Of Dose:</label> <input type="number" name="dose_weight">
                     <label>Weight Of Yield:</label> <input type="number" name="yield_weight">
                     <label>Preinfuse Time:</label> <input type="number" name="preinfuse_time">
@@ -220,8 +222,13 @@
                     <label>Positive Notes:</label> <input type="text" name="postitive_notes">
                     <label>Negative Notes:</label> <input type="text" name="negative_notes">
                   </div>
-                  <input class="login btn btn-primary" type="submit" value="Submit Espresso Note"></input>
                 </div>
+                <div class="row">
+                  <div class="span6 offset6">
+                    <input class="login btn btn-primary" type="submit" value="Submit Espresso Note"></input>
+                  </div>
+                </div>
+
               </form>
             </div>
 
