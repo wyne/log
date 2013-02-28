@@ -97,7 +97,11 @@ roasts.query(qAll, {
 });
 
 
-// ===== Objects
+/*
+ * ==========
+ * LOCATIONS
+ * ==========
+ */
 
 function createNewLocation(locName, locCoffees){
   var dfd = new jQuery.Deferred();
@@ -108,22 +112,6 @@ function createNewLocation(locName, locCoffees){
   });
 
   newLocation.create({
-    success: function(model){ dfd.resolve(model) },
-    error: function(model){ dfd.reject(model) }
-  });
-
-  return dfd.promise();
-};
-
-function createNewCoffee(coffeeName, coffeeLocations){
-  var dfd = new jQuery.Deferred();
-
-  var newCoffee = new Coffee({
-    name : coffeeName,
-    locations : coffeeLocations || undefined
-  });
-
-  newCoffee.create({
     success: function(model){ dfd.resolve(model) },
     error: function(model){ dfd.reject(model) }
   });
@@ -162,16 +150,16 @@ function assignLocationToCoffees(coffees, location){
   return dfd.promise();
 };
 
-function removeLocation(locID){
+function removeLocation(location){
   var dfd = new jQuery.Deferred();
 
   var newLocation = new Loc({
-    location_id : locID,
+    location_id : location,
   });
 
   newLocation.destroy({
-    success: function(model){ dfd.resolve(locID) },
-    error: function(model){ dfd.reject(locID) }
+    success: function(model){ dfd.resolve(location) },
+    error: function(model){ dfd.reject(location) }
   });
 
   return dfd.promise();
@@ -196,11 +184,9 @@ function removeLocationFromAllCoffees(location){
   var hasLocation = new StackMob.Collection.Query();
   hasLocation.mustBeOneOf('locations', location);
   coffees.query(hasLocation, {
-    success: function(col){
-      var deferreds = col.map(function(c) {
-        var id = c.get('coffee_id');
-        console.log("ID = = = " + id);
-        return removeLocationFromCoffee(id, location);
+    success: function(collection){
+      var deferreds = collection.map(function(coffee) {
+        return removeLocationFromCoffee(coffee.get('coffee_id'), location);
       });
 
       $.when(deferreds)
@@ -211,12 +197,34 @@ function removeLocationFromAllCoffees(location){
       
     },
     error: function(){
-      console.log("Error removing location from coffees");
+      console.log("Error removing location from coffees.");
     }
   });
 
   return dfd.promise();
 }
+
+/*
+ * ==========
+ * COFFEES
+ * ==========
+ */
+
+function createNewCoffee(coffeeName, coffeeLocations){
+  var dfd = new jQuery.Deferred();
+
+  var newCoffee = new Coffee({
+    name : coffeeName,
+    locations : coffeeLocations || undefined
+  });
+
+  newCoffee.create({
+    success: function(model){ dfd.resolve(model) },
+    error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
 
 function assignCoffeeToLocation(location, coffee){
   var dfd = new jQuery.Deferred();
@@ -226,6 +234,39 @@ function assignCoffeeToLocation(location, coffee){
   location.appendAndSave('coffees', [coffee], {
     success: function(model){ dfd.resolve(model) },
     error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
+
+function assignCoffeeToLocations(locations, coffee){
+  var dfd = new jQuery.Deferred();
+
+  if ( locations != null ){
+    var deferreds = locations.map(function(locationId) {
+      return assignCoffeeToLocation(locationId, coffee);
+    });
+
+    $.when(deferreds)
+    .then(
+      function(status) { dfd.resolve(status) },
+      function(status) { dfd.reject(status) }
+    );
+  }
+
+  return dfd.promise();
+};
+
+function removeCoffee(coffee){
+  var dfd = new jQuery.Deferred();
+
+  var newCoffee = new Coffee({
+    coffee_id : coffee,
+  });
+
+  newCoffee.destroy({
+    success: function(model){ dfd.resolve(coffee) },
+    error: function(model){ dfd.reject(coffee) }
   });
 
   return dfd.promise();
@@ -245,14 +286,40 @@ function removeCoffeeFromLocation(location, coffee){
 };
 
 function removeCoffeeFromAllLocations(coffee){
+  var dfd = new jQuery.Deferred();
 
+  var hasCoffee = new StackMob.Collection.Query();
+  hasCoffee.mustBeOneOf('coffees', coffee);
+  locations.query(hasCoffee, {
+    success: function(collection){
+      var deferreds = collection.map(function(location) {
+        return removeCoffeeFromLocation(location.get('location_id'), coffee);
+      });
+
+      $.when(deferreds)
+      .then(
+        function(status) { dfd.resolve(coffee) },
+        function(status) { dfd.reject(coffee) }
+      );
+      
+    },
+    error: function(){
+      console.log("Error removing coffee from locations.");
+    }
+  });
+
+  return dfd.promise();
 }
 
-// ===== Misc
+/*
+ * ==========
+ * MISC
+ * ==========
+ */
+
 function redirectWithMessage(loc, msg){
   window.location = loc + "?message=" + msg;
 }
-
 
 $(document).ready(function(){
   $(".date-input").datepicker();

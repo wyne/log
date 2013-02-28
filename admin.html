@@ -36,29 +36,29 @@
           /* Add location for new user */
           $("#locationsListForAddUser").append(
             $('<option></option>').val(model.get('location_id')).html(model.get('name'))
-          );
+            );
           /* Add locations list for new coffee */
           $("#locationsListForAddCoffee").append(
             $('<option></option>').val(model.get('location_id')).html(model.get('name'))
-          );
+            );
 
           /* Add locations list for remove location */
           $("#locationsListForRemoveLocation").append(
             $('<option></option>').val(model.get('location_id')).html(model.get('name'))
-          );
+            );
 
           $('#locationsListForAddSingleCoffee').append(
             $('<option></option>').val(model.get('location_id')).html(model.get('name'))
-          );
+            );
 
           $('#locationsListForRemovingSingleCoffee').append(
             $('<option></option>').val(model.get('location_id')).html(model.get('name'))
-          );
-       });
-     },
-     error: function(){ console.log("bad locations query"); }
-   });
-    
+            );
+        });
+      },
+      error: function(){ console.log("bad locations query"); }
+    });
+
     var qCoffees = new StackMob.Collection.Query();
     qCoffees.orderAsc('name');
     coffees.query(qCoffees, {
@@ -67,24 +67,24 @@
         /* Add coffees list for new location */
         $("#coffeesListForAddLocation").append(
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
-        );
+          );
 
         /* Add coffees list for remove coffee */
         $('#coffeesListForRemoveCoffee').append(
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
-        );
+          );
 
         $('#coffeesListForAddSingleCoffee').append(
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
-        );
+          );
 
         $('#coffeesListForRemovingSingleCoffee').append(
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
-        );
+          );
       })
      },
      error: function(){ console.log("bad coffee query"); }
-   });
+    });
 
     var qUsers = new StackMob.Collection.Query();
     qUsers.orderAsc('username');
@@ -92,14 +92,20 @@
       success: function(results){
 
         results.each(function(model){
-        /* Add coffees list for new location */
-        $("#usersListForRemoveUser").append(
-          $('<option></option>').val(model.get('username')).html(model.get('username'))
-          );
-      })
-     },
-     error: function(){ console.log("bad users query"); }
-   });
+          /* Add coffees list for new location */
+          $("#usersListForRemoveUser").append(
+            $('<option></option>').val(model.get('username')).html(model.get('username'))
+            );
+        })
+      },
+      error: function(){ console.log("bad users query"); }
+    });
+
+    /*
+     * ==========
+     * USERS
+     * ==========
+     */
 
     $('#newUser').click(function(){
     	var newUser = new StackMob.User({
@@ -130,6 +136,12 @@
         error: function(){ console.log("bad"); }
       });
     });
+
+    /*
+     * ==========
+     * LOCATIONS
+     * ==========
+     */
 
     $('#newLocation').click(function(){
       createNewLocation( $('#locationName').val(), $('#coffeesListForAddLocation').val() )
@@ -162,33 +174,21 @@
 
     });
 
+    /*
+     * ==========
+     * COFFEES
+     * ==========
+     */
+
     $('#newCoffee').click(function(){
-      $.when(createNewCoffee($('#coffeeName').val(), $('#locationsListForAddCoffee').val()))
+      createNewCoffee( $('#coffeeName').val(), $('#locationsListForAddCoffee').val() )
       .then(
         function(status){
-          // Done
-          var coffeeId = status.id;
-          if ( $('#locationsListForAddCoffee').val() != null ){
-            var deferreds = $('#locationsListForAddCoffee').val().map(function(locationId) {
-              return assignCoffeeToLocation(locationId, coffeeId);
-            });
-
-            $.when.apply(null, deferreds)
-            .then(
-              function(status2) {
-                // Done
-                redirectWithMessage("", "Successfully created coffee " + status.get('name'));
-              },
-              function(status2) {
-                // Fail
-                console.log("Error");
-              }
-            );
-
-          }
+          // Success
+          assignCoffeeToLocations( $('#locationsListForAddCoffee').val(), status.id );
         },
         function(status){
-          // Fail
+          // Failure
           console.log("Error");
         }
       );
@@ -299,6 +299,7 @@
     <div class="row-fluid">
 
       <div class="span12">
+        <input type="button" value="click" class="aaa"></input>
         <div id="status"></div>
       </div>
 
