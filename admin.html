@@ -148,7 +148,12 @@
       .then(
         function(status){
           // Success
-          assignLocationToCoffees( $('#coffeesListForAddLocation').val(), status.id );
+          assignLocationToCoffees( $('#coffeesListForAddLocation').val(), status.id ).then(
+            function(status){
+              redirectWithMessage("", "Successfully created location: " + status.id);
+            },
+            function(){}
+          );
         },
         function(status){
           // Failure
@@ -182,11 +187,18 @@
       .then(
         function(status){
           // Success
-          assignCoffeeToLocations( $('#locationsListForAddCoffee').val(), status.id );
+          assignCoffeeToLocations( $('#locationsListForAddCoffee').val(), status.id ).then(
+            function(status){
+              redirectWithMessage("", "Successfully created coffee: " + status.id);
+            },
+            function(status){
+              console.log("Error adding coffee to locations.");
+            }
+          );
         },
         function(status){
           // Failure
-          console.log("Error");
+          console.log("Error creating new coffee.");
         }
       );
     });
@@ -293,7 +305,6 @@
     <div class="row-fluid">
 
       <div class="span12">
-        <input type="button" value="click" class="aaa"></input>
         <div id="status"></div>
       </div>
 

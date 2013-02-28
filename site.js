@@ -145,6 +145,8 @@ function assignLocationToCoffees(coffees, location){
       function(status) { dfd.resolve(status) },
       function(status) { dfd.reject(status) }
     );
+  } else {
+    dfd.resolve(location);
   }
 
   return dfd.promise();
@@ -252,6 +254,8 @@ function assignCoffeeToLocations(locations, coffee){
       function(status) { dfd.resolve(status) },
       function(status) { dfd.reject(status) }
     );
+  } else {
+    dfd.resolve(coffee);
   }
 
   return dfd.promise();
