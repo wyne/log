@@ -159,19 +159,16 @@
     });
 
     $('#removeLocation').click(function(){
-
       removeLocationFromAllCoffees( $('#locationsListForRemoveLocation').val() )
       .then(removeLocation)
       .then(
         function(status){
-          // redirectWithMessage("", "Successfully removed location: " + status);
-          console.log("done removing location");
+          redirectWithMessage("", "Successfully removed location: " + status);
         },
         function(){
           console.log("Error removing location.");
         }
       );
-
     });
 
     /*
@@ -238,32 +235,29 @@
             success: function(model2){
               window.location = '?message=Removed ' + model2.name + ' from ' + model.name + '.';
             },
-            error: function(){ 
-              console.log("bad"); 
+            error: function(){
+              console.log("bad");
             }
           });
         },
-        error: function(){ 
-          console.log("bad"); 
-        } 
+        error: function(){
+          console.log("bad");
+        }
       });
 
     });
 
-
     $('#removeCoffee').click(function(){
-      var newCoffee = new Coffee({
-        coffee_id : $('#coffeesListForRemoveCoffee').val(),
-      });
-      newCoffee.destroy({
-
-        success: function(model){
-
-          window.location = '?message=Successfully removed coffee.';
-
+      removeCoffeeFromAllLocations( $('#coffeesListForRemoveCoffee').val() )
+      .then(removeCoffee)
+      .then(
+        function(status){
+          redirectWithMessage("", "Successfully removed coffee: " + status);
         },
-        error: function(){ console.log("bad"); }
-      });
+        function(){
+          console.log("Error removing coffee.");
+        }
+      );
     });
 });
 
