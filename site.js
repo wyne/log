@@ -26,10 +26,15 @@ if(StackMob.isLoggedOut()){
 
 // User
 var username = StackMob.getLoggedInUser();
-var user = new StackMob.User({'username': username});
+if (username) { var user = new StackMob.User({'username': username}); };
 
 // Users
 var users = new StackMob.Users();
+
+//Roles
+var Role = StackMob.Model.extend({ schemaName: 'aclrole' });
+var Roles = StackMob.Collection.extend({ model: Role });
+var roles = new Roles();
 
 // Locations
 var Loc = StackMob.Model.extend({ schemaName: 'location' });
@@ -325,6 +330,38 @@ function redirectWithMessage(loc, msg){
   window.location = loc + "?message=" + msg;
 }
 
+function ifAdmin(){
+  var dfd = new jQuery.Deferred();
+
+  var admin = new Role({role_id: "admin"});
+
+  admin.fetch({
+    success: function(model){
+      var isAdmin = false;
+      _.each( model.get(0).members, function(item){
+        if (item == username) { isAdmin = true; }
+      });
+
+      isAdmin ? dfd.resolve() : dfd.reject();
+    },
+    error: function(){
+      dfd.reject();
+    }
+  });
+
+  return dfd.promise();
+}
+
 $(document).ready(function(){
+
   $(".date-input").datepicker();
+
+  // q.mustBeOneOf('members', )
+
+  ifAdmin().then(
+    function(){
+      $(".nav li.admin").css("display", "initial");
+    }
+  );
+
 });

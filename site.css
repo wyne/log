@@ -5,3 +5,7 @@ body {
 .table-wrapper {
 	overflow: scroll;
 }
+
+.nav li.admin{
+  display: none;
+}

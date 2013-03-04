@@ -26,8 +26,6 @@
 
       StackMob.getLoggedInUser( {
         success: function(name){
-          console.log('Name is');
-          console.log(name);
           var user = new StackMob.User({
             username : name
           });
@@ -35,8 +33,6 @@
 
             success : function(model){
               var locationObject = new Loc(model.get('location'));
-              console.log("locationObject")
-              console.log(locationObject);
               if (typeof locationObject !== 'undefined') {
                 // Display Location of user
                 $('#usersLocation').append(
@@ -44,17 +40,12 @@
                 );
                 // Get all coffees for that location and display
                 locationCoffees = locationObject.get("coffees");
-                console.log("locationCoffees");
-                console.log(locationCoffees);
                 if (typeof locationCoffees !== 'undefined') {
-                  
-                  console.log('Got here');
                   _.sortBy(locationCoffees, function(model) {
                     return model.name;
                   });
 
                   _.each(locationCoffees, function(model) {
-                    console.log(model.name);
                     $("#coffeesListForLocation").append(
                       $('<option></option>').val(model.coffee_id).html(model.name)
                     );
@@ -66,13 +57,13 @@
 
             },
             error : function(model, response){
-              console.log(response);
+              console.log("Error: " + response);
             }
 
           });
         },
-        error : function(model, response) { 
-          console.log(response);
+        error : function(model, response) {
+          console.log("Error: " + response);
         }
       });
 
@@ -82,10 +73,10 @@
         var newNote = new EspressoNote(json);
         newNote.create({
           success : function (model) {
-            console.log("good, new roast");
+            console.log("Success, new roast");
           },
           error : function(model, response) {
-            console.log("bad");
+            console.log("Error saving note.");
           }
         })
       };
@@ -108,7 +99,6 @@
             }
           }
         });
-        console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
 
         if (!jsonForm.roast_date) {
@@ -122,7 +112,7 @@
           success: function(col){
             if (col.length == 0) {
               // Create new roast
-              console.log("creating new roast");
+              console.log("Creating new roast");
               var newRoast = new Roast({
                 date : jsonForm.roast_date,
                 coffee : $("#coffeesListForLocation").val()
@@ -163,8 +153,8 @@
         <div class="nav-collapse">
           <ul class="nav">
             <li class="active"><a href="/">Home</a></li>
-            <li><a href="/admin.html">Admin</a></li>
-            <li><a href="/data.html">Data</a></li>
+            <li class="admin"><a href="/admin.html">Admin</a></li>
+            <li class="admin"><a href="/data.html">Data</a></li>
             <li><a href="/login.html">Login</a></li>
             <li><a href="/login.html?logout=true">Logout</a></li>
           </ul>
