@@ -13,7 +13,7 @@ StackMob.init({
     appName: "coffeelog",
     clientSubdomain: "bennettbluebottlecoffeecom",
     publicKey: "8480bb0b-99bc-4acc-abc9-0a19bd5eab1e",
-    apiVersion: 1
+    apiVersion: 0
 });
 
 if(StackMob.isLoggedOut()){
