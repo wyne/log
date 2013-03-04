@@ -258,6 +258,8 @@
       $('#espressoTableData').html("");
       $('#dripTableData').html("");
       $('#siphonTableData').html("");
+      $('#showingNotesForRostDate').html("");
+      $('#showingNotesForRostDate').append("Showing notes for " + $('#roastsList').find(":selected").text() + "  roast of " + $('#coffeesList').find(":selected").text() + ".");
       queryEspressoNotesBasedOnRoast();
     });
 
@@ -359,6 +361,8 @@
     </label>
     </p></div>
     <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Submit"></input>
+
+    <p></p><p id="showingNotesForRostDate"></p>
 
     <div class="table-wrapper">
     <p>&nbsp;</p>
