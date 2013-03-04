@@ -59,14 +59,12 @@
       qRoasts.orderAsc('date');
        roasts.query(qRoasts, {
         success : function(results) {
-        console.log(results);
-       results.each(function(model){
-        var newDate = new Date(model.get('date'));
-        console.log(newDate);
-        $("#roastsList").append(
-          $('<option></option>').val(model.get('roast_id')).html(newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear())
-        );
-      })
+          results.each(function(model){
+            var newDate = new Date(model.get('date'));
+            $("#roastsList").append(
+              $('<option></option>').val(model.get('roast_id')).html(newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear())
+            );
+          })
         },
         error : function(model, response) {
           console.log(response);
@@ -75,42 +73,56 @@
 
     };
 
-    var arrayOfEspressoFields = _.union(['espresso_note_id'], _.sortBy(['prep_date', 'dose_weight', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'preinfuse_pressure', 'preinfuse_time', 'total_extraction_time', 'yield_weight', 'aftertaste'], function(a){ return a }));
+    var arrayOfEspressoFields = _.union(['espresso_note_id', 'sm_owner', 'preparation_date'], _.sortBy(['dose_weight', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'preinfuse_pressure', 'espresso_prep_type', 'preinfuse_time', 'total_extraction_time', 'shift', 'acidity', 'yield_weight', 'aftertaste'], function(a){ return a }));
 
-    var arrayOfDripFields = _.union(['drip_note_id'], _.sortBy(['prep_date', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes','total_extraction_time', 'milk', 'aftertaste', 'coffee_dose', 'water_dose', 'grind_setting', 'bloom_time'], function(a){ return a }));
+    var arrayOfDripFields = _.union(['drip_note_id', 'sm_owner', 'preparation_date'], _.sortBy(['flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes','total_extraction_time', 'milk', 'aftertaste', 'coffee_dose', 'acidity', 'water_dose', 'shift', 'grind_setting', 'bloom_time'], function(a){ return a }));
 
-    var arrayOfSiphonFields = _.union(['siphon_note_id'], _.sortBy(['prep_date', 'dose_weight', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'preinfuse_pressure', 'preinfuse_time', 'prep_date', 'total_extraction_time', 'yield_weight'], function(a){ return a }));
+    // FILL IN
+    var arrayOfSiphonFields = _.union(['siphon_note_id', 'sm_owner', 'preparation_date'], _.sortBy(['shift', 'brewing_time', 'steep_time', 'grind_setting', 'coffee_dose', 'water_weight', 'drawdown_time', 'total_extraction_time', 'aftertaste', 'acidity', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes'], function(a){ return a }));
 
     function queryEspressoNotesBasedOnRoast(){
       if ($('#espresso_checkbox').is(':checked')) {
         console.log("Querying all espresso notes for roast date");
         var qEspressoNotes = new StackMob.Collection.Query();
+        // Add OR support for multiple roasts selected
         qEspressoNotes.equals('roast', $('#roastsList').val());
-        //qEspressoNotes.orderAsc('espresso_note_id');
         $('input:checkbox:checked.sort_checkbox').each(function(idx,obj){ 
           qEspressoNotes.orderAsc($(obj).val()); 
         });
         espressoNotes.query(qEspressoNotes, {
           success : function(results){
-            populateTableWithHeadersFromList(arrayOfEspressoFields);
+            console.log('Successfully got all espresso notes');
+            populateEspressoTable();
             results.each(function(model){
               var columnData = [];
               _.each(arrayOfEspressoFields, function(idx, item){
-                columnData.push($('<td></td>').html(model.get(arrayOfEspressoFields[item])));
+                var field = arrayOfEspressoFields[item];
+                var entry;
+                if (field == "preparation_date") {
+                  var newDate = new Date(model.get(field));
+                  entry = newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                } else if (field == "sm_owner") {
+                  entry = model.get(field).split("/")[1];
+                } else {
+                  entry = model.get(field);
+                }
+
+                columnData.push($('<td></td>').html(entry));
               });
-              $('#tableData').append(
+              $('#espressoTableData').append(
                 $('<tr></tr>').append(
                   columnData
                 )
               )
             });
-            console.log('Successfully got all espresso notes');
             queryDripNotesBasedOnRoast();
           },
           error : function(model, response){
             console.log(response);
           }
         });
+      } else {
+        queryDripNotesBasedOnRoast();
       }
     };
 
@@ -119,18 +131,45 @@
         console.log("Querying all drip notes for roast date");
         var qDripNotes = new StackMob.Collection.Query();
         qDripNotes.equals('roast', $('#roastsList').val());
-        qDripNotes.orderAsc('drip_note_id');
+        $('input:checkbox:checked.sort_checkbox').each(function(idx,obj){ 
+          qDripNotes.orderAsc($(obj).val()); 
+        });
         dripNotes.query(qDripNotes, {
-          success : function(model){
+          success : function(results){
             console.log('Successfully got all drip notes');
-            populateTableWithHeadersFromList(arrayOfDripFields);
-            
+            populateDripTable();
+            results.each(function(model){
+              var columnData = [];
+              _.each(arrayOfDripFields, function(idx, item){
+                var field = arrayOfDripFields[item];
+                var entry;
+                if (field == "preparation_date") {
+                  var newDate = new Date(model.get(field));
+                  entry = newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                } else if (field == "sm_owner") {
+                  entry = model.get(field).split("/")[1];
+                } if (field == "milk") {
+                  entry = model.get(field) ? "YES" : "NO";
+                } else {
+                  entry = model.get(field);
+                }
+
+                columnData.push($('<td></td>').html(entry));
+              });
+              $('#dripTableData').append(
+                $('<tr></tr>').append(
+                  columnData
+                )
+              )
+            });
             querySiphonNotesBasedOnRoast();
           },
           error : function(model, response){
             console.log(response);
           }
         });
+      } else {
+        querySiphonNotesBasedOnRoast();
       }
     };
 
@@ -141,10 +180,31 @@
         qSiphonNotes.equals('roast', $('#roastsList').val());
         qSiphonNotes.orderAsc('siphon_note_id');
         siphonNotes.query(qSiphonNotes, {
-          success : function(model){
-            // TODO FILL IN
+          success : function(results){
             console.log('Successfully got all siphon notes');
-            populateTableWithHeadersFromList(arrayOfSiphonFields);
+            populateSiphonTable();
+            results.each(function(model){
+              var columnData = [];
+              _.each(arrayOfSiphonFields, function(idx, item){
+                var field = arrayOfSiphonFields[item];
+                var entry;
+                if (field == "preparation_date") {
+                  var newDate = new Date(model.get(field));
+                  entry = newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                } else if (field == "sm_owner") {
+                  entry = model.get(field).split("/")[1];
+                } else {
+                  entry = model.get(field);
+                }
+
+                columnData.push($('<td></td>').html(entry));
+              });
+              $('#siphonTableData').append(
+                $('<tr></tr>').append(
+                  columnData
+                )
+              )
+            });
           },
           error : function(model, response){
             console.log(response);
@@ -154,16 +214,39 @@
     }
 
     $('#coffeesList').change(function(){
-      console.log('Changes');
       populateRoasts();
     });
 
-    function populateTableWithHeadersFromList(list) {
+    function populateEspressoTable() {
       var columnHeaders = [];
-      _.each(list, function(idx, item){
-        columnHeaders.push($('<th></th>').html(list[item]));
+      _.each(arrayOfEspressoFields, function(idx, item){
+        columnHeaders.push($('<th></th>').html(arrayOfEspressoFields[item]));
       })
-      $('#tableData').append(
+      $('#espressoTableData').append(
+        $('<tr></tr>').append(
+          columnHeaders
+        )
+      )
+    };
+
+    function populateDripTable() {
+      var columnHeaders = [];
+      _.each(arrayOfDripFields, function(idx, item){
+        columnHeaders.push($('<th></th>').html(arrayOfDripFields[item]));
+      })
+      $('#dripTableData').append(
+        $('<tr></tr>').append(
+          columnHeaders
+        )
+      )
+    };
+
+    function populateSiphonTable() {
+      var columnHeaders = [];
+      _.each(arrayOfSiphonFields, function(idx, item){
+        columnHeaders.push($('<th></th>').html(arrayOfSiphonFields[item]));
+      })
+      $('#siphonTableData').append(
         $('<tr></tr>').append(
           columnHeaders
         )
@@ -172,7 +255,9 @@
 
     $('#getNotesFromRoast').click(function(e){
       e.preventDefault();
-      $('#tableData').html("");
+      $('#espressoTableData').html("");
+      $('#dripTableData').html("");
+      $('#siphonTableData').html("");
       queryEspressoNotesBasedOnRoast();
     });
 
@@ -277,7 +362,15 @@
 
     <div class="table-wrapper">
     <p>&nbsp;</p>
-    <table border="1" id="tableData" class="table table-bordered table-hover"></table>
+    <table border="1" id="espressoTableData" class="table table-bordered table-hover"></table>
+    </div>
+    <div class="table-wrapper">
+    <p>&nbsp;</p>
+    <table border="1" id="dripTableData" class="table table-bordered table-hover"></table>
+    </div>
+    <div class="table-wrapper">
+    <p>&nbsp;</p>
+    <table border="1" id="siphonTableData" class="table table-bordered table-hover"></table>
     </div>
   </div>
 
