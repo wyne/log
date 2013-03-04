@@ -92,15 +92,6 @@ function getCoffees() {
   });
 };
 
-roasts.query(qAll, {
-  success: function(col){
-    col.each(function(model){
-      $(".roasts").append("<li>" + (new Date(model.get('date'))) + "</li>");
-    })
-  },
-  error: function(){ console.log("bad"); }
-});
-
 
 /*
  * ==========

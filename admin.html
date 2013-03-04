@@ -56,7 +56,7 @@
             );
         });
       },
-      error: function(){ console.log("bad locations query"); }
+      error: function(){ console.log("Bad locations query"); }
     });
 
     var qCoffees = new StackMob.Collection.Query();
@@ -83,7 +83,7 @@
           );
       })
      },
-     error: function(){ console.log("bad coffee query"); }
+     error: function(){ console.log("Bad coffee query"); }
     });
 
     var qUsers = new StackMob.Collection.Query();
@@ -98,7 +98,7 @@
             );
         })
       },
-      error: function(){ console.log("bad users query"); }
+      error: function(){ console.log("Bad users query"); }
     });
 
     /*
@@ -209,24 +209,24 @@
       });
       newLocation.appendAndSave('coffees', [$('#coffeesListForAddSingleCoffee').val()], {
 
-        success: function(model){
+        success: function(locationModel){
 
           var newCoffee = new Coffee({
             coffee_id : $('#coffeesListForAddSingleCoffee').val()
           });
           newCoffee.appendAndSave('locations', [$('#locationsListForAddSingleCoffee').val()], {
 
-            success: function(model2){
-              redirectWithMessage("","?message=Added " + model2.name + " to " + model.name + ".");
+            success: function(coffeeModel){
+              redirectWithMessage("","Added " + coffeeModel.name + " to " + locationModel.name + ".");
             },
-            error: function(){
-              console.log("bad");
+            error: function(coffeeModel, response){
+              redirectWithMessage("", "Error Adding cofffee with ID " + coffeeModel.get("coffee_id") +" to " + locationModel.name + ".");
             }
           });
 
         },
-        error: function(){
-          console.log("bad");
+        error: function(locationModel, response){
+          redirectWithMessage("", "Error Adding coffee to location with ID " + locationModel.get("location_id") + ".");
         }
       });
 
@@ -238,22 +238,22 @@
       });
       newLocation.deleteAndSave('coffees', [$('#coffeesListForRemovingSingleCoffee').val()], StackMob.SOFT_DELETE, {
 
-        success: function(model){
+        success: function(locationModel){
           var newCoffee = new Coffee({
             coffee_id : $('#coffeesListForRemovingSingleCoffee').val()
           });
           newCoffee.deleteAndSave('locations', [$('#locationsListForRemovingSingleCoffee').val()], StackMob.SOFT_DELETE, {
 
-            success: function(model2){
-              window.location = '?message=Removed ' + model2.name + ' from ' + model.name + '.';
+            success: function(coffeeModel){
+              window.location = 'Removed ' + coffeeModel.name + ' from ' + locationModel.name + '.';
             },
-            error: function(){
-              console.log("bad");
+            error: function(coffeeModel, response){
+              redirectWithMessage("", "Error Removing " + locationModel.name + " from coffee with ID " + coffeeModel.get("coffee_id") + ".");
             }
           });
         },
-        error: function(){
-          console.log("bad");
+        error: function(locationModel, response){
+          redirectWithMessage("", "Error removing coffee from location with ID " + locationModel.get("location_id") + ".");
         }
       });
 
