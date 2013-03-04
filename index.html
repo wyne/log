@@ -41,7 +41,6 @@
                 // Get all coffees for that location and display
                 locationCoffees = locationObject.get("coffees");
                 if (typeof locationCoffees !== 'undefined') {
-                  
                   _.sortBy(locationCoffees, function(model) {
                     return model.name;
                   });
@@ -58,13 +57,13 @@
 
             },
             error : function(model, response){
-              console.log(response);
+              console.log("Error: " + response);
             }
 
           });
         },
-        error : function(model, response) { 
-          console.log(response);
+        error : function(model, response) {
+          console.log("Error: " + response);
         }
       });
 
@@ -167,7 +166,7 @@
         });
 
       });
-  
+
       $("#drip_note_form").submit(function(e){
         e.preventDefault();
         var jsonForm = {};//$(this).serializeArray();
@@ -299,8 +298,8 @@
         <div class="nav-collapse">
           <ul class="nav">
             <li class="active"><a href="/">Home</a></li>
-            <li><a href="/admin.html">Admin</a></li>
-            <li><a href="/data.html">Data</a></li>
+            <li class="admin"><a href="/admin.html">Admin</a></li>
+            <li class="admin"><a href="/data.html">Data</a></li>
             <li><a href="/login.html">Login</a></li>
             <li><a href="/login.html?logout=true">Logout</a></li>
           </ul>
@@ -378,7 +377,7 @@
             </div>
 
           </div>
-          
+
           <div class="tab-pane" id="drip">
 
             <div id="drip_note">
@@ -427,7 +426,7 @@
             </div>
 
           </div>
-          
+
           <div class="tab-pane" id="siphon">
 
             <div id="siphon_note">
