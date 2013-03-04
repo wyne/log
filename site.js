@@ -87,17 +87,12 @@ function getCoffees() {
   });
 };
 
-roasts.query(qAll, {
-  success: function(col){
-    col.each(function(model){
-      $(".roasts").append("<li>" + (new Date(model.get('date'))) + "</li>");
-    })
-  },
-  error: function(){ console.log("bad"); }
-});
 
-
-// ===== Objects
+/*
+ * ==========
+ * LOCATIONS
+ * ==========
+ */
 
 function createNewLocation(locName, locCoffees){
   var dfd = new jQuery.Deferred();
@@ -108,37 +103,6 @@ function createNewLocation(locName, locCoffees){
   });
 
   newLocation.create({
-    success: function(model){ dfd.resolve(model) },
-    error: function(model){ dfd.reject(model) }
-  });
-
-  return dfd.promise();
-};
-
-function removeLocation(locID){
-  var dfd = new jQuery.Deferred();
-
-  var newLocation = new Loc({
-    location_id : locID,
-  });
-
-  newLocation.destroy({
-    success: function(model){ dfd.resolve(model) },
-    error: function(model){ dfd.reject(model) }
-  });
-
-  return dfd.promise();
-};
-
-function createNewCoffee(coffeeName, coffeeLocations){
-  var dfd = new jQuery.Deferred();
-
-  var newCoffee = new Coffee({
-    name : coffeeName,
-    locations : coffeeLocations || undefined
-  });
-
-  newCoffee.create({
     success: function(model){ dfd.resolve(model) },
     error: function(model){ dfd.reject(model) }
   });
@@ -159,32 +123,101 @@ function assignLocationToCoffee(coffee, location){
   return dfd.promise();
 };
 
+function assignLocationToCoffees(coffees, location){
+  var dfd = new jQuery.Deferred();
+
+  if ( coffees != null ){
+    var deferreds = coffees.map(function(coffeeId) {
+      return assignLocationToCoffee(coffeeId, location);
+    });
+
+    $.when(deferreds)
+    .then(
+      function(status) { dfd.resolve(status) },
+      function(status) { dfd.reject(status) }
+    );
+  } else {
+    dfd.resolve(location);
+  }
+
+  return dfd.promise();
+};
+
+function removeLocation(location){
+  var dfd = new jQuery.Deferred();
+
+  var newLocation = new Loc({
+    location_id : location,
+  });
+
+  newLocation.destroy({
+    success: function(model){ dfd.resolve(location) },
+    error: function(model){ dfd.reject(location) }
+  });
+
+  return dfd.promise();
+};
+
 function removeLocationFromCoffee(coffee, location){
   var dfd = new jQuery.Deferred();
 
   var coffee = new Coffee({coffee_id: coffee});
 
   coffee.deleteAndSave('locations', [location], {
-    success: function(model){ dfd.resolve(model) },
-    error: function(model){ dfd.reject(model) }
+    success: function(model){ dfd.resolve(location) },
+    error: function(model){ dfd.reject(location) }
   });
 
   return dfd.promise();
 };
 
 function removeLocationFromAllCoffees(location){
+  var dfd = new jQuery.Deferred();
+
   var hasLocation = new StackMob.Collection.Query();
-  hasLocation.mustBeOneOf('location', location);
+  hasLocation.mustBeOneOf('locations', location);
   coffees.query(hasLocation, {
-    success: function(col){
-      var deferreds = col.get('coffee_id').map(function(coffeeId) {
-              return removeLocationReferenceFromCoffee(location, coffeeId);
+    success: function(collection){
+      var deferreds = collection.map(function(coffee) {
+        return removeLocationFromCoffee(coffee.get('coffee_id'), location);
       });
+
+      $.when(deferreds)
+      .then(
+        function(status) { dfd.resolve(location) },
+        function(status) { dfd.reject(location) }
+      );
       
     },
-    error: function(){}
-  })
+    error: function(){
+      console.log("Error removing location from coffees.");
+    }
+  });
+
+  return dfd.promise();
 }
+
+/*
+ * ==========
+ * COFFEES
+ * ==========
+ */
+
+function createNewCoffee(coffeeName, coffeeLocations){
+  var dfd = new jQuery.Deferred();
+
+  var newCoffee = new Coffee({
+    name : coffeeName,
+    locations : coffeeLocations || undefined
+  });
+
+  newCoffee.create({
+    success: function(model){ dfd.resolve(model) },
+    error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
 
 function assignCoffeeToLocation(location, coffee){
   var dfd = new jQuery.Deferred();
@@ -194,6 +227,41 @@ function assignCoffeeToLocation(location, coffee){
   location.appendAndSave('coffees', [coffee], {
     success: function(model){ dfd.resolve(model) },
     error: function(model){ dfd.reject(model) }
+  });
+
+  return dfd.promise();
+};
+
+function assignCoffeeToLocations(locations, coffee){
+  var dfd = new jQuery.Deferred();
+
+  if ( locations != null ){
+    var deferreds = locations.map(function(locationId) {
+      return assignCoffeeToLocation(locationId, coffee);
+    });
+
+    $.when(deferreds)
+    .then(
+      function(status) { dfd.resolve(status) },
+      function(status) { dfd.reject(status) }
+    );
+  } else {
+    dfd.resolve(coffee);
+  }
+
+  return dfd.promise();
+};
+
+function removeCoffee(coffee){
+  var dfd = new jQuery.Deferred();
+
+  var newCoffee = new Coffee({
+    coffee_id : coffee,
+  });
+
+  newCoffee.destroy({
+    success: function(model){ dfd.resolve(coffee) },
+    error: function(model){ dfd.reject(coffee) }
   });
 
   return dfd.promise();
@@ -213,14 +281,40 @@ function removeCoffeeFromLocation(location, coffee){
 };
 
 function removeCoffeeFromAllLocations(coffee){
+  var dfd = new jQuery.Deferred();
 
+  var hasCoffee = new StackMob.Collection.Query();
+  hasCoffee.mustBeOneOf('coffees', coffee);
+  locations.query(hasCoffee, {
+    success: function(collection){
+      var deferreds = collection.map(function(location) {
+        return removeCoffeeFromLocation(location.get('location_id'), coffee);
+      });
+
+      $.when(deferreds)
+      .then(
+        function(status) { dfd.resolve(coffee) },
+        function(status) { dfd.reject(coffee) }
+      );
+      
+    },
+    error: function(){
+      console.log("Error removing coffee from locations.");
+    }
+  });
+
+  return dfd.promise();
 }
 
-// ===== Misc
+/*
+ * ==========
+ * MISC
+ * ==========
+ */
+
 function redirectWithMessage(loc, msg){
   window.location = loc + "?message=" + msg;
 }
-
 
 $(document).ready(function(){
   $(".date-input").datepicker();
