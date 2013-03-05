@@ -136,7 +136,7 @@
       $("#espresso_note_form").submit(function(e){
         e.preventDefault();
 
-        var jsonForm = parseInputs( $(this).find('input') );
+        var jsonForm = parseInputs( $(this).find('input, textarea') );
 
         jsonForm["espresso_prep_type"] = $("#espresso_prep_type").val();
         var roastQuery = new StackMob.Collection.Query();
@@ -178,7 +178,7 @@
       $("#drip_note_form").submit(function(e){
         e.preventDefault();
 
-        var jsonForm = parseInputs( $(this).find('input') );
+        var jsonForm = parseInputs( $(this).find('input, textarea') );
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -220,7 +220,7 @@
       $("#siphon_note_form").submit(function(e){
         e.preventDefault();
 
-        var jsonForm = parseInputs( $(this).find('input') );
+        var jsonForm = parseInputs( $(this).find('input, textarea') );
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
