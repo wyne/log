@@ -177,28 +177,9 @@
 
       $("#drip_note_form").submit(function(e){
         e.preventDefault();
-        var jsonForm = {};//$(this).serializeArray();
-        $(this).find('input').each(function(){
-          if ($(this).val() != "" && $(this).attr("type") != "submit") {
-            if ($(this).attr('type') == "number" && $(this).attr('step') == "any") {
-              jsonForm[$(this).attr("name")] = parseFloat($(this).val());
-            } else if ($(this).attr('type') == "number") {
-              jsonForm[$(this).attr("name")] = parseInt($(this).val());
-            } else if ($(this).hasClass("date-input") ) {
-              jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
-            } else if ($(this).attr("type") == "radio") {
-              if ($(this).hasClass("milk") && $(this).is(":checked")) {
-                jsonForm[$(this).attr("name")] = $(this).val() == "YES" ? true : false;
-              } else if ($(this).is(":checked")) {
-                jsonForm[$(this).attr("name")] = $(this).val();
-              }
-            } else if ($(this).attr("type") == "checkbox") {
-              jsonForm[$(this).attr("name")] = $(this).is(":checked");
-            } else {
-              jsonForm[$(this).attr("name")] = $(this).val();
-            }
-          }
-        });
+
+        var jsonForm = parseInputs( $(this).find('input') );
+
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
 
@@ -238,22 +219,9 @@
 
       $("#siphon_note_form").submit(function(e){
         e.preventDefault();
-        var jsonForm = {};//$(this).serializeArray();
-        $(this).find('input').each(function(){
-          if ($(this).val() != "" && $(this).attr("type") != "submit") {
-            if ($(this).attr('type') == "number") {
-              jsonForm[$(this).attr("name")] = parseInt($(this).val());
-            } else if ($(this).hasClass("date-input") ) {
-              jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
-            } else if ($(this).attr("type") == "radio") {
-              if ($(this).is(":checked")) {
-                jsonForm[$(this).attr("name")] = $(this).val();
-              }
-            } else {
-              jsonForm[$(this).attr("name")] = $(this).val();
-            }
-          }
-        });
+
+        var jsonForm = parseInputs( $(this).find('input') );
+
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
 

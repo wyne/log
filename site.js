@@ -356,7 +356,6 @@ function parseInputs(inputs){
   var jsonForm = {};
 
   inputs.each(function(){
-    console.log($(this));
     var name = $(this).attr("name"),
         type = $(this).attr("type"),
         step = $(this).attr('step'),
@@ -373,8 +372,15 @@ function parseInputs(inputs){
         break;
 
       case "radio":
-        if ( $(this).is(":checked") )
+        if ($(this).hasClass("milk") && $(this).is(":checked")) {
+          jsonForm[$(this).attr("name")] = $(this).val() == "YES" ? true : false;
+        } else if ( $(this).is(":checked") ) {
           jsonForm[name] = val;
+        }
+        break;
+
+      case "checkbox":
+        jsonForm[name] = $(this).is(":checked");
         break;
 
       default:
