@@ -62,7 +62,7 @@
           results.each(function(model){
             var newDate = new Date(model.get('date'));
             $("#roastsList").append(
-              $('<option></option>').val(model.get('roast_id')).html(newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear())
+              $('<option></option>').val(model.get('roast_id')).html((newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear())
             );
           })
         },
@@ -100,7 +100,7 @@
                 var entry;
                 if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
-                  entry = newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "sm_owner") {
                   entry = model.get(field).split("/")[1];
                 } else {
@@ -145,7 +145,7 @@
                 var entry;
                 if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
-                  entry = newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "sm_owner") {
                   entry = model.get(field).split("/")[1];
                 } if (field == "milk") {
@@ -190,7 +190,7 @@
                 var entry;
                 if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
-                  entry = newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "sm_owner") {
                   entry = model.get(field).split("/")[1];
                 } else {
