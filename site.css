@@ -10,3 +10,9 @@ body {
 .nav li.admin{
   display: none;
 }
+
+body > .container{
+  padding: 20px;
+  background: white;
+  border: 1px dashed #777;
+}
