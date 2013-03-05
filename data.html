@@ -73,7 +73,7 @@
 
     };
 
-    var arrayOfEspressoFields = _.union(['espresso_note_id', 'sm_owner', 'preparation_date'], _.sortBy(['dose_weight', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'preinfuse_pressure', 'espresso_prep_type', 'preinfuse_time', 'total_extraction_time', 'shift', 'acidity', 'yield_weight', 'aftertaste'], function(a){ return a }));
+    var arrayOfEspressoFields = _.union(['espresso_note_id', 'sm_owner', 'preparation_date'], _.sortBy(['weight_of_dose', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'pre_infuse_pressure', 'espresso_prep_type', 'preinfuse_time', 'total_extraction_time', 'shift', 'acidity', 'weight_of_yield', 'aftertaste'], function(a){ return a }));
 
     var arrayOfDripFields = _.union(['drip_note_id', 'sm_owner', 'preparation_date'], _.sortBy(['flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes','total_extraction_time', 'milk', 'aftertaste', 'coffee_dose', 'acidity', 'water_dose', 'shift', 'grind_setting', 'bloom_time'], function(a){ return a }));
 

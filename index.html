@@ -22,6 +22,11 @@
   /* <![CDATA[ */
     $(document).ready(function(){
 
+      /* On Page Load */
+      if (getParameterByName('message')!=""){
+        $("#status").addClass("alert").html(getParameterByName('message'));
+      }
+
       var locationCoffees;
 
       StackMob.getLoggedInUser( {
@@ -74,7 +79,8 @@
         var newNote = new EspressoNote(json);
         newNote.create({
           success : function (model) {
-            $("#espresso_note_submission_message").append("Created new espresso note.");
+            //$("#espresso_note_submission_message").append("Created new espresso note.");
+            redirectWithMessage("", "Successfully created new espresso note.");
           },
           error : function(model, response) {
             $("#espresso_note_submission_message").append("Error creating new espresso note.");
@@ -117,7 +123,9 @@
         var jsonForm = {};//$(this).serializeArray();
         $(this).find('input').each(function(){
           if ($(this).val() != "" && $(this).attr("type") != "submit") {
-            if ($(this).attr('type') == "number") {
+            if ($(this).attr('type') == "number" && $(this).attr('step') == "any") {
+              jsonForm[$(this).attr("name")] = parseFloat($(this).val());
+            } else if ($(this).attr('type') == "number") {
               jsonForm[$(this).attr("name")] = parseInt($(this).val());
             } else if ($(this).hasClass("date-input") ) {
               jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
@@ -172,7 +180,9 @@
         var jsonForm = {};//$(this).serializeArray();
         $(this).find('input').each(function(){
           if ($(this).val() != "" && $(this).attr("type") != "submit") {
-            if ($(this).attr('type') == "number") {
+            if ($(this).attr('type') == "number" && $(this).attr('step') == "any") {
+              jsonForm[$(this).attr("name")] = parseFloat($(this).val());
+            } else if ($(this).attr('type') == "number") {
               jsonForm[$(this).attr("name")] = parseInt($(this).val());
             } else if ($(this).hasClass("date-input") ) {
               jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
@@ -286,6 +296,14 @@
 </head>
 <body>
 
+  <div class="row-fluid">
+
+      <div class="span12">
+        <div id="status"></div>
+      </div>
+
+    </div>
+
   <div class="navbar">
     <div class="navbar-inner">
       <div class="container">
@@ -344,16 +362,16 @@
                     </label>
                     <label>Preparation Type:</label>
                     <select id="espresso_prep_type">
-                      <option value="Cappuccino">Cappuccino</option>
                       <option value="Espresso">Espresso</option>
+                      <option value="Cappuccino">Cappuccino</option>
                       <option value="Gibraltar">Gibraltar</option>
                       <option value= "Latte">Latte</option>
                       <option value="Macchiato">Macchiato</option>
                     </select>
-                    <label>Weight Of Dose:</label> <input type="number" name="dose_weight">
-                    <label>Weight Of Yield:</label> <input type="number" name="yield_weight">
+                    <label>Weight Of Dose (g):</label> <input type="number" step="any" name="weight_of_dose">
+                    <label>Weight Of Yield (g):</label> <input type="number" step="any" name="weight_of_yield">
                     <label>Preinfuse Time:</label> <input type="number" name="preinfuse_time">
-                    <label>Preinfuse Pressure:</label> <input type="number" name="preinfuse_pressure">
+                    <label>Preinfuse Pressure (bar):</label> <input type="number" step="any" name="pre_infuse_pressure">
                   </div>
                   <div class="span6">
                     <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
@@ -369,7 +387,6 @@
                 <div class="row">
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Espresso Note"></input>
-                    <p></p><p id="espresso_note_submission_message"></p><p></p>
                   </div>
                 </div>
 
