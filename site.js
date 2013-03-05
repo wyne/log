@@ -317,8 +317,9 @@ function removeCoffeeFromAllLocations(coffee){
  * ==========
  */
 
-function redirectWithMessage(loc, msg){
-  window.location = loc + "?message=" + msg;
+function refreshWithMessage(msg){
+  var l = window.location.pathname + "?message=" + msg;
+  window.location = l;
 }
 
 function ifAdmin(){

@@ -1,5 +1,6 @@
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  background: #f3ecdd url(images/bg-body.jpg) 50% 0;
 }
 
 .table-wrapper {
@@ -8,4 +9,10 @@ body {
 
 .nav li.admin{
   display: none;
+}
+
+body > .container{
+  padding: 20px;
+  background: white;
+  border: 1px dashed #777;
 }
