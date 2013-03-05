@@ -24,7 +24,7 @@
 
       /* On Page Load */
       if (getParameterByName('message')!=""){
-        $("#status").addClass("alert").html(getParameterByName('message'));
+        $("#status").addClass("alert alert-success").html(getParameterByName('message'));
       }
 
       var locationCoffees;
@@ -80,7 +80,7 @@
         newNote.create({
           success : function (model) {
             //$("#espresso_note_submission_message").append("Created new espresso note.");
-            refreshWithMessage("", "Successfully created new espresso note");
+            refreshWithMessage("Successfully created new espresso note");
           },
           error : function(model, response) {
             $("#espresso_note_submission_message").append("Error creating new espresso note.");
@@ -469,6 +469,9 @@
                   </div>
                   <div class="span6">
                     <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
+
+                    <input type="text" size="10" class="inlineConfig {show24Hours: true, timeSteps: [1, 1, 1], appendText: ' (see below)'}">
+
                     <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">

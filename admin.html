@@ -217,7 +217,7 @@
           newCoffee.appendAndSave('locations', [$('#locationsListForAddSingleCoffee').val()], {
 
             success: function(coffeeModel){
-              redirectWithMessage("","Added " + coffeeModel.name + " to " + locationModel.name + ".");
+              refreshWithMessage("Added " + coffeeModel.name + " to " + locationModel.name + ".");
             },
             error: function(coffeeModel, response){
               refreshWithMessage("Error Adding cofffee with ID " + coffeeModel.get("coffee_id") +" to " + locationModel.name + ".");

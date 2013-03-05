@@ -318,7 +318,7 @@ function removeCoffeeFromAllLocations(coffee){
  */
 
 function refreshWithMessage(msg){
-  var l = "#?message=" + msg;
+  var l = window.location.pathname + "?message=" + msg;
   window.location = l;
 }
 
