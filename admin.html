@@ -131,7 +131,7 @@
       newUser.destroy({
 
         success: function(model){
-          redirectWithMessage("", "Successfully removed user.");
+          refreshWithMessage("Successfully removed user.");
         },
         error: function(){ console.log("bad"); }
       });
@@ -150,7 +150,7 @@
           // Success
           assignLocationToCoffees( $('#coffeesListForAddLocation').val(), status.id ).then(
             function(status){
-              redirectWithMessage("", "Successfully created location: " + status.id);
+              refreshWithMessage("Successfully created location: " + status.id);
             },
             function(){}
           );
@@ -168,7 +168,7 @@
       .then(removeLocation)
       .then(
         function(status){
-          redirectWithMessage("", "Successfully removed location: " + status);
+          refreshWithMessage("Successfully removed location: " + status);
         },
         function(){
           console.log("Error removing location.");
@@ -189,7 +189,7 @@
           // Success
           assignCoffeeToLocations( $('#locationsListForAddCoffee').val(), status.id ).then(
             function(status){
-              redirectWithMessage("", "Successfully created coffee: " + status.id);
+              refreshWithMessage("Successfully created coffee: " + status.id);
             },
             function(status){
               console.log("Error adding coffee to locations.");
@@ -220,13 +220,13 @@
               redirectWithMessage("","Added " + coffeeModel.name + " to " + locationModel.name + ".");
             },
             error: function(coffeeModel, response){
-              redirectWithMessage("", "Error Adding cofffee with ID " + coffeeModel.get("coffee_id") +" to " + locationModel.name + ".");
+              refreshWithMessage("Error Adding cofffee with ID " + coffeeModel.get("coffee_id") +" to " + locationModel.name + ".");
             }
           });
 
         },
         error: function(locationModel, response){
-          redirectWithMessage("", "Error Adding coffee to location with ID " + locationModel.get("location_id") + ".");
+          refreshWithMessage("Error Adding coffee to location with ID " + locationModel.get("location_id") + ".");
         }
       });
 
@@ -248,12 +248,12 @@
               window.location = 'Removed ' + coffeeModel.name + ' from ' + locationModel.name + '.';
             },
             error: function(coffeeModel, response){
-              redirectWithMessage("", "Error Removing " + locationModel.name + " from coffee with ID " + coffeeModel.get("coffee_id") + ".");
+              refreshWithMessage("Error Removing " + locationModel.name + " from coffee with ID " + coffeeModel.get("coffee_id") + ".");
             }
           });
         },
         error: function(locationModel, response){
-          redirectWithMessage("", "Error removing coffee from location with ID " + locationModel.get("location_id") + ".");
+          refreshWithMessage("Error removing coffee from location with ID " + locationModel.get("location_id") + ".");
         }
       });
 
@@ -264,7 +264,7 @@
       .then(removeCoffee)
       .then(
         function(status){
-          redirectWithMessage("", "Successfully removed coffee: " + status);
+          refreshWithMessage("Successfully removed coffee: " + status);
         },
         function(){
           console.log("Error removing coffee.");
