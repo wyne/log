@@ -344,6 +344,51 @@ function ifAdmin(){
   return dfd.promise();
 }
 
+function durationStringToSeconds(str){
+  var sp = str.split(":");
+  var h = sp[0];
+  var m = sp[1];
+  var s = sp[2];
+  return (60*60*h) + (60*m) + s;
+}
+
+function parseInputs(inputs){
+  var jsonForm = {};
+
+  inputs.each(function(){
+    console.log($(this));
+    var name = $(this).attr("name"),
+        type = $(this).attr("type"),
+        step = $(this).attr('step'),
+        val  = $(this).val();
+
+    if (val == "" || type == "submit") return;
+
+    switch (type){
+      case "number":
+        if (step == "any")
+          jsonForm[name] = parseFloat(val);
+        else
+          jsonForm[name] = parseInt(val);
+        break;
+
+      case "radio":
+        if ( $(this).is(":checked") )
+          jsonForm[name] = val;
+        break;
+
+      default:
+        if ($(this).hasClass("date-input") )
+          jsonForm[name] = new Date($(this).val()).getTime();
+        else
+          jsonForm[name] = $(this).val();
+        break;
+    }
+
+  });
+  return jsonForm;
+}
+
 $(document).ready(function(){
 
   $(".date-input").datepicker();
