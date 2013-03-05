@@ -94,7 +94,6 @@
         var newNote = new EspressoNote(json);
         newNote.create({
           success : function (model) {
-            //$("#espresso_note_submission_message").append("Created new espresso note.");
             refreshWithMessage("Successfully created new espresso note");
           },
           error : function(model, response) {
@@ -110,7 +109,7 @@
         var newNote = new DripNote(json);
         newNote.create({
           success : function (model) {
-            $("#drip_note_submission_message").append("Created new drip note.");
+            refreshWithMessage("Successfully created new drip note");
           },
           error : function(model, response) {
             $("#drip_note_submission_message").append("Error creating new drip note.");
@@ -125,7 +124,7 @@
         var newNote = new SiphonNote(json);
         newNote.create({
           success : function (model) {
-            $("#siphon_note_submission_message").append("Created new siphon note.");
+            refreshWithMessage("Successfully created new siphon note");
           },
           error : function(model, response) {
             $("#siphon_note_submission_message").append("Error creating new siphon note!");
@@ -346,7 +345,7 @@
                     <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <input type="text" name="flavor">
+                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
                     <label>Aftertaste:</label> <input type="text" name="aftertaste">
                     <label>Positive Notes:</label> <textarea type="text" name="positive_notes"></textarea>
                     <label>Negative Notes:</label> <textarea type="text" name="negative_notes"></textarea>
@@ -355,6 +354,7 @@
                 <div class="row">
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Espresso Note"></input>
+                    <p></p><p id="espresso_note_submission_message"></p><p></p>
                   </div>
                 </div>
 
@@ -399,10 +399,10 @@
                     <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <input type="text" name="flavor">
+                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
                     <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                    <label>Positive Notes:</label> <input type="text" name="positive_notes">
-                    <label>Negative Notes:</label> <input type="text" name="negative_notes">
+                    <label>Positive Notes:</label> <textarea type="text" name="positive_notes"></textarea>
+                    <label>Negative Notes:</label> <textarea type="text" name="negative_notes"></textarea>
                   </div>
                 </div>
                 <div class="row">
@@ -450,10 +450,10 @@
                     <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <input type="text" name="flavor">
+                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
                     <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                    <label>Positive Notes:</label> <input type="text" name="positive_notes">
-                    <label>Negative Notes:</label> <input type="text" name="negative_notes">
+                    <label>Positive Notes:</label> <textarea type="text" name="positive_notes"></textarea>
+                    <label>Negative Notes:</label> <textarea type="text" name="negative_notes"></textarea>
                   </div>
                 </div>
                 <div class="row">
