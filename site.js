@@ -346,10 +346,17 @@ function ifAdmin(){
 
 function durationStringToSeconds(str){
   var sp = str.split(":");
-  var h = sp[0];
-  var m = sp[1];
-  var s = sp[2];
-  return parseInt((60*60*h) + (60*m) + s);
+  var h = parseInt(sp[0]),
+      m = parseInt(sp[1]),
+      s = parseInt(sp[2]);
+  return (60*60*h) + (60*m) + s;
+}
+
+function secondsToDurationString(sec){
+  var s = sec%60,
+      m = (sec%(60*60)-s)/60,
+      h = (sec-(m*60)-s)/60/60;
+  return h + ":" + m + ":" + s;
 }
 
 function parseInputs(inputs){
@@ -389,7 +396,6 @@ function parseInputs(inputs){
         } else if ( $(this).hasClass("timeentry")) {
           jsonForm[name] = durationStringToSeconds(val);
           console.log(jsonForm[name]);
-          alert(jsonForm[name]);
         } else
           jsonForm[name] = val;
         break;
