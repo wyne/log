@@ -349,7 +349,7 @@ function durationStringToSeconds(str){
   var h = sp[0];
   var m = sp[1];
   var s = sp[2];
-  return (60*60*h) + (60*m) + s;
+  return parseInt((60*60*h) + (60*m) + s);
 }
 
 function parseInputs(inputs){
@@ -384,9 +384,13 @@ function parseInputs(inputs){
         break;
 
       default:
-        if ($(this).hasClass("date-input") )
+        if ($(this).hasClass("date-input") ) {
           jsonForm[name] = new Date(val).getTime();
-        else
+        } else if ( $(this).hasClass("timeentry")) {
+          jsonForm[name] = durationStringToSeconds(val);
+          console.log(jsonForm[name]);
+          alert(jsonForm[name]);
+        } else
           jsonForm[name] = val;
         break;
     }
