@@ -187,7 +187,9 @@
             } else if ($(this).hasClass("date-input") ) {
               jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
             } else if ($(this).attr("type") == "radio") {
-              if ($(this).is(":checked")) {
+              if ($(this).hasClass("milk") && $(this).is(":checked")) {
+                jsonForm[$(this).attr("name")] = $(this).val() == "YES" ? true : false;
+              } else if ($(this).is(":checked")) {
                 jsonForm[$(this).attr("name")] = $(this).val();
               }
             } else if ($(this).attr("type") == "checkbox") {
@@ -302,7 +304,7 @@
         <div id="status"></div>
       </div>
 
-    </div>
+  </div>
 
   <div class="navbar">
     <div class="navbar-inner">
@@ -417,8 +419,12 @@
                     <label>Dose Of Water:</label> <input type="number" name="water_dose">
                     <label>Grind Setting:</label> <input type="number" name="grind_setting">
                     <label>Bloom Time:</label> <input type="number" name="bloom_time">
-                    <label class="checkbox">
-                      <input id="milk_checkbox" type="checkbox" name="milk"></input> Milk?
+                    <span style="float:left;">Milk:<span>
+                    <label class="radio inline">
+                      <input type="radio" name="milk" value="YES" class="milk"> YES
+                    </label>
+                    <label class="radio inline">
+                      <input type="radio" name="milk" value="NO" class="milk" checked="true"> NO
                     </label>
                   </div>
                   <div class="span6">

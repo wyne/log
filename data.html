@@ -73,12 +73,12 @@
 
     };
 
-    var arrayOfEspressoFields = _.union(['espresso_note_id', 'sm_owner', 'preparation_date'], _.sortBy(['weight_of_dose', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'pre_infuse_pressure', 'espresso_prep_type', 'preinfuse_time', 'total_extraction_time', 'shift', 'acidity', 'weight_of_yield', 'aftertaste'], function(a){ return a }));
+    var arrayOfEspressoFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['weight_of_dose', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'pre_infuse_pressure', 'espresso_prep_type', 'preinfuse_time', 'total_extraction_time', 'shift', 'acidity', 'weight_of_yield', 'aftertaste'], function(a){ return a }));
 
-    var arrayOfDripFields = _.union(['drip_note_id', 'sm_owner', 'preparation_date'], _.sortBy(['flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes','total_extraction_time', 'milk', 'aftertaste', 'coffee_dose', 'acidity', 'water_dose', 'shift', 'grind_setting', 'bloom_time'], function(a){ return a }));
+    var arrayOfDripFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes','total_extraction_time', 'milk', 'aftertaste', 'coffee_dose', 'acidity', 'water_dose', 'shift', 'grind_setting', 'bloom_time'], function(a){ return a }));
 
     // FILL IN
-    var arrayOfSiphonFields = _.union(['siphon_note_id', 'sm_owner', 'preparation_date'], _.sortBy(['shift', 'brewing_time', 'steep_time', 'grind_setting', 'coffee_dose', 'water_weight', 'drawdown_time', 'total_extraction_time', 'aftertaste', 'acidity', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes'], function(a){ return a }));
+    var arrayOfSiphonFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['shift', 'brewing_time', 'steep_time', 'grind_setting', 'coffee_dose', 'water_weight', 'drawdown_time', 'total_extraction_time', 'aftertaste', 'acidity', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes'], function(a){ return a }));
 
     function queryEspressoNotesBasedOnRoast(){
       if ($('#espresso_checkbox').is(':checked')) {
@@ -220,7 +220,11 @@
     function populateEspressoTable() {
       var columnHeaders = [];
       _.each(arrayOfEspressoFields, function(idx, item){
-        columnHeaders.push($('<th></th>').html(arrayOfEspressoFields[item]));
+        var entry = arrayOfEspressoFields[item];
+        if (entry == "sm_owner") {
+          entry = "location";
+        }
+        columnHeaders.push($('<th></th>').html(entry));
       })
       $('#espressoTableData').append(
         $('<tr></tr>').append(
@@ -232,7 +236,11 @@
     function populateDripTable() {
       var columnHeaders = [];
       _.each(arrayOfDripFields, function(idx, item){
-        columnHeaders.push($('<th></th>').html(arrayOfDripFields[item]));
+        var entry = arrayOfDripFields[item];
+        if (entry == "sm_owner") {
+          entry = "location";
+        }
+        columnHeaders.push($('<th></th>').html(entry));
       })
       $('#dripTableData').append(
         $('<tr></tr>').append(
@@ -244,7 +252,11 @@
     function populateSiphonTable() {
       var columnHeaders = [];
       _.each(arrayOfSiphonFields, function(idx, item){
-        columnHeaders.push($('<th></th>').html(arrayOfSiphonFields[item]));
+        var entry = arrayOfSiphonFields[item];
+        if (entry == "sm_owner") {
+          entry = "location";
+        }
+        columnHeaders.push($('<th></th>').html(entry));
       })
       $('#siphonTableData').append(
         $('<tr></tr>').append(
