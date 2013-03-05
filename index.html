@@ -46,7 +46,7 @@
                 // Get all coffees for that location and display
                 locationCoffees = locationObject.get("coffees");
                 if (typeof locationCoffees !== 'undefined') {
-                  _.sortBy(locationCoffees, function(model) {
+                  locationCoffees = _.sortBy(locationCoffees, function(model) {
                     return model.name;
                   });
 
@@ -80,7 +80,7 @@
         newNote.create({
           success : function (model) {
             //$("#espresso_note_submission_message").append("Created new espresso note.");
-            redirectWithMessage("", "Successfully created new espresso note.");
+            refreshWithMessage("", "Successfully created new espresso note");
           },
           error : function(model, response) {
             $("#espresso_note_submission_message").append("Error creating new espresso note.");
@@ -296,14 +296,6 @@
 </head>
 <body>
 
-  <div class="row-fluid">
-
-      <div class="span12">
-        <div id="status"></div>
-      </div>
-
-    </div>
-
   <div class="navbar">
     <div class="navbar-inner">
       <div class="container">
@@ -323,6 +315,12 @@
           </ul>
         </div><!--/.nav-collapse -->
       </div>
+    </div>
+  </div>
+
+  <div class="row-fluid">
+    <div class="span12">
+      <div id="status"></div>
     </div>
   </div>
 
@@ -380,8 +378,8 @@
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
                     <label>Flavor:</label> <input type="text" name="flavor">
                     <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                    <label>Positive Notes:</label> <input type="text" name="positive_notes">
-                    <label>Negative Notes:</label> <input type="text" name="negative_notes">
+                    <label>Positive Notes:</label> <textarea type="text" name="positive_notes"></textarea>
+                    <label>Negative Notes:</label> <textarea type="text" name="negative_notes"></textarea>
                   </div>
                 </div>
                 <div class="row">

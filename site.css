@@ -1,5 +1,6 @@
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  background: #f3ecdd url(images/bg-body.jpg) 50% 0;
 }
 
 .table-wrapper {
