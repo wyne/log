@@ -373,7 +373,7 @@ function parseInputs(inputs){
 
       case "radio":
         if ($(this).hasClass("milk") && $(this).is(":checked")) {
-          jsonForm[$(this).attr("name")] = $(this).val() == "YES" ? true : false;
+          jsonForm[name] = (val == "YES") ? true : false;
         } else if ( $(this).is(":checked") ) {
           jsonForm[name] = val;
         }
@@ -385,9 +385,9 @@ function parseInputs(inputs){
 
       default:
         if ($(this).hasClass("date-input") )
-          jsonForm[name] = new Date($(this).val()).getTime();
+          jsonForm[name] = new Date(val).getTime();
         else
-          jsonForm[name] = $(this).val();
+          jsonForm[name] = val;
         break;
     }
 
