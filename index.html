@@ -94,7 +94,6 @@
         var newNote = new EspressoNote(json);
         newNote.create({
           success : function (model) {
-            //$("#espresso_note_submission_message").append("Created new espresso note.");
             refreshWithMessage("Successfully created new espresso note");
           },
           error : function(model, response) {
@@ -110,7 +109,7 @@
         var newNote = new DripNote(json);
         newNote.create({
           success : function (model) {
-            $("#drip_note_submission_message").append("Created new drip note.");
+            refreshWithMessage("Successfully created new drip note");
           },
           error : function(model, response) {
             $("#drip_note_submission_message").append("Error creating new drip note.");
@@ -125,7 +124,7 @@
         var newNote = new SiphonNote(json);
         newNote.create({
           success : function (model) {
-            $("#siphon_note_submission_message").append("Created new siphon note.");
+            refreshWithMessage("Successfully created new siphon note");
           },
           error : function(model, response) {
             $("#siphon_note_submission_message").append("Error creating new siphon note!");
@@ -135,24 +134,9 @@
 
       $("#espresso_note_form").submit(function(e){
         e.preventDefault();
-        var jsonForm = {};//$(this).serializeArray();
-        $(this).find('input').each(function(){
-          if ($(this).val() != "" && $(this).attr("type") != "submit") {
-            if ($(this).attr('type') == "number" && $(this).attr('step') == "any") {
-              jsonForm[$(this).attr("name")] = parseFloat($(this).val());
-            } else if ($(this).attr('type') == "number") {
-              jsonForm[$(this).attr("name")] = parseInt($(this).val());
-            } else if ($(this).hasClass("date-input") ) {
-              jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
-            } else if ($(this).attr("type") == "radio") {
-              if ($(this).is(":checked")) {
-                jsonForm[$(this).attr("name")] = $(this).val();
-              }
-            } else {
-              jsonForm[$(this).attr("name")] = $(this).val();
-            }
-          }
-        });
+
+        var jsonForm = parseInputs( $(this).find('input, textarea') );
+
         jsonForm["espresso_prep_type"] = $("#espresso_prep_type").val();
         var roastQuery = new StackMob.Collection.Query();
 
@@ -192,28 +176,9 @@
 
       $("#drip_note_form").submit(function(e){
         e.preventDefault();
-        var jsonForm = {};//$(this).serializeArray();
-        $(this).find('input').each(function(){
-          if ($(this).val() != "" && $(this).attr("type") != "submit") {
-            if ($(this).attr('type') == "number" && $(this).attr('step') == "any") {
-              jsonForm[$(this).attr("name")] = parseFloat($(this).val());
-            } else if ($(this).attr('type') == "number") {
-              jsonForm[$(this).attr("name")] = parseInt($(this).val());
-            } else if ($(this).hasClass("date-input") ) {
-              jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
-            } else if ($(this).attr("type") == "radio") {
-              if ($(this).hasClass("milk") && $(this).is(":checked")) {
-                jsonForm[$(this).attr("name")] = $(this).val() == "YES" ? true : false;
-              } else if ($(this).is(":checked")) {
-                jsonForm[$(this).attr("name")] = $(this).val();
-              }
-            } else if ($(this).attr("type") == "checkbox") {
-              jsonForm[$(this).attr("name")] = $(this).is(":checked");
-            } else {
-              jsonForm[$(this).attr("name")] = $(this).val();
-            }
-          }
-        });
+
+        var jsonForm = parseInputs( $(this).find('input, textarea') );
+
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
 
@@ -253,22 +218,9 @@
 
       $("#siphon_note_form").submit(function(e){
         e.preventDefault();
-        var jsonForm = {};//$(this).serializeArray();
-        $(this).find('input').each(function(){
-          if ($(this).val() != "" && $(this).attr("type") != "submit") {
-            if ($(this).attr('type') == "number") {
-              jsonForm[$(this).attr("name")] = parseInt($(this).val());
-            } else if ($(this).hasClass("date-input") ) {
-              jsonForm[$(this).attr("name")] = new Date($(this).val()).getTime();
-            } else if ($(this).attr("type") == "radio") {
-              if ($(this).is(":checked")) {
-                jsonForm[$(this).attr("name")] = $(this).val();
-              }
-            } else {
-              jsonForm[$(this).attr("name")] = $(this).val();
-            }
-          }
-        });
+
+        var jsonForm = parseInputs( $(this).find('input, textarea') );
+
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
 
@@ -343,9 +295,9 @@
   <div class="container">
     <div class="row-fluid">
       <div class="span8 offset2">
-        <h2 class="current-location"></h2>
-        <h2 id="usersLocation"></h2>
-        <h2>Pick your coffee:</h2>
+        <h4 class="current-location"></h4>
+        <h4 id="usersLocation"></h4>
+        <h4>Pick your coffee:</h4>
         <select id="coffeesListForLocation"></select><br />
 
         <ul class="nav nav-tabs" id="myTab" data-tabs="tabs">
@@ -382,18 +334,17 @@
                       <option value= "Latte">Latte</option>
                       <option value="Macchiato">Macchiato</option>
                     </select>
-                    <label>Weight Of Dose (g):</label> <input type="number" step="any" name="weight_of_dose">
-                    <label>Weight Of Yield (g):</label> <input type="number" step="any" name="weight_of_yield">
+                    <label>Weight Of Dose:</label> <input type="number" step="any" name="weight_of_dose"> grams
+                    <label>Weight Of Yield:</label> <input type="number" step="any" name="weight_of_yield"> grams
                     <label>Preinfuse Time:</label> <input type="number" name="preinfuse_time">
                     <label>Preinfuse Pressure (bar):</label> <input type="number" step="any" name="pre_infuse_pressure">
                   </div>
                   <div class="span6">
-                    <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
-                    <input type="text" size="10" class="timeentry">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
                     <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <input type="text" name="flavor">
+                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
                     <label>Aftertaste:</label> <input type="text" name="aftertaste">
                     <label>Positive Notes:</label> <textarea type="text" name="positive_notes"></textarea>
                     <label>Negative Notes:</label> <textarea type="text" name="negative_notes"></textarea>
@@ -402,6 +353,7 @@
                 <div class="row">
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Espresso Note"></input>
+                    <p></p><p id="espresso_note_submission_message"></p><p></p>
                   </div>
                 </div>
 
@@ -428,9 +380,9 @@
                     <label class="radio inline">
                       <input type="radio" name="shift" value="PM" class="shift"> PM
                     </label>
-                    <label>Dose Of Coffee:</label> <input type="number" name="coffee_dose">
-                    <label>Dose Of Water:</label> <input type="number" name="water_dose">
-                    <label>Grind Setting:</label> <input type="number" name="grind_setting">
+                    <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
+                    <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
+                    <label>Grind Setting:</label> <input type="number" step="any" name="grind">
                     <label>Bloom Time:</label> <input type="number" name="bloom_time">
                     <span style="float:left;">Milk:<span>
                     <label class="radio inline">
@@ -441,15 +393,14 @@
                     </label>
                   </div>
                   <div class="span6">
-                    <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
-                    <input type="text" size="10" class="timeentry">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
                     <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <input type="text" name="flavor">
+                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
                     <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                    <label>Positive Notes:</label> <input type="text" name="positive_notes">
-                    <label>Negative Notes:</label> <input type="text" name="negative_notes">
+                    <label>Positive Notes:</label> <textarea type="text" name="positive_notes"></textarea>
+                    <label>Negative Notes:</label> <textarea type="text" name="negative_notes"></textarea>
                   </div>
                 </div>
                 <div class="row">
@@ -482,25 +433,22 @@
                     <label class="radio inline">
                       <input type="radio" name="shift" value="PM" class="shift"> PM
                     </label>
-                    <label>Dose Of Coffee:</label> <input type="number" name="coffee_dose">
-                    <label>Weight Of Water:</label> <input type="number" name="water_weight">
-                    <label>Grind Setting:</label> <input type="number" name="grind_setting">
+                    <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
+                    <label>Weight Of Water:</label> <input type="number" step="any" name="weight_of_water"> grams
+                    <label>Grind Setting:</label> <input type="number" step="any" name="grind">
                     <label>Brewing Time:</label> <input type="number" name="brewing_time">
                     <label>Steep Time:</label> <input type="number" name="steep_time">
                     <label>Draw Down Time:</label> <input type="number" name="drawdown_time">
                   </div>
                   <div class="span6">
-                    <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
-
-                    <input type="text" size="10" class="timeentry">
-
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
                     <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <input type="text" name="flavor">
+                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
                     <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                    <label>Positive Notes:</label> <input type="text" name="positive_notes">
-                    <label>Negative Notes:</label> <input type="text" name="negative_notes">
+                    <label>Positive Notes:</label> <textarea type="text" name="positive_notes"></textarea>
+                    <label>Negative Notes:</label> <textarea type="text" name="negative_notes"></textarea>
                   </div>
                 </div>
                 <div class="row">

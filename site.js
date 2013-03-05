@@ -344,6 +344,61 @@ function ifAdmin(){
   return dfd.promise();
 }
 
+function durationStringToSeconds(str){
+  var sp = str.split(":");
+  var h = sp[0];
+  var m = sp[1];
+  var s = sp[2];
+  return parseInt((60*60*h) + (60*m) + s);
+}
+
+function parseInputs(inputs){
+  var jsonForm = {};
+
+  inputs.each(function(){
+    var name = $(this).attr("name"),
+        type = $(this).attr("type"),
+        step = $(this).attr('step'),
+        val  = $(this).val();
+
+    if (val == "" || type == "submit") return;
+
+    switch (type){
+      case "number":
+        if (step == "any")
+          jsonForm[name] = parseFloat(val);
+        else
+          jsonForm[name] = parseInt(val);
+        break;
+
+      case "radio":
+        if ($(this).hasClass("milk") && $(this).is(":checked")) {
+          jsonForm[name] = (val == "YES") ? true : false;
+        } else if ( $(this).is(":checked") ) {
+          jsonForm[name] = val;
+        }
+        break;
+
+      case "checkbox":
+        jsonForm[name] = $(this).is(":checked");
+        break;
+
+      default:
+        if ($(this).hasClass("date-input") ) {
+          jsonForm[name] = new Date(val).getTime();
+        } else if ( $(this).hasClass("timeentry")) {
+          jsonForm[name] = durationStringToSeconds(val);
+          console.log(jsonForm[name]);
+          alert(jsonForm[name]);
+        } else
+          jsonForm[name] = val;
+        break;
+    }
+
+  });
+  return jsonForm;
+}
+
 $(document).ready(function(){
 
   $(".date-input").datepicker();

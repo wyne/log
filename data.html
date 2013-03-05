@@ -62,7 +62,7 @@
           results.each(function(model){
             var newDate = new Date(model.get('date'));
             $("#roastsList").append(
-              $('<option></option>').val(model.get('roast_id')).html(newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear())
+              $('<option></option>').val(model.get('roast_id')).html((newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear())
             );
           })
         },
@@ -75,10 +75,10 @@
 
     var arrayOfEspressoFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['weight_of_dose', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'pre_infuse_pressure', 'espresso_prep_type', 'preinfuse_time', 'total_extraction_time', 'shift', 'acidity', 'weight_of_yield', 'aftertaste'], function(a){ return a }));
 
-    var arrayOfDripFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes','total_extraction_time', 'milk', 'aftertaste', 'coffee_dose', 'acidity', 'water_dose', 'shift', 'grind_setting', 'bloom_time'], function(a){ return a }));
+    var arrayOfDripFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes','total_extraction_time', 'milk', 'aftertaste', 'dose_of_coffee', 'acidity', 'dose_of_water', 'shift', 'grind', 'bloom_time'], function(a){ return a }));
 
     // FILL IN
-    var arrayOfSiphonFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['shift', 'brewing_time', 'steep_time', 'grind_setting', 'coffee_dose', 'water_weight', 'drawdown_time', 'total_extraction_time', 'aftertaste', 'acidity', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes'], function(a){ return a }));
+    var arrayOfSiphonFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['shift', 'brewing_time', 'steep_time', 'grind', 'dose_of_coffee', 'weight_of_water', 'drawdown_time', 'total_extraction_time', 'aftertaste', 'acidity', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes'], function(a){ return a }));
 
     function queryEspressoNotesBasedOnRoast(){
       if ($('#espresso_checkbox').is(':checked')) {
@@ -100,7 +100,7 @@
                 var entry;
                 if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
-                  entry = newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "sm_owner") {
                   entry = model.get(field).split("/")[1];
                 } else {
@@ -145,10 +145,10 @@
                 var entry;
                 if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
-                  entry = newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "sm_owner") {
                   entry = model.get(field).split("/")[1];
-                } if (field == "milk") {
+                } else if (field == "milk") {
                   entry = model.get(field) ? "YES" : "NO";
                 } else {
                   entry = model.get(field);
@@ -190,7 +190,7 @@
                 var entry;
                 if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
-                  entry = newDate.getMonth() + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "sm_owner") {
                   entry = model.get(field).split("/")[1];
                 } else {
@@ -305,7 +305,7 @@
   </div>
 
   <div class="container">
-    <h2>Get notes from a coffee's roast:</h2>
+    <h3>Get notes from a coffee's roast:</h3>
     <div class="row-fluid">
       <div class="span6">
         <label>Choose Coffee:</label><select id="coffeesList"></select>
