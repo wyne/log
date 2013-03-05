@@ -12,6 +12,21 @@
   <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
   <link href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" rel="stylesheet">
   <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+  <script type="text/javascript" src="timeentry/jquery.timeentry.js"></script>
+  <link href="timeentry/jquery.timeentry.css" rel="stylesheet">
+  <script type="text/javascript">
+  $(function () {
+    $('.timeentry').timeEntry({
+      show24Hours: true,
+      showSeconds: true,
+      timeSteps: [1, 1, 1],
+      defaultTime: '00:00:00',
+      spinnerImage: 'timeentry/spinnerDefault.png',
+      initialField: 1,
+      appendText: ' (hh:mm:ss)'
+    });
+  });
+  </script>
 
   <!-- Site Dependencies -->
   <script type="text/javascript" src="site.js"></script>
@@ -374,6 +389,7 @@
                   </div>
                   <div class="span6">
                     <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
+                    <input type="text" size="10" class="timeentry">
                     <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
@@ -426,6 +442,7 @@
                   </div>
                   <div class="span6">
                     <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
+                    <input type="text" size="10" class="timeentry">
                     <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
@@ -475,7 +492,7 @@
                   <div class="span6">
                     <label>Total Extraction Time:</label> <input type="number" name="total_extraction_time">
 
-                    <input type="text" size="10" class="inlineConfig {show24Hours: true, timeSteps: [1, 1, 1], appendText: ' (see below)'}">
+                    <input type="text" size="10" class="timeentry">
 
                     <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
