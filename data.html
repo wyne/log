@@ -77,7 +77,6 @@
 
     var arrayOfDripFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes','total_extraction_time', 'milk', 'aftertaste', 'dose_of_coffee', 'acidity', 'dose_of_water', 'shift', 'grind', 'bloom_time'], function(a){ return a }));
 
-    // FILL IN
     var arrayOfSiphonFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['shift', 'brewing_time', 'steep_time', 'grind', 'dose_of_coffee', 'weight_of_water', 'drawdown_time', 'total_extraction_time', 'aftertaste', 'acidity', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes'], function(a){ return a }));
 
     function queryEspressoNotesBasedOnRoast(){
@@ -104,7 +103,7 @@
                 } else if (field == "sm_owner") {
                   entry = model.get(field).split("/")[1];
                 } else if (field == "total_extraction_time"){
-                  entry = secondsToDurationString(model.get(field));
+                  entry = millisecondsToDurationString(model.get(field));
                 } else {
                   entry = model.get(field);
                 }
