@@ -344,32 +344,28 @@ function ifAdmin(){
   return dfd.promise();
 }
 
-function durationStringToSeconds(str){
+function durationStringToMilliseconds(str){
   var sp = str.split(":");
   var h = parseInt(sp[0]),
       m = parseInt(sp[1]),
       s = parseInt(sp[2]);
-  return (60*60*h) + (60*m) + s;
+  return ( (60*60*h) + (60*m) + s) * 1000;
 }
 
-function secondsToDurationString(sec){
+function millisecondsToDurationString(ms){
+  var sec = ms / 1000;
   var s = sec%60,
       m = (sec%(60*60)-s)/60,
       h = (sec-(m*60)-s)/60/60;
 
-  /*
-  var timeArray = [s, m, h];
+  
+  var timeArray = [h, m, s];
 
   timeArray = _.map(timeArray,function(time){
-    return (time % 10 == 0) ? "0" + time : time;
+    return time < 10 ? "0" + time : time;
   });
-  */
 
-  s = (s % 10 == 0) ? "0" + s : s;
-  m = (m % 10 == 0) ? "0" + m : m;
-  h = (h % 10 == 0) ? "0" + h : h;
-  
-  return h + ":" + m + ":" + s;
+  return timeArray[0] + ":" + timeArray[1] + ":" + timeArray[2];
 }
 
 function parseInputs(inputs){
@@ -407,7 +403,7 @@ function parseInputs(inputs){
         if ($(this).hasClass("date-input") ) {
           jsonForm[name] = new Date(val).getTime();
         } else if ( $(this).hasClass("timeentry")) {
-          jsonForm[name] = durationStringToSeconds(val);
+          jsonForm[name] = durationStringToMilliseconds(val);
           console.log(jsonForm[name]);
         } else
           jsonForm[name] = val;
