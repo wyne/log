@@ -25,9 +25,6 @@
       qLocations.orderAsc('name');
       locations.query(qLocations, {
       success: function(results){
-       $("#locationsList").append(
-            $('<option></option>').val('ALL').html('All Locations')
-        );
        results.each(function(model){
           $("#locationsList").append(
             $('<option></option>').val(model.get('location_id')).html(model.get('name'))
@@ -38,6 +35,7 @@
      error: function(){ console.log("bad locations query"); }
    });
 
+      /*
     var qCoffees = new StackMob.Collection.Query();
     qCoffees.orderAsc('name');
     coffees.query(qCoffees, {
@@ -54,16 +52,47 @@
      },
      error: function(){ console.log("bad coffee query"); }
    });
+*/
+    function populateCoffees(){
+      $('#coffeesList').html("");
+      var selectedLocation = $('#locationsList').val();
+
+      var qCoffees = new StackMob.Collection.Query();
+      qCoffees.mustBeOneOf('locations', selectedLocation);
+      qCoffees.orderAsc('name');
+      coffees.query(qCoffees, {
+      success: function(results){
+        if (results.size() != 0) {
+          results.each(function(model){
+            $("#coffeesList").append(
+              $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
+              );
+          });
+        } else {
+          $("#coffeesList").append(
+            $('<option></option>').val('NONE').html('No Coffees')
+          );
+          $('#roastsList').html("");
+        }
+        
+     },
+     error: function(){ console.log("bad coffee query"); }
+     });
+
+    }
 
     function populateRoasts(){
       $('#roastsList').html("");
       var selectedCoffee = $('#coffeesList').val();
 
       var qRoasts = new StackMob.Collection.Query();
-      if (selectedCoffee != 'ALL') {
-        qRoasts.equals('coffee', selectedCoffee);
-      }
       qRoasts.orderAsc('date');
+
+      for (var item in selectedCoffee) {
+        var newQuery = new StackMob.Collection.Query().equals("coffee", item);
+        qRoasts = qRoasts.or(newQuery);
+      }
+
        roasts.query(qRoasts, {
         success : function(results) {
           if (results.size() != 0) {
@@ -85,41 +114,6 @@
 
     };
 
-    function populateCoffees(){
-      $('#coffeesList').html("");
-      var selectedLocation = $('#locationsList').val();
-
-      var qCoffees = new StackMob.Collection.Query();
-      if (selectedLocation != 'ALL') {
-        qCoffees.mustBeOneOf('locations', selectedLocation);
-      }
-
-      qCoffees.orderAsc('name');
-      coffees.query(qCoffees, {
-      success: function(results){
-        if (results.size() != 0) {
-          $("#coffeesList").append(
-            $('<option></option>').val('ALL').html('All Coffees')
-            );
-          results.each(function(model){
-            $("#coffeesList").append(
-              $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
-              );
-          });
-          populateRoasts();
-        } else {
-          $("#coffeesList").append(
-            $('<option></option>').val('NONE').html('No Coffees')
-          );
-          $('#roastsList').html("");
-        }
-        
-     },
-     error: function(){ console.log("bad coffee query"); }
-     });
-
-    }
-
     var arrayOfEspressoFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['weight_of_dose', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'pre_infuse_pressure', 'espresso_prep_type', 'preinfuse_time', 'total_extraction_time', 'shift', 'acidity', 'weight_of_yield', 'aftertaste'], function(a){ return a }));
 
     var arrayOfDripFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes','total_extraction_time', 'milk', 'aftertaste', 'dose_of_coffee', 'acidity', 'dose_of_water', 'shift', 'grind', 'bloom_time'], function(a){ return a }));
@@ -134,7 +128,7 @@
         var qEspressoNotes = new StackMob.Collection.Query();
         // Add OR support for multiple roasts selected
         qEspressoNotes.equals('roast', $('#roastsList').val());
-        $('input:checkbox:checked.sort_checkbox').each(function(idx,obj){ 
+        $('input:checkbox:checked.sort_checkbox').each(function(idx,obj){
           qEspressoNotes.orderAsc($(obj).val()); 
         });
         espressoNotes.query(qEspressoNotes, {
@@ -322,6 +316,56 @@
       )
     };
 
+    function selectAllRoasts(){
+
+      if ($('#select_all_roasts').is(':checked')) {
+        $("#roastsList option").attr("selected", "selected");
+      } else {
+        console.log("unchecked");
+        $("#roastsList option").removeAttr("selected");
+        // TODO Why UI sucky
+      }
+
+    }
+
+    function selectAllCoffees(){
+
+      if ($('#select_all_coffees').is(':checked')) {
+        $("#coffeesList option").attr("selected", "selected");
+        populateRoasts();
+      } else {
+        console.log("unchecked");
+        $("#coffeesList option").removeAttr("selected");
+        // TODO Why UI sucky
+      }
+
+    }
+
+    function selectAllLocations(){
+
+      if ($('#select_all_locations').is(':checked')) {
+        $("#locationsList option").attr("selected", "selected");
+        populateCoffees();
+      } else {
+        console.log("unchecked");
+        $("#locationsList option").removeAttr("selected");
+        // TODO Why UI sucky
+      }
+
+    }
+
+    $('#select_all_roasts').change(function(){
+      selectAllRoasts();
+    });
+
+    $('#select_all_coffees').change(function(){
+      selectAllCoffees();
+    });
+
+    $('#select_all_locations').change(function(){
+      selectAllLocations();
+    });
+
     $('#getNotesFromRoast').click(function(e){
       e.preventDefault();
       $('#espressoTableData').html("");
@@ -368,13 +412,16 @@
   <div class="container">
     <div class="row-fluid">
       <div class="span4">
-        <label>Choose Location:</label><select id="locationsList"></select>
+        <label>Choose Location:</label><select size="10" id="locationsList" multiple></select><br/>
+        <label class="checkbox inline"><input id="select_all_locations" type="checkbox">Select All</input></label>
       </div>
       <div class="span4">
-        <label>Choose Coffee:</label><select id="coffeesList"></select>
+        <label>Choose Coffee:</label><select size="10" id="coffeesList" multiple></select><br/>
+        <label class="checkbox inline"><input id="select_all_coffees" type="checkbox">Select All</input></label>
       </div>
       <div class="span4">
-        <label>Choose Roast:</label><select size="10" id="roastsList" multiple></select>
+        <label>Choose Roast:</label><select size="10" id="roastsList" multiple></select><br/>
+        <label class="checkbox inline"><input id="select_all_roasts" type="checkbox">Select All</input></label>
       </div>
     </div>
     <div class="row-fluid">
