@@ -277,6 +277,10 @@
       queryEspressoNotesBasedOnRoast();
     });
 
+    $(".export-button").click(function(){
+      saveTable( $(this).data("target") );
+    })
+
   });
   /* ]]> */
   </script>
@@ -376,26 +380,40 @@
     </p></div>
     <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Submit"></input>
 
-    <p></p><p id="showingNotesForRostDate"></p>
+    <p></p>
+
+    <p id="showingNotesForRostDate"></p>
+
+    <div class="divider"></div>
 
     <div class="table-wrapper">
-    <p>&nbsp;</p>
-    <table border="1" id="espressoTableData" class="table table-bordered table-hover"></table>
+      <table border="1" id="espressoTableData" class="table table-bordered table-hover"></table>
     </div>
+
+    <input class="btn btn-info export-button" type="button" value="Export Espresso Data to CSV" data-target="espressoTableData" />
+
+    <div class="divider"></div>
+
     <div class="table-wrapper">
-    <p>&nbsp;</p>
-    <table border="1" id="dripTableData" class="table table-bordered table-hover"></table>
+      <table border="1" id="dripTableData" class="table table-bordered table-hover"></table>
     </div>
+
+    <input class="btn btn-info export-button" type="button" value="Export Drip Data to CSV" data-target="dripTableData" />
+
+    <div class="divider"></div>
+
     <div class="table-wrapper">
-    <p>&nbsp;</p>
-    <table border="1" id="siphonTableData" class="table table-bordered table-hover"></table>
+      <table border="1" id="siphonTableData" class="table table-bordered table-hover"></table>
     </div>
+
+    <input class="btn btn-info export-button" type="button" value="Export Siphon Data to CSV" data-target="siphonTableData" />
+
   </div>
 
   <!--
-  <label>Locations:</label><select size='10' id="locationsList" multiple><option value="None">N/A</option></select><br />
-  <label>Type:</label><select size='10' id="typeList" multiple><option value="None">N/A</option><option value="Espresso">Espresso</option><option value="Drip">Drip</option><option value="Siphon">Siphon</option></select><br />
-  <label>Data:</label><select size='10' id="dataList" multiple></select><br />
--->
+    <label>Locations:</label><select size='10' id="locationsList" multiple><option value="None">N/A</option></select><br />
+    <label>Type:</label><select size='10' id="typeList" multiple><option value="None">N/A</option><option value="Espresso">Espresso</option><option value="Drip">Drip</option><option value="Siphon">Siphon</option></select><br />
+    <label>Data:</label><select size='10' id="dataList" multiple></select><br />
+  -->
 </body>
 </html>

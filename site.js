@@ -418,3 +418,51 @@ $(document).ready(function(){
   );
 
 });
+
+
+/*
+  CSV EXPOT
+ */
+function saveFile(str){
+  if (navigator.appName != 'Microsoft Internet Explorer'){
+    window.open('data:text/csv;charset=utf-8,' + escape(str));
+  } else{
+    var popup = window.open('','csv','');
+    popup.document.body.innerHTML = '<pre>' + str + '</pre>';
+  }
+}
+
+/**
+* trimTail function trims the ending , after row reading ends
+*/
+function trimTail(str){
+  var tail = str.substring( 0, str.length - 1 );
+  return tail;
+}
+
+/**
+* Main function that is to be called to read table content before saving
+*/
+function saveTable(t){
+  var table     = document.getElementById(t),
+      rowLength = table.rows.length,
+      colLength = table.rows[0].cells.length,
+      header    = "",
+      body      = "";
+
+  for( var i=0; i<colLength; i++ ){
+    header = header + table.rows[0].cells[i].innerHTML + ",";
+  };
+
+  header = trimTail( header );
+
+  for( var j=1; j<rowLength; j++ ){
+    for( var k=0; k<colLength; k++ ){ // reading content of each column
+      body = body + table.rows[j].cells[k].innerHTML + ",";
+    }
+    body = trimTail( body ) + '\r\n';
+  };
+
+  body = header + '\r\n' + body;
+  saveFile( body );
+}
