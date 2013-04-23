@@ -16,3 +16,7 @@ body > .container{
   background: white;
   border: 1px dashed #777;
 }
+
+.divider {
+  margin: 15px 0;
+}
