@@ -15,15 +15,13 @@ StackMob.init({
 });
 
 
-
-if(StackMob.isLoggedIn(function(){
+StackMob.isLoggedIn({
   no: function(){
     if (getParameterByName("redir") != "true"){
       window.location="/login.html?redir=true";
     }
   }
 });
-
 
 // ===== SCHEMA SETUP
 
