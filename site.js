@@ -10,17 +10,20 @@ function getParameterByName(name){
 }
 
 StackMob.init({
-    appName: "coffeelog",
-    clientSubdomain: "bennettbluebottlecoffeecom",
     publicKey: "8480bb0b-99bc-4acc-abc9-0a19bd5eab1e",
     apiVersion: 0
 });
 
-if(StackMob.isLoggedOut()){
-  if (getParameterByName("redir") != "true"){
-    window.location="/login.html?redir=true";
+
+
+if(StackMob.isLoggedIn(function(){
+  no: function(){
+    if (getParameterByName("redir") != "true"){
+      window.location="/login.html?redir=true";
+    }
   }
-}
+});
+
 
 // ===== SCHEMA SETUP
 
