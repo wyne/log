@@ -25,7 +25,9 @@
       qLocations.orderAsc('name');
       locations.query(qLocations, {
       success: function(results){
-
+       $("#locationsList").append(
+            $('<option></option>').val('ALL').html('All Locations')
+        );
        results.each(function(model){
           $("#locationsList").append(
             $('<option></option>').val(model.get('location_id')).html(model.get('name'))
@@ -37,9 +39,12 @@
    });
 
     var qCoffees = new StackMob.Collection.Query();
-      qCoffees.orderAsc('name');
+    qCoffees.orderAsc('name');
     coffees.query(qCoffees, {
       success: function(results){
+        $("#coffeesList").append(
+            $('<option></option>').val('ALL').html('All Coffees')
+        );
        results.each(function(model){
         $("#coffeesList").append(
           $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
@@ -55,16 +60,23 @@
       var selectedCoffee = $('#coffeesList').val();
 
       var qRoasts = new StackMob.Collection.Query();
-      qRoasts.equals('coffee', selectedCoffee);
+      if (selectedCoffee != 'ALL') {
+        qRoasts.equals('coffee', selectedCoffee);
+      }
       qRoasts.orderAsc('date');
        roasts.query(qRoasts, {
         success : function(results) {
-          results.each(function(model){
-            var newDate = new Date(model.get('date'));
-            $("#roastsList").append(
-              $('<option></option>').val(model.get('roast_id')).html((newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear())
-            );
-          })
+          if (results.size() != 0) {
+            results.each(function(model){
+              var newDate = new Date(model.get('date'));
+              $("#roastsList").append(
+                $('<option></option>').val(model.get('roast_id')).html((newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear())
+              );
+            })
+          } else {
+            $("#roastsList").append( $('<option></option>').html("No Roasts") );
+          }
+          
         },
         error : function(model, response) {
           console.log(response);
@@ -72,6 +84,41 @@
       });
 
     };
+
+    function populateCoffees(){
+      $('#coffeesList').html("");
+      var selectedLocation = $('#locationsList').val();
+
+      var qCoffees = new StackMob.Collection.Query();
+      if (selectedLocation != 'ALL') {
+        qCoffees.mustBeOneOf('locations', selectedLocation);
+      }
+
+      qCoffees.orderAsc('name');
+      coffees.query(qCoffees, {
+      success: function(results){
+        if (results.size() != 0) {
+          $("#coffeesList").append(
+            $('<option></option>').val('ALL').html('All Coffees')
+            );
+          results.each(function(model){
+            $("#coffeesList").append(
+              $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
+              );
+          });
+          populateRoasts();
+        } else {
+          $("#coffeesList").append(
+            $('<option></option>').val('NONE').html('No Coffees')
+          );
+          $('#roastsList').html("");
+        }
+        
+     },
+     error: function(){ console.log("bad coffee query"); }
+     });
+
+    }
 
     var arrayOfEspressoFields = _.union(['sm_owner', 'preparation_date'], _.sortBy(['weight_of_dose', 'flavor', 'fragrance_aroma', 'mouthfeel', 'negative_notes', 'positive_notes', 'pre_infuse_pressure', 'espresso_prep_type', 'preinfuse_time', 'total_extraction_time', 'shift', 'acidity', 'weight_of_yield', 'aftertaste'], function(a){ return a }));
 
@@ -220,6 +267,9 @@
       }
     }
 
+    $('#locationsList').change(function(){
+      populateCoffees();
+    });
     $('#coffeesList').change(function(){
       populateRoasts();
     });
@@ -312,12 +362,14 @@
   </div>
 
   <div class="container">
-    <h3>Get notes from a coffee's roast:</h3>
     <div class="row-fluid">
-      <div class="span6">
+      <div class="span4">
+        <label>Choose Location:</label><select id="locationsList"></select>
+      </div>
+      <div class="span4">
         <label>Choose Coffee:</label><select id="coffeesList"></select>
       </div>
-      <div class="span6">
+      <div class="span4">
         <label>Choose Roast:</label><select size="10" id="roastsList" multiple></select>
       </div>
     </div>
@@ -361,14 +413,6 @@
     <label class="checkbox inline">
         <input id="negative_notes_checkbox" class="sort_checkbox" type="checkbox" value="negative_notes">Negative Notes</input>
     </label>
-    <!--
-    <label class="checkbox inline">
-        <input id="preinfuse_pressure_checkbox" class="sort_checkbox" type="checkbox" value="preinfuse_pressure">Preinfuse Pressure</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="preinfuse_time_checkbox" class="sort_checkbox" type="checkbox" value="preinfuse_time">Preinfuse Time</input>
-    </label>
-  -->
     <label class="checkbox inline">
         <input id="prep_date_checkbox" class="sort_checkbox" type="checkbox" value="prep_date">Prep Date</input>
     </label>
@@ -379,7 +423,7 @@
         <input id="yield_date_checkbox" class="sort_checkbox" type="checkbox" value="yield_weight">Yield Weight</input>
     </label>
     </p></div>
-    <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Submit"></input>
+    <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Get Data"></input>
 
     <p></p><p id="showingNotesForRostDate"></p>
 
