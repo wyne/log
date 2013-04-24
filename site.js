@@ -57,15 +57,30 @@ var EspressoNote = StackMob.Model.extend({ schemaName: 'espresso_note' });
 var EspressoNotes = StackMob.Collection.extend({ model: EspressoNote });
 var espressoNotes = new EspressoNotes();
 
-// Espresso Note
+// Drip Note
 var DripNote = StackMob.Model.extend({ schemaName: 'drip_note' });
 var DripNotes = StackMob.Collection.extend({ model: DripNote });
 var dripNotes = new DripNotes();
 
-// Espresso Note
+// Siphon Note
 var SiphonNote = StackMob.Model.extend({ schemaName: 'siphon_note' });
 var SiphonNotes = StackMob.Collection.extend({ model: SiphonNote });
 var siphonNotes = new SiphonNotes();
+
+// Nel Note
+var NelNote = StackMob.Model.extend({ schemaName: 'nel_note' });
+var NelNotes = StackMob.Collection.extend({ model: NelNote });
+var nelNotes = new NelNotes();
+
+// Chemex Note
+var ChemexNote = StackMob.Model.extend({ schemaName: 'chemex_note' });
+var ChemexNotes = StackMob.Collection.extend({ model: ChemexNote });
+var chemexNotes = new ChemexNotes();
+
+// Cupping Note
+var CuppingNote = StackMob.Model.extend({ schemaName: 'cupping_note' });
+var CuppingNotes = StackMob.Collection.extend({ model: CuppingNote });
+var cuppingNotes = new CuppingNotes();
 
 
 var qAll = new StackMob.Collection.Query();

@@ -88,11 +88,13 @@
       var qRoasts = new StackMob.Collection.Query();
       qRoasts.orderAsc('date');
 
+      qRoasts.mustBeOneOf("coffee", selectedCoffee);
+      /*
       for (var item in selectedCoffee) {
         var newQuery = new StackMob.Collection.Query().equals("coffee", item);
         qRoasts = qRoasts.or(newQuery);
       }
-
+*/
        roasts.query(qRoasts, {
         success : function(results) {
           if (results.size() != 0) {
