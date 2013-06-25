@@ -7,7 +7,7 @@ var EspressoNotes = StackMob.Collection.extend({
 });
 var espressoNotes = new EspressoNotes();
 
-// Espresso Note
+// Drip Note
 var DripNote = StackMob.Model.extend({
   schemaName: 'drip_note'
 });

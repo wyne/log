@@ -1,30 +1,38 @@
-// var CoffeeView = Backbone.View.extend({
-//   tagName: 'div',
-//   model: new Coffee(),
-//   initialize: function() {
-//     this.template = _.template($('#coffees-template').html());
-//   },
-//   render: function(){
+// Model
 
-//   }
-// });
+var CoffeeView = Backbone.View.extend({
 
-var CoffeesView = Backbone.View.extend({
-  // el: $("#coffees-select-container"),
+  model: new Coffee(),
 
-  model: new Coffees(),
   tagName: 'div',
 
   initialize: function() {
-    // this.template = _.template($('#coffees-select-template').html());
-    // this.coffees = new Coffees();
-    // this.coffees.add(new Coffee({
-    //   name: 'first'
-    // }));
-    //
+
+  },
+
+  render: function() {
+    return this;
+  }
+});
+
+// Collection
+
+var CoffeesView = Backbone.View.extend({
+
+  model: new Coffees(),
+
+  el: $("#coffees-select-container"),
+
+  initialize: function() {
+    // Events
+    this.model.on('add', this.render, this);
+
+    // Template
     this.template = _.template($("#coffees-select-template").html());
 
     var self = this;
+
+    // Fetch
     this.model.fetch({
       success: function() {
         self.render();
