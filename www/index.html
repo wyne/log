@@ -352,7 +352,7 @@
                 </div>
                 <div class="row">
                   <div class="span6 offset6">
-                    <input class="login btn btn-primary" type="submit" value="Submit Espresso Note"></input>
+                    <input class="btn btn-primary" type="submit" value="Submit Espresso Note"></input>
                     <p></p><p id="espresso_note_submission_message"></p><p></p>
                   </div>
                 </div>
@@ -405,7 +405,7 @@
                 </div>
                 <div class="row">
                   <div class="span6 offset6">
-                    <input class="login btn btn-primary" type="submit" value="Submit Drip Note"></input>
+                    <input class="btn btn-primary" type="submit" value="Submit Drip Note"></input>
                     <p></p><p id="drip_note_submission_message"></p><p></p>
                   </div>
                 </div>
@@ -453,8 +453,12 @@
                 </div>
                 <div class="row">
                   <div class="span6 offset6">
-                    <input class="login btn btn-primary" type="submit" value="Submit Siphon Note"></input>
-                    <p></p><p id="siphon_note_submission_message"></p><p></p>
+                    <input class="btn btn-primary" type="submit" value="Submit Siphon Note"></input>
+                    <input class="confirmation btn btn-primary" type="button" value="confirmation"></input>
+
+                    <p></p>
+                    <p id="siphon_note_submission_message"></p>
+                    <p></p>
                   </div>
                 </div>
 
@@ -471,7 +475,10 @@
             $('#myTab a').click(function (e) {
               e.preventDefault();
               $(this).tab('show');
-            })
+            });
+            $('.confirmation').click(function(){
+              console.log( $(this).parents("form").attr('id') );
+            });
           });
         </script>
 
