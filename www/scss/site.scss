@@ -1,6 +1,8 @@
+$foreground: #333;
+
 body {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-  background: #f3ecdd url(images/bg-body.jpg) 50% 0;
+  background: #f3ecdd image-url("bg-body.jpg") 50% 0;
 }
 
 .table-wrapper {
@@ -19,4 +21,14 @@ body > .container{
 
 .divider {
   margin: 15px 0;
+}
+
+
+.coffee {
+  .name {
+    font-weight: bold;
+  }
+  .coffee-location{
+    color: lighten($foreground, 30%);
+  }
 }

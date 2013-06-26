@@ -3,10 +3,10 @@ var LocationsView = Backbone.View.extend({
 
   model: new Locations(),
 
-  el: $("#locations-select-container"),
+  el: $('#locations-select-container'),
 
   initialize: function() {
-    this.template = _.template($("#locations-select-template").html());
+    this.template = _.template($('#locations-select-template').html());
 
     var self = this;
 
@@ -27,4 +27,29 @@ var LocationsView = Backbone.View.extend({
     return this;
   }
 
+});
+
+// Location
+
+var CoffeeLocationView = Backbone.View.extend({
+
+  model: new Location(),
+
+  tagName: 'li',
+
+  initialize: function() {
+    // Template
+    this.template = _.template($('#coffee-location-template').html());
+
+    this.render();
+  },
+
+  render: function() {
+    // this.model.toJSON()
+    var coffee_location_template = this.template(this.model);
+
+    this.$el.html(coffee_location_template);
+
+    return this;
+  }
 });
