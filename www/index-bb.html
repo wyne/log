@@ -53,21 +53,41 @@
     </div>
     <div class="row">
       <div class="span6">
+        <form id="new-coffee-form" class="form-inline">
+          <label>Create Coffee</label>
+          <input id="new-coffee-name" name="coffee-name" type="text"/>
+          <button type="submit" class="btn">Create</button>
+        </form>
         <div id="coffees-list-container"></div>
       </div>
-      <div class="span6">Column 2</div>
+      <div class="span6">
+        <form id="new-location-form" class="form-inline">
+          <label>Create Location</label>
+          <input id="new-location-name" name="location-name" type="text"/>
+          <button type="submit" class="btn">Create</button>
+        </form>
+        <div id="locations-list-container"></div>
+      </div>
     </div>
   </div>
-
 
   <script id="coffee-location-template" type="text/template">
     <span class="coffee-location"><%= name %></span>
     <a href="#" class="delete"><i class="icon-trash"></i></a>
   </script>
 
+  <script id="location-template" type="text/template">
+    <span class="name"><%= name %></span>
+    <a href="#" class="edit"><i class="icon-pencil"></i></a>
+    <a href="#" class="delete"><i class="icon-trash"></i></a>
+    <div>Coffees here:</div>
+    <ul class="location-coffees-list"></ul>
+  </script>
+
   <script id="coffee-template" type="text/template">
     <span class="name"><%= name %></span>
     <a href="#" class="edit"><i class="icon-pencil"></i></a>
+    <a href="#" class="delete"><i class="icon-trash"></i></a>
     <div>Locations:</div>
     <ul class="coffee-locations-list"></ul>
   </script>
@@ -92,10 +112,46 @@
 
   <script>
     $(document).ready(function() {
-      var allCoffees = 
-      new CoffeesSelectView();
-      new CoffeesListView();
-      new LocationsView();
+      // Fetch all coffees
+      var coffees = new Coffees();
+      var query = new StackMob.Collection.Query().setExpand(1);
+      coffees.query(query, {
+        success: function(m) {
+          new CoffeesSelectView({model: m});
+          new CoffeesListView({model: m});
+        }
+      });
+
+      // Fetch all locations
+      var locations = new Locations();
+      var query = new StackMob.Collection.Query().setExpand(1);
+      locations.query(query, {
+        success: function(m) {
+          new LocationsSelectView({model: m});
+          new LocationsListView({model: m});
+        }
+      });
+
+      // Bind New Coffee Form
+      $("#new-coffee-form").submit(function(e) {
+        var coffee = new Coffee({name: $("#new-coffee-name").val()});
+        coffee.create().then(function(model, result, df) {
+          coffees.add(coffee);
+        });
+        $("#new-coffee-name").val('');
+        return false;
+      });
+
+      // Bind New Location Form
+      $("#new-location-form").submit(function(e) {
+        var location = new Location({name: $("#new-location-name").val()});
+        location.create().then(function(model, result, df) {
+          locations.add(location);
+        });
+        $("#new-location-name").val('');
+        return false;
+      });
+
     });
   </script>
 

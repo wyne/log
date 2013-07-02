@@ -566,7 +566,8 @@
  * BackBone.js-based
  * Backbone.js Version 0.9.2
  * No OAuth - for use with StackMob's HTML5 Product
- */ (function() {
+ */
+(function() {
   var root = this;
 
   var $ = root.jQuery || root.Ext || root.Zepto;
@@ -1195,7 +1196,7 @@
         _.extend(options, {
           query: stackMobQuery
         });
-        this.fetch(options);
+        return this.fetch(options);
       },
       fetch: function(options) {
         StackMob.wrapStackMobCallbacks.call(this, options);
@@ -1316,7 +1317,7 @@
         _.extend(options, {
           query: stackMobQuery
         });
-        this.fetch(options);
+        return this.fetch(options);
       },
       destroyAll: function(stackMobQuery, options) {
         options = options || {};

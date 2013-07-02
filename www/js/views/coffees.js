@@ -8,19 +8,14 @@ var CoffeesSelectView = Backbone.View.extend({
 
   initialize: function() {
     // Events
-    this.model.on('add', this.render, this);
+    this.model.on('all', this.render, this);
 
     // Template
     this.template = _.template($('#coffees-select-template').html());
 
     var self = this;
 
-    // Fetch
-    this.model.fetch({
-      success: function() {
-        self.render();
-      }
-    });
+    self.render();
   },
 
   render: function() {
@@ -47,6 +42,7 @@ var CoffeeView = Backbone.View.extend({
   model: new Coffee(),
 
   events: {
+    'click .delete': 'destroy',
     'click .edit': 'edit',
     'dblclick .name': 'edit',
     'blur .name': 'close',
@@ -56,6 +52,7 @@ var CoffeeView = Backbone.View.extend({
   initialize: function() {
     // Events
     this.model.on('fetch', this.render, this);
+    this.model.on('destroy', this.render, this);
 
     // Template
     this.template = _.template($('#coffee-template').html());
@@ -63,9 +60,14 @@ var CoffeeView = Backbone.View.extend({
     this.render();
   },
 
-  edit: function(ev) {
-    ev.preventDefault();
+  edit: function(e) {
+    e.preventDefault();
     this.$('.name').attr('contenteditable', true).focus();
+  },
+
+  destroy: function(e) {
+    e.preventDefault();
+    this.model.destroy();
   },
 
   close: function() {
@@ -127,17 +129,11 @@ var CoffeesListView = Backbone.View.extend({
 
   initialize: function() {
     // Events
-    this.model.on('add', this.render, this);
+    this.model.on('all', this.render, this);
 
     var self = this;
 
-    // Fetch
-    var query = new StackMob.Collection.Query().setExpand(1);
-    this.model.query(query, {
-      success: function() {
-        self.render();
-      }
-    });
+    self.render();
   },
 
   render: function() {
@@ -154,6 +150,6 @@ var CoffeesListView = Backbone.View.extend({
     });
 
     return this;
-  },
+  }
 
 });
