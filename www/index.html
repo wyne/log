@@ -103,7 +103,7 @@
       };
 
       function submitDripNote(json){
-        console.log('submitting drip note');
+        console.log('submitting bonmac note');
         $("#drip_note_submission_message").html("");
         json.roast_date = undefined;
         var newNote = new DripNote(json);
@@ -131,6 +131,40 @@
           }
         })
       };
+
+      function submitNelNote (json) {
+        console.log('submitting nel note');
+        $("#nel_note_submission_message").html("");
+        json.roast_date = undefined;
+        var newNote = new NelNote(json);
+        newNote.create({
+          success : function (model) {
+            refreshWithMessage("Successfully created new nel note");
+          },
+          error : function(model, response) {
+            $("#nel_note_submission_message").append("Error creating new nel note.");
+          }
+        })
+      }
+
+      function submitChemexNote (json) {
+        console.log('submitting chemex note');
+        $("#chemex_note_submission_message").html("");
+        json.roast_date = undefined;
+        var newNote = new ChemexNote(json);
+        newNote.create({
+          success : function (model) {
+            refreshWithMessage("Successfully created new chemex note");
+          },
+          error : function(model, response) {
+            $("#chemex_note_submission_message").append("Error creating new chemex note.");
+          }
+        })
+      }
+
+      function submitCuppingNote(json) {
+
+      }
 
       $("#espresso_note_form").submit(function(e){
         e.preventDefault();
@@ -258,6 +292,90 @@
 
       });
 
+      $("#nel_note_form").submit(function(e){
+        e.preventDefault();
+
+        var jsonForm = parseInputs( $(this).find('input, textarea') );
+
+        console.log(jsonForm);
+        var roastQuery = new StackMob.Collection.Query();
+
+        if (!jsonForm.roast_date) {
+          // Handle error
+        }
+
+        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
+
+
+        roasts.query(roastQuery, {
+          success: function(col){
+            if (col.length == 0) {
+              // Create new roast
+              console.log("Creating new roast");
+              var newRoast = new Roast({
+                date : jsonForm.roast_date,
+                coffee : $("#coffeesListForLocation").val()
+              });
+              newRoast.create({
+                success : function(model){
+                  jsonForm["roast"] = model.get('roast_id');
+                  submitNelNote(jsonForm);
+                },
+                error : function(model, response){}
+              });
+            } else {
+              // make check for 1 item only
+              jsonForm["roast"] = col.at(0).get('roast_id');
+              submitNelNote(jsonForm);
+            }
+          },
+          error : function(model, response){}
+        });
+
+      });
+
+      $("#chemex_note_form").submit(function(e){
+        e.preventDefault();
+
+        var jsonForm = parseInputs( $(this).find('input, textarea') );
+
+        console.log(jsonForm);
+        var roastQuery = new StackMob.Collection.Query();
+
+        if (!jsonForm.roast_date) {
+          // Handle error
+        }
+
+        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
+
+
+        roasts.query(roastQuery, {
+          success: function(col){
+            if (col.length == 0) {
+              // Create new roast
+              console.log("Creating new roast");
+              var newRoast = new Roast({
+                date : jsonForm.roast_date,
+                coffee : $("#coffeesListForLocation").val()
+              });
+              newRoast.create({
+                success : function(model){
+                  jsonForm["roast"] = model.get('roast_id');
+                  submitChemexNote(jsonForm);
+                },
+                error : function(model, response){}
+              });
+            } else {
+              // make check for 1 item only
+              jsonForm["roast"] = col.at(0).get('roast_id');
+              submitChemexNote(jsonForm);
+            }
+          },
+          error : function(model, response){}
+        });
+
+      });
+
     });
   /* ]]> */
   </script>
@@ -302,8 +420,10 @@
 
         <ul class="nav nav-tabs" id="myTab" data-tabs="tabs">
           <li class="active"><a href="#espresso" data-toggle="tab">Espresso</a></li>
-          <li><a href="#drip" data-toggle="tab">Drip</a></li>
+          <li><a href="#drip" data-toggle="tab">Bonmac</a></li>
           <li><a href="#siphon" data-toggle="tab">Siphon</a></li>
+          <li><a href="#nel" data-toggle="tab">Nel</a></li>
+          <li><a href="#chemex" data-toggle="tab">Chemex</a></li>
         </ul>
 
         <div class="tab-content">
@@ -336,6 +456,7 @@
                     </select>
                     <label>Weight Of Dose:</label> <input type="number" step="any" name="weight_of_dose"> grams
                     <label>Weight Of Yield:</label> <input type="number" step="any" name="weight_of_yield"> grams
+                    <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
                     <label>Preinfuse Time:</label> <input type="text" size="10" class="timeentry" name="preinfuse_time">
                     <label>Preinfuse Pressure:</label> <input type="number" step="any" name="pre_infuse_pressure"> bars
                   </div>
@@ -382,6 +503,7 @@
                     </label>
                     <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
                     <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
+                    <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
                     <label>Grind Setting:</label> <input type="number" step="any" name="grind">
                     <label>Bloom Time:</label> <input type="text" size="10" class="timeentry" name="bloom_time">
                     <span style="float:left;">Milk:<span>
@@ -405,7 +527,7 @@
                 </div>
                 <div class="row">
                   <div class="span6 offset6">
-                    <input class="btn btn-primary" type="submit" value="Submit Drip Note"></input>
+                    <input class="login btn btn-primary" type="submit" value="Submit Bonmac Note"></input>
                     <p></p><p id="drip_note_submission_message"></p><p></p>
                   </div>
                 </div>
@@ -435,6 +557,7 @@
                     </label>
                     <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
                     <label>Weight Of Water:</label> <input type="number" step="any" name="weight_of_water"> grams
+                    <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
                     <label>Grind Setting:</label> <input type="number" step="any" name="grind">
                     <label>Brewing Time:</label> <input type="text" size="10" class="timeentry" name="brewing_time">
                     <label>Steep Time:</label> <input type="text" size="10" class="timeentry" name="steep_time">
@@ -467,7 +590,113 @@
 
           </div>
 
+        <div class="tab-pane" id="nel">
+
+            <div id="nel_note">
+              <form id="nel_note_form">
+                <div class="row-fluid">
+                  <div class="span6">
+                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
+
+                    <div class="clear"></div>
+                    <span style="float:left;">Shift:<span>
+
+                    <label class="radio inline">
+                      <input type="radio" name="shift" value="AM" class="shift" checked="true"> AM
+                    </label>
+                    <label class="radio inline">
+                      <input type="radio" name="shift" value="PM" class="shift"> PM
+                    </label>
+                    <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
+                    <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
+                    <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
+                    <label>Grind Setting:</label> <input type="number" step="any" name="grind">
+                    <label>Bloom Time:</label> <input type="text" size="10" class="timeentry" name="bloom_time">
+                    <span style="float:left;">Milk:<span>
+                    <label class="radio inline">
+                      <input type="radio" name="milk" value="YES" class="milk"> YES
+                    </label>
+                    <label class="radio inline">
+                      <input type="radio" name="milk" value="NO" class="milk" checked="true"> NO
+                    </label>
+                  </div>
+                  <div class="span6">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
+                    <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
+                    <label>Acidity:</label> <input type="text" name="acidity">
+                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
+                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
+                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
+                    <label>Positive Notes:</label> <textarea type="text" name="positive_notes"></textarea>
+                    <label>Negative Notes:</label> <textarea type="text" name="negative_notes"></textarea>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="span6 offset6">
+                    <input class="login btn btn-primary" type="submit" value="Submit Nel Note"></input>
+                    <p></p><p id="nel_note_submission_message"></p><p></p>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+
         </div>
+
+          <div class="tab-pane" id="chemex">
+
+            <div id="chemex_note">
+              <form id="chemex_note_form">
+                <div class="row-fluid">
+                  <div class="span6">
+                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
+
+                    <div class="clear"></div>
+                    <span style="float:left;">Shift:<span>
+
+                    <label class="radio inline">
+                      <input type="radio" name="shift" value="AM" class="shift" checked="true"> AM
+                    </label>
+                    <label class="radio inline">
+                      <input type="radio" name="shift" value="PM" class="shift"> PM
+                    </label>
+                    <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
+                    <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
+                    <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
+                    <label>Grind Setting:</label> <input type="number" step="any" name="grind">
+                    <label>Bloom Time:</label> <input type="text" size="10" class="timeentry" name="bloom_time">
+                    <span style="float:left;">Milk:<span>
+                    <label class="radio inline">
+                      <input type="radio" name="milk" value="YES" class="milk"> YES
+                    </label>
+                    <label class="radio inline">
+                      <input type="radio" name="milk" value="NO" class="milk" checked="true"> NO
+                    </label>
+                  </div>
+                  <div class="span6">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
+                    <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
+                    <label>Acidity:</label> <input type="text" name="acidity">
+                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
+                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
+                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
+                    <label>Positive Notes:</label> <textarea type="text" name="positive_notes"></textarea>
+                    <label>Negative Notes:</label> <textarea type="text" name="negative_notes"></textarea>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="span6 offset6">
+                    <input class="login btn btn-primary" type="submit" value="Submit Chemex Note"></input>
+                    <p></p><p id="chemex_note_submission_message"></p><p></p>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+
+          </div>
 
         <script>
           $(document).ready(function(){
