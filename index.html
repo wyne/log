@@ -64,20 +64,18 @@
                 var coffees = new Coffees();
                 coffees.query(q, {
                   success: function(collection) {
-                    console.debug(collection.toJSON());
-                    locationCoffees = collection;
 
-                    if (typeof locationCoffees !== 'undefined') {
-                    locationCoffees = _.sortBy(locationCoffees, function(model) {
-                    return model.name;
-                  });
+                    if (typeof collection !== 'undefined') {
+                      locationCoffees = collection.sortBy( function(model) {
+                      return model.get('name');
+                      });
 
-                  _.each(locationCoffees, function(model) {
-                    $("#coffeesListForLocation").append(
-                      $('<option></option>').val(model.coffee_id).html(model.name)
-                    );
-                  })
-                }
+                      _.each(locationCoffees, function(model) {
+                        $("#coffeesListForLocation").append(
+                          $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
+                        );
+                      });
+                    }
                   },
                   error: function(model, response) {
                     console.log("shit");
