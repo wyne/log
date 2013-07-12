@@ -59,9 +59,16 @@
                   "Logged in at " + locationObject.get("name")
                 );
                 // Get all coffees for that location and display
-                locationCoffees = locationObject.get("coffees");
-                if (typeof locationCoffees !== 'undefined') {
-                  locationCoffees = _.sortBy(locationCoffees, function(model) {
+                var q = new StackMob.Collection.Query();
+                q.mustBeOneOf("locations", locationObject.get('location_id')); 
+                var coffees = new Coffees();
+                coffees.query(q, {
+                  success: function(collection) {
+                    console.debug(collection.toJSON());
+                    locationCoffees = collection;
+
+                    if (typeof locationCoffees !== 'undefined') {
+                    locationCoffees = _.sortBy(locationCoffees, function(model) {
                     return model.name;
                   });
 
@@ -71,6 +78,12 @@
                     );
                   })
                 }
+                  },
+                  error: function(model, response) {
+                    console.log("shit");
+                  }
+                });
+                 
               } else {
                 console.log('No Location object found');
               }
