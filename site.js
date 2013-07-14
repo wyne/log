@@ -426,7 +426,7 @@ function parseInputs(inputs){
       default:
         if ($(this).hasClass("date-input") ) {
           jsonForm[name] = new Date(val).getTime();
-        } else if ( $(this).hasClass("timeentry")) {
+        } else if ( $(this).hasClass("time_entry_sec") || $(this).hasClass("time_entry_min")) {
           jsonForm[name] = durationStringToMilliseconds(val);
           console.log(jsonForm[name]);
         } else

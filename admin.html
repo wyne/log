@@ -28,6 +28,7 @@
     }
 
     var qLocations = new StackMob.Collection.Query();
+    qLocations.equals('active', true);
     qLocations.orderAsc('name');
     locations.query(qLocations, {
       success: function(results){
@@ -60,6 +61,7 @@
     });
 
     var qCoffees = new StackMob.Collection.Query();
+    qCoffees.equals('active', true);
     qCoffees.orderAsc('name');
     coffees.query(qCoffees, {
       success: function(results){
@@ -87,6 +89,7 @@
     });
 
     var qUsers = new StackMob.Collection.Query();
+    qUsers.equals('active', true);
     qUsers.orderAsc('username');
     users.query(qUsers, {
       success: function(results){
@@ -346,7 +349,7 @@
             <li><a href="/">Home</a></li>
             <li class="active admin"><a href="/admin.html">Admin</a></li>
             <li class="admin"><a href="/data.html">Data</a></li>
-            <li><a href="/login.html">Login</a></li>
+            <!--<li><a href="/login.html">Login</a></li>-->
             <li><a href="/login.html?logout=true">Logout</a></li>
           </ul>
         </div><!--/.nav-collapse -->

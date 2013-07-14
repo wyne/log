@@ -16,7 +16,7 @@
   <link href="timeentry/jquery.timeentry.css" rel="stylesheet">
   <script type="text/javascript">
   $(function () {
-    $('.timeentry').timeEntry({
+    $('.time_entry_sec').timeEntry({
       show24Hours: true,
       showSeconds: true,
       timeSteps: [1, 1, 1],
@@ -24,6 +24,17 @@
       spinnerImage: 'timeentry/spinnerDefault.png',
       initialField: 2,
       appendText: ' (--:--:sec)'
+    });
+  });
+  $(function () {
+    $('.time_entry_min').timeEntry({
+      show24Hours: true,
+      showSeconds: true,
+      timeSteps: [1, 1, 1],
+      defaultTime: '00:00:00',
+      spinnerImage: 'timeentry/spinnerDefault.png',
+      initialField: 1,
+      appendText: ' (--:min:sec)'
     });
   });
   </script>
@@ -473,7 +484,7 @@
             <li class="active"><a href="/">Home</a></li>
             <li class="admin"><a href="/admin.html">Admin</a></li>
             <li class="admin"><a href="/data.html">Data</a></li>
-            <li><a href="/login.html">Login</a></li>
+            <!--<li><a href="/login.html">Login</a></li>-->
             <li><a href="/login.html?logout=true">Logout</a></li>
           </ul>
         </div><!--/.nav-collapse -->
@@ -544,11 +555,11 @@
                     <label>Weight Of Dose:</label> <input type="number" step="any" name="weight_of_dose"> grams
                     <label>Weight Of Yield:</label> <input type="number" step="any" name="weight_of_yield"> grams
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
-                    <label>Preinfuse Time:</label> <input type="text" size="10" class="timeentry" name="preinfuse_time">
+                    <label>Preinfuse Time:</label> <input type="text" size="10" class="time_entry_sec" name="preinfuse_time">
                     <label>Preinfuse Pressure:</label> <input type="number" step="any" name="pre_infuse_pressure"> bars
                   </div>
                   <div class="span6">
-                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
                     <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
@@ -603,7 +614,7 @@
                     <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
                     <label>Grind Setting:</label> <input type="number" step="any" name="grind">
-                    <label>Bloom Time:</label> <input type="text" size="10" class="timeentry" name="bloom_time">
+                    <label>Bloom Time:</label> <input type="text" size="10" class="time_entry_sec" name="bloom_time">
                     <span style="float:left;">Milk:<span>
                     <label class="radio inline">
                       <input type="radio" name="milk" value="YES" class="milk"> YES
@@ -613,7 +624,7 @@
                     </label>
                   </div>
                   <div class="span6">
-                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
                     <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
@@ -668,12 +679,12 @@
                     <label>Weight Of Water:</label> <input type="number" step="any" name="weight_of_water"> grams
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
                     <label>Grind Setting:</label> <input type="number" step="any" name="grind">
-                    <label>Brewing Time:</label> <input type="text" size="10" class="timeentry" name="brewing_time">
-                    <label>Steep Time:</label> <input type="text" size="10" class="timeentry" name="steep_time">
-                    <label>Draw Down Time:</label> <input type="text" size="10" class="timeentry" name="drawdown_time">
+                    <label>Brewing Time:</label> <input type="text" size="10" class="time_entry_sec" name="brewing_time">
+                    <label>Steep Time:</label> <input type="text" size="10" class="time_entry_sec" name="steep_time">
+                    <label>Draw Down Time:</label> <input type="text" size="10" class="time_entry_sec" name="drawdown_time">
                   </div>
                   <div class="span6">
-                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
                     <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
@@ -728,7 +739,7 @@
                     <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
                     <label>Grind Setting:</label> <input type="number" step="any" name="grind">
-                    <label>Bloom Time:</label> <input type="text" size="10" class="timeentry" name="bloom_time">
+                    <label>Bloom Time:</label> <input type="text" size="10" class="time_entry_sec" name="bloom_time">
                     <span style="float:left;">Milk:<span>
                     <label class="radio inline">
                       <input type="radio" name="milk" value="YES" class="milk"> YES
@@ -738,7 +749,7 @@
                     </label>
                   </div>
                   <div class="span6">
-                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
                     <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
@@ -793,7 +804,7 @@
                     <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
                     <label>Grind Setting:</label> <input type="number" step="any" name="grind">
-                    <label>Bloom Time:</label> <input type="text" size="10" class="timeentry" name="bloom_time">
+                    <label>Bloom Time:</label> <input type="text" size="10" class="time_entry_sec" name="bloom_time">
                     <span style="float:left;">Milk:<span>
                     <label class="radio inline">
                       <input type="radio" name="milk" value="YES" class="milk"> YES
@@ -803,7 +814,7 @@
                     </label>
                   </div>
                   <div class="span6">
-                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
                     <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
@@ -834,43 +845,12 @@
                     <label>Barista Name:</label><input type="text" name="barista_name">
                     <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
-
-                    <div class="clear"></div>
-                    <span style="float:left;">Shift:<span>
-
-                    <label class="radio inline">
-                      <input type="radio" name="shift" value="AM" class="shift" checked="true"> AM
-                    </label>
-                    <label class="radio inline">
-                      <input type="radio" name="shift" value="PM" class="shift"> PM
-                    </label>
-
-                    <label>Dial In Difficulty:</label>
-                    <select id="dial_in_difficulty">
-                      <option value="Extremely Easy">Very Easy</option>
-                      <option value="Easy">Easy</option>
-                      <option value="Moderate">Moderate</option>
-                      <option value= "Difficult">Difficult</option>
-                      <option value="Extremely Difficult">Extremely Difficult</option>
-                    </select>
-
-                    <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
-                    <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
-                    <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
-                    <label>Grind Setting:</label> <input type="number" step="any" name="grind">
-                    <label>Bloom Time:</label> <input type="text" size="10" class="timeentry" name="bloom_time">
-                    <span style="float:left;">Milk:<span>
-                    <label class="radio inline">
-                      <input type="radio" name="milk" value="YES" class="milk"> YES
-                    </label>
-                    <label class="radio inline">
-                      <input type="radio" name="milk" value="NO" class="milk" checked="true"> NO
-                    </label>
-                  </div>
-                  <div class="span6">
-                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
                     <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
+                    
+                  </div>
+                  <div class="span6">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
                     <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
                     <label>Aftertaste:</label> <input type="text" name="aftertaste">
