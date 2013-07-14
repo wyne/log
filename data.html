@@ -21,6 +21,7 @@
   <script type="text/javascript">
   /* <![CDATA[ */
     $(document).ready(function(){
+      hideAllButtons();
       var qLocations = new StackMob.Collection.Query();
       qLocations.equals("active", true);
       qLocations.orderAsc('name');
@@ -69,6 +70,23 @@
      error: function(){ console.log("bad coffee query"); }
    });
 */
+    function clearAllTableData(){
+      $('#espressoTableData').html("");
+      $('#dripTableData').html("");
+      $('#siphonTableData').html("");
+      $('#nelTableData').html("");
+      $('#chemexTableData').html("");
+      $('#cuppingTableData').html("");
+    }
+    function hideAllButtons(){
+      $('#export_espresso_data').hide();
+      $('#export_drip_data').hide();
+      $('#export_siphon_data').hide();
+      $('#export_nel_data').hide();
+      $('#export_chemex_data').hide();
+      $('#export_cupping_data').hide();
+    }
+
     function populateCoffees(){
       $('#coffeesList').html("");
       var selectedLocation = $('#locationsList').val();
@@ -158,7 +176,7 @@
         var qEspressoNotes = new StackMob.Collection.Query();
         // Add OR support for multiple roasts selected
         qEspressoNotes.mustBeOneOf('roast', $('#roastsList').val());
-        qEspressoNotes.sortBy()
+        qEspressoNotes.orderAsc('createddate');
         var arrayOfLocations = $('#locationsList option').map( function(){
           return "user/" + $(this).html();
         });
@@ -168,8 +186,11 @@
         espressoNotes.query(qEspressoNotes, {
           success : function(results){
             console.log('Successfully got all espresso notes');
-            populateEspressoTable();
-            results.each(function(model){
+            
+            if (results.length > 0) {
+              $('#export_espresso_data').show();
+              populateEspressoTable();
+              results.each(function(model){
               var columnData = [];
               _.each(arrayOfEspressoFields, function(idx, item){
                 var field = arrayOfEspressoFields[item];
@@ -192,7 +213,9 @@
                   columnData
                 )
               )
-            });
+              });
+            }
+            
             queryDripNotesBasedOnRoast();
           },
           error : function(model, response){
@@ -213,13 +236,16 @@
           return "user/" + $(this).html();
         });
 
-        qEspressoNotes.mustBeOneOf('sm_owner', $.makeArray(arrayOfLocations));
+        qDripNotes.mustBeOneOf('sm_owner', $.makeArray(arrayOfLocations));
 
         dripNotes.query(qDripNotes, {
           success : function(results){
             console.log('Successfully got all drip notes');
-            populateDripTable();
-            results.each(function(model){
+
+            if (results.length > 0) {
+              $('#export_drip_data').show();
+              populateDripTable();
+              results.each(function(model){
               var columnData = [];
               _.each(arrayOfDripFields, function(idx, item){
                 var field = arrayOfDripFields[item];
@@ -244,7 +270,9 @@
                   columnData
                 )
               )
-            });
+              });
+            }
+            
             querySiphonNotesBasedOnRoast();
           },
           error : function(model, response){
@@ -272,8 +300,11 @@
         siphonNotes.query(qSiphonNotes, {
           success : function(results){
             console.log('Successfully got all siphon notes');
-            populateSiphonTable();
-            results.each(function(model){
+            
+            if (results.length > 0) {
+              $('#export_siphon_data').show();
+              populateSiphonTable();
+              results.each(function(model){
               var columnData = [];
               _.each(arrayOfSiphonFields, function(idx, item){
                 var field = arrayOfSiphonFields[item];
@@ -296,7 +327,9 @@
                   columnData
                 )
               )
-            });
+              });
+            }
+            
             queryNelNotesBasedOnRoast();
           },
           error : function(model, response){
@@ -323,8 +356,11 @@
         nelNotes.query(qNelNotes, {
           success : function(results){
             console.log('Successfully got all nel notes');
-            populateNelTable();
-            results.each(function(model){
+
+            if (results.length > 0) {
+              $('#export_nel_data').show();
+              populateNelTable();
+              results.each(function(model){
               var columnData = [];
               _.each(arrayOfNelFields, function(idx, item){
                 var field = arrayOfNelFields[item];
@@ -347,7 +383,9 @@
                   columnData
                 )
               )
-            });
+              });
+            }
+            
             queryChemexNotesBasedOnRoast();
           },
           error : function(model, response){
@@ -374,8 +412,11 @@
         chemexNotes.query(qChemexNotes, {
           success : function(results){
             console.log('Successfully got all chemex notes');
-            populateChemexTable();
-            results.each(function(model){
+
+            if (results.length > 0) {
+              $('#export_chemex_data').show();
+              populateChemexTable();
+              results.each(function(model){
               var columnData = [];
               _.each(arrayOfChemexFields, function(idx, item){
                 var field = arrayOfChemexFields[item];
@@ -398,7 +439,9 @@
                   columnData
                 )
               )
-            });
+              });
+            }
+            
             queryCuppingNotesBasedOnRoast();
           },
           error : function(model, response){
@@ -425,8 +468,11 @@
         cuppingNotes.query(qCuppingNotes, {
           success : function(results){
             console.log('Successfully got all cupping notes');
-            populateCuppingTable();
-            results.each(function(model){
+
+            if (results.length > 0) {
+              $('#export_cupping_data').show();
+              populateCuppingTable();
+              results.each(function(model){
               var columnData = [];
               _.each(arrayOfCuppingFields, function(idx, item){
                 var field = arrayOfCuppingFields[item];
@@ -449,7 +495,9 @@
                   columnData
                 )
               )
-            });
+              });
+            }
+            
             //queryChemexNotesBasedOnRoast();
           },
           error : function(model, response){
@@ -541,6 +589,22 @@
       )
     };
 
+    function populateCuppingTable() {
+      var columnHeaders = [];
+      _.each(arrayOfCuppingFields, function(idx, item){
+        var entry = arrayOfCuppingFields[item];
+        if (entry == "sm_owner") {
+          entry = "location";
+        }
+        columnHeaders.push($('<th></th>').html(entry));
+      })
+      $('#cuppingTableData').append(
+        $('<tr></tr>').append(
+          columnHeaders
+        )
+      )
+    };
+
     function selectAllRoasts(){
 
       if ($('#select_all_roasts').is(':checked')) {
@@ -603,9 +667,8 @@
 
     $('#getNotesFromRoast').click(function(e){
       e.preventDefault();
-      $('#espressoTableData').html("");
-      $('#dripTableData').html("");
-      $('#siphonTableData').html("");
+      hideAllButtons();
+      clearAllTableData();
       /*
       $('#showingNotesForRostDate').html("");
       $('#showingNotesForRostDate').append("Showing notes for " + $('#roastsList').find(":selected").text() + "  roast of " + $('#coffeesList').find(":selected").text() + ".");
@@ -740,15 +803,15 @@
       <table border="1" id="espressoTableData" class="table table-bordered table-hover"></table>
     </div>
 
-    <input class="btn btn-info export-button" type="button" value="Export Espresso Data to CSV" data-target="espressoTableData" />
-
+    <input id="export_espresso_data" class="btn btn-info export-button" type="button" value="Export Espresso Data to CSV" data-target="espressoTableData" />
+    
     <div class="divider"></div>
 
     <div class="table-wrapper">
       <table border="1" id="dripTableData" class="table table-bordered table-hover"></table>
     </div>
 
-    <input class="btn btn-info export-button" type="button" value="Export Drip Data to CSV" data-target="dripTableData" />
+    <input id="export_drip_data" class="btn btn-info export-button" type="button" value="Export Drip Data to CSV" data-target="dripTableData" />
 
     <div class="divider"></div>
 
@@ -756,26 +819,33 @@
       <table border="1" id="siphonTableData" class="table table-bordered table-hover"></table>
     </div>
 
-    <input class="btn btn-info export-button" type="button" value="Export Siphon Data to CSV" data-target="siphonTableData" />
+    <input id="export_siphon_data" class="btn btn-info export-button" type="button" value="Export Siphon Data to CSV" data-target="siphonTableData" />
+
+    <div class="divider"></div>
 
     <div class="table-wrapper">
       <table border="1" id="nelTableData" class="table table-bordered table-hover"></table>
     </div>
 
-    <input class="btn btn-info export-button" type="button" value="Export Nel Data to CSV" data-target="nelTableData" />
+    <input id="export_nel_data" class="btn btn-info export-button" type="button" value="Export Nel Data to CSV" data-target="nelTableData" />
+
+    <div class="divider"></div>
 
     <div class="table-wrapper">
       <table border="1" id="chemexTableData" class="table table-bordered table-hover"></table>
     </div>
 
-    <input class="btn btn-info export-button" type="button" value="Export Chemex Data to CSV" data-target="chemexTableData" />
+    <input id="export_chemex_data" class="btn btn-info export-button" type="button" value="Export Chemex Data to CSV" data-target="chemexTableData" />
+
+    <div class="divider"></div>
 
     <div class="table-wrapper">
       <table border="1" id="cuppingTableData" class="table table-bordered table-hover"></table>
     </div>
 
-    <input class="btn btn-info export-button" type="button" value="Export Cupping Data to CSV" data-target="cuppingTableData" />
+    <input id="export_cupping_data" class="btn btn-info export-button" type="button" value="Export Cupping Data to CSV" data-target="cuppingTableData" />
 
+    <div class="divider"></div>
   </div>
 
   <!--
