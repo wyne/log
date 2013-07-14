@@ -120,6 +120,7 @@ function createNewLocation(locName, locCoffees){
 
   var newLocation = new Loc({
     name : locName,
+    active : true,
     coffees : locCoffees || undefined
   });
 
@@ -170,8 +171,10 @@ function removeLocation(location){
   var newLocation = new Loc({
     location_id : location,
   });
-
-  newLocation.destroy({
+  newLocation.set({
+    active : false
+  });
+  newLocation.save({
     success: function(model){ dfd.resolve(location) },
     error: function(model){ dfd.reject(location) }
   });
@@ -273,6 +276,7 @@ function assignCoffeeToLocations(locations, coffee){
   return dfd.promise();
 };
 
+/*
 function removeCoffee(coffee){
   var dfd = new jQuery.Deferred();
 
@@ -287,7 +291,7 @@ function removeCoffee(coffee){
 
   return dfd.promise();
 };
-
+*/
 function removeCoffeeFromLocation(location, coffee){
   var dfd = new jQuery.Deferred();
 

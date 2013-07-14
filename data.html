@@ -22,6 +22,7 @@
   /* <![CDATA[ */
     $(document).ready(function(){
       var qLocations = new StackMob.Collection.Query();
+      qLocations.equals("active", true);
       qLocations.orderAsc('name');
       locations.query(qLocations, {
       success: function(results){
@@ -58,7 +59,13 @@
       var selectedLocation = $('#locationsList').val();
 
       var qCoffees = new StackMob.Collection.Query();
+
+      if (selectedLoction == 'Admin') {
+
+      }
+
       qCoffees.mustBeOneOf('locations', selectedLocation);
+      qCoffees.equals("active", true);
       qCoffees.orderAsc('name');
       coffees.query(qCoffees, {
       success: function(results){
@@ -86,7 +93,7 @@
       var selectedCoffee = $('#coffeesList').val();
 
       var qRoasts = new StackMob.Collection.Query();
-      qRoasts.orderAsc('date');
+      qRoasts.orderDesc('date');
 
       qRoasts.mustBeOneOf("coffee", selectedCoffee);
       /*

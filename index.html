@@ -22,8 +22,8 @@
       timeSteps: [1, 1, 1],
       defaultTime: '00:00:00',
       spinnerImage: 'timeentry/spinnerDefault.png',
-      initialField: 1,
-      appendText: ' (hh:mm:ss)'
+      initialField: 2,
+      appendText: ' (--:--:sec)'
     });
   });
   </script>
@@ -52,40 +52,47 @@
           user.fetchExpanded(2, {
 
             success : function(model){
-              var locationObject = new Loc(model.get('location'));
-              if (typeof locationObject !== 'undefined') {
-                // Display Location of user
-                $('#usersLocation').append(
-                  "Logged in at " + locationObject.get("name")
-                );
-                // Get all coffees for that location and display
-                var q = new StackMob.Collection.Query();
-                q.mustBeOneOf("locations", locationObject.get('location_id')); 
-                var coffees = new Coffees();
-                coffees.query(q, {
-                  success: function(collection) {
 
-                    if (typeof collection !== 'undefined') {
-                      locationCoffees = collection.sortBy( function(model) {
-                      return model.get('name');
-                      });
+              // Get all coffees for that location and display, all for admin
+              var q = new StackMob.Collection.Query();
+              q.equals('active', true);
 
-                      _.each(locationCoffees, function(model) {
-                        $("#coffeesListForLocation").append(
-                          $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
-                        );
-                      });
-                    }
-                  },
-                  error: function(model, response) {
-                    console.log("shit");
-                  }
-                });
-                 
+              if (!model.get('admin')) {
+                var locationObject = new Loc(model.get('location'));
+                if (typeof locationObject !== 'undefined') {
+                  // Display Location of user
+                  $('#usersLocation').append(
+                    "Logged in at " + locationObject.get("name")
+                  );
+                  q.mustBeOneOf("locations", locationObject.get('location_id'));
+                } else {
+                  console.log('No Location object found');
+                }
               } else {
-                console.log('No Location object found');
+                  $('#usersLocation').append(
+                      "Logged in as an admin."
+                  ); 
               }
+              var coffees = new Coffees();
+              coffees.query(q, {
+                success: function(collection) {
 
+                  if (typeof collection !== 'undefined') {
+                    locationCoffees = collection.sortBy( function(model) {
+                    return model.get('name');
+                    });
+
+                    _.each(locationCoffees, function(model) {
+                      $("#coffeesListForLocation").append(
+                        $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
+                      );
+                    });
+                  }
+                },
+                error: function(model, response) {
+                  console.log("Bad coffee query");
+                }
+              });
             },
             error : function(model, response){
               console.log("Error: " + response);
@@ -174,7 +181,18 @@
       }
 
       function submitCuppingNote(json) {
-
+        console.log('submitting cupping note');
+        $("#cupping_note_submission_message").html("");
+        json.roast_date = undefined;
+        var newNote = new CuppingNote(json);
+        newNote.create({
+          success : function (model) {
+            refreshWithMessage("Successfully created new cupping note.");
+          },
+          error : function(model, response) {
+            $("#cupping_note_submission_message").append("Error creating new cupping note.");
+          }
+        })
       }
 
       $("#espresso_note_form").submit(function(e){
@@ -183,6 +201,7 @@
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
         jsonForm["espresso_prep_type"] = $("#espresso_prep_type").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
         var roastQuery = new StackMob.Collection.Query();
 
         if (!jsonForm.roast_date) {
@@ -223,6 +242,7 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -265,6 +285,7 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -307,6 +328,7 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -349,6 +371,7 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -380,6 +403,49 @@
               // make check for 1 item only
               jsonForm["roast"] = col.at(0).get('roast_id');
               submitChemexNote(jsonForm);
+            }
+          },
+          error : function(model, response){}
+        });
+
+      });
+
+      $("#cupping_note_form").submit(function(e){
+        e.preventDefault();
+
+        var jsonForm = parseInputs( $(this).find('input, textarea') );
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
+
+        console.log(jsonForm);
+        var roastQuery = new StackMob.Collection.Query();
+
+        if (!jsonForm.roast_date) {
+          // Handle error
+        }
+
+        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
+
+
+        roasts.query(roastQuery, {
+          success: function(col){
+            if (col.length == 0) {
+              // Create new roast
+              console.log("Creating new roast");
+              var newRoast = new Roast({
+                date : jsonForm.roast_date,
+                coffee : $("#coffeesListForLocation").val()
+              });
+              newRoast.create({
+                success : function(model){
+                  jsonForm["roast"] = model.get('roast_id');
+                  submitCuppingNote(jsonForm);
+                },
+                error : function(model, response){}
+              });
+            } else {
+              // make check for 1 item only
+              jsonForm["roast"] = col.at(0).get('roast_id');
+              submitCuppingNote(jsonForm);
             }
           },
           error : function(model, response){}
@@ -435,6 +501,7 @@
           <li><a href="#siphon" data-toggle="tab">Siphon</a></li>
           <li><a href="#nel" data-toggle="tab">Nel</a></li>
           <li><a href="#chemex" data-toggle="tab">Chemex</a></li>
+          <li><a href="#cupping" data-toggle="tab">Cupping</a></li>
         </ul>
 
         <div class="tab-content">
@@ -445,6 +512,7 @@
               <form id="espresso_note_form">
                 <div class="row-fluid">
                   <div class="span6">
+                    <label>Barista Name:</label><input type="text" name="barista_name">
                     <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
@@ -465,6 +533,14 @@
                       <option value= "Latte">Latte</option>
                       <option value="Macchiato">Macchiato</option>
                     </select>
+                    <label>Dial In Difficulty:</label>
+                    <select id="dial_in_difficulty">
+                      <option value="Extremely Easy">Very Easy</option>
+                      <option value="Easy">Easy</option>
+                      <option value="Moderate">Moderate</option>
+                      <option value= "Difficult">Difficult</option>
+                      <option value="Extremely Difficult">Extremely Difficult</option>
+                    </select>
                     <label>Weight Of Dose:</label> <input type="number" step="any" name="weight_of_dose"> grams
                     <label>Weight Of Yield:</label> <input type="number" step="any" name="weight_of_yield"> grams
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
@@ -473,7 +549,7 @@
                   </div>
                   <div class="span6">
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
-                    <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
+                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
                     <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
@@ -500,6 +576,7 @@
               <form id="drip_note_form">
                 <div class="row-fluid">
                   <div class="span6">
+                    <label>Barista Name:</label><input type="text" name="barista_name">
                     <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
@@ -512,6 +589,16 @@
                     <label class="radio inline">
                       <input type="radio" name="shift" value="PM" class="shift"> PM
                     </label>
+
+                    <label>Dial In Difficulty:</label>
+                    <select id="dial_in_difficulty">
+                      <option value="Extremely Easy">Very Easy</option>
+                      <option value="Easy">Easy</option>
+                      <option value="Moderate">Moderate</option>
+                      <option value= "Difficult">Difficult</option>
+                      <option value="Extremely Difficult">Extremely Difficult</option>
+                    </select>
+
                     <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
                     <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
@@ -527,7 +614,7 @@
                   </div>
                   <div class="span6">
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
-                    <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
+                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
                     <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
@@ -554,6 +641,7 @@
               <form id="siphon_note_form">
                 <div class="row-fluid">
                   <div class="span6">
+                    <label>Barista Name:</label><input type="text" name="barista_name">
                     <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
@@ -566,6 +654,16 @@
                     <label class="radio inline">
                       <input type="radio" name="shift" value="PM" class="shift"> PM
                     </label>
+
+                    <label>Dial In Difficulty:</label>
+                    <select id="dial_in_difficulty">
+                      <option value="Extremely Easy">Very Easy</option>
+                      <option value="Easy">Easy</option>
+                      <option value="Moderate">Moderate</option>
+                      <option value= "Difficult">Difficult</option>
+                      <option value="Extremely Difficult">Extremely Difficult</option>
+                    </select>
+
                     <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
                     <label>Weight Of Water:</label> <input type="number" step="any" name="weight_of_water"> grams
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
@@ -576,7 +674,7 @@
                   </div>
                   <div class="span6">
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
-                    <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
+                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
                     <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
@@ -603,6 +701,7 @@
               <form id="nel_note_form">
                 <div class="row-fluid">
                   <div class="span6">
+                    <label>Barista Name:</label><input type="text" name="barista_name">
                     <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
@@ -615,6 +714,16 @@
                     <label class="radio inline">
                       <input type="radio" name="shift" value="PM" class="shift"> PM
                     </label>
+
+                    <label>Dial In Difficulty:</label>
+                    <select id="dial_in_difficulty">
+                      <option value="Extremely Easy">Very Easy</option>
+                      <option value="Easy">Easy</option>
+                      <option value="Moderate">Moderate</option>
+                      <option value= "Difficult">Difficult</option>
+                      <option value="Extremely Difficult">Extremely Difficult</option>
+                    </select>
+
                     <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
                     <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
@@ -630,7 +739,7 @@
                   </div>
                   <div class="span6">
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
-                    <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
+                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
                     <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
@@ -657,6 +766,7 @@
               <form id="chemex_note_form">
                 <div class="row-fluid">
                   <div class="span6">
+                    <label>Barista Name:</label><input type="text" name="barista_name">
                     <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
@@ -669,6 +779,16 @@
                     <label class="radio inline">
                       <input type="radio" name="shift" value="PM" class="shift"> PM
                     </label>
+
+                    <label>Dial In Difficulty:</label>
+                    <select id="dial_in_difficulty">
+                      <option value="Extremely Easy">Very Easy</option>
+                      <option value="Easy">Easy</option>
+                      <option value="Moderate">Moderate</option>
+                      <option value= "Difficult">Difficult</option>
+                      <option value="Extremely Difficult">Extremely Difficult</option>
+                    </select>
+
                     <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
                     <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
@@ -684,7 +804,7 @@
                   </div>
                   <div class="span6">
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
-                    <label>Fragrance Aroma:</label> <input type="text" name="fragrance_aroma">
+                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
                     <label>Acidity:</label> <input type="text" name="acidity">
                     <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
                     <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
@@ -697,6 +817,72 @@
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Chemex Note"></input>
                     <p></p><p id="chemex_note_submission_message"></p><p></p>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+
+          </div>
+
+          <div class="tab-pane" id="cupping">
+
+            <div id="cupping_note">
+              <form id="cupping_note_form">
+                <div class="row-fluid">
+                  <div class="span6">
+                    <label>Barista Name:</label><input type="text" name="barista_name">
+                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
+
+                    <div class="clear"></div>
+                    <span style="float:left;">Shift:<span>
+
+                    <label class="radio inline">
+                      <input type="radio" name="shift" value="AM" class="shift" checked="true"> AM
+                    </label>
+                    <label class="radio inline">
+                      <input type="radio" name="shift" value="PM" class="shift"> PM
+                    </label>
+
+                    <label>Dial In Difficulty:</label>
+                    <select id="dial_in_difficulty">
+                      <option value="Extremely Easy">Very Easy</option>
+                      <option value="Easy">Easy</option>
+                      <option value="Moderate">Moderate</option>
+                      <option value= "Difficult">Difficult</option>
+                      <option value="Extremely Difficult">Extremely Difficult</option>
+                    </select>
+
+                    <label>Dose Of Coffee:</label> <input type="number" step="any" name="dose_of_coffee"> grams
+                    <label>Dose Of Water:</label> <input type="number" step="any" name="dose_of_water"> grams
+                    <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
+                    <label>Grind Setting:</label> <input type="number" step="any" name="grind">
+                    <label>Bloom Time:</label> <input type="text" size="10" class="timeentry" name="bloom_time">
+                    <span style="float:left;">Milk:<span>
+                    <label class="radio inline">
+                      <input type="radio" name="milk" value="YES" class="milk"> YES
+                    </label>
+                    <label class="radio inline">
+                      <input type="radio" name="milk" value="NO" class="milk" checked="true"> NO
+                    </label>
+                  </div>
+                  <div class="span6">
+                    <label>Total Extraction Time:</label> <input type="text" size="10" class="timeentry" name="total_extraction_time">
+                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
+                    <label>Acidity:</label> <input type="text" name="acidity">
+                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
+                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
+                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
+                    <label>Positive Notes:</label> <textarea type="text" name="positive_notes"></textarea>
+                    <label>Negative Notes:</label> <textarea type="text" name="negative_notes"></textarea>
+                    <label>Overall Score:</label> <input type="number" name="score">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="span6 offset6">
+                    <input class="login btn btn-primary" type="submit" value="Submit Cupping Note"></input>
+                    <p></p><p id="cupping_note_submission_message"></p><p></p>
                   </div>
                 </div>
 

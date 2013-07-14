@@ -111,15 +111,27 @@
     	var newUser = new StackMob.User({
         username : $('#username').val(),
         password : $('#password').val(),
-        location : $('#locationsListForAddUser').val() || undefined
+        active : true
       });
+      if ($('#admin_checkbox').is(':checked')) {
+        newUser.set({
+          admin : true
+        });
+      } else {
+        newUser.set({
+          admin : false,
+          location : $('#locationsListForAddUser').val() || undefined
+        });
+      }
     	console.log(newUser);
     	newUser.create({
 
     		success: function(model){
-          window.location = '?message=Successfully created user ' + model.get('username') + ' who works at ' + $('#locationsList option:selected').text() + '.';
+          refreshWithMessage("Successfully created user " + model.get('username') + " who works at " + $('#locationsListForAddUser option:selected').text() + ".");
         },
-        error: function(){ console.log("bad"); }
+        error: function(model, error, options){ 
+          refreshWithMessage("Error: " + error.error); 
+        }
       });
     });
 
@@ -127,13 +139,19 @@
       var newUser = new StackMob.User({
         username : $('#usersListForRemoveUser').val(),
       });
+      newUser.set({
+        active : false
+      });
       console.log(newUser);
-      newUser.destroy({
+      newUser.save({
 
         success: function(model){
-          refreshWithMessage("Successfully removed user.");
+          refreshWithMessage("Successfully removed user " + $('#usersListForRemoveUser').val() + ".");
         },
-        error: function(){ console.log("bad"); }
+        error: function(model, error, options){ 
+          refreshWithMessage("Error: " + error.error);
+
+        }
       });
     });
 
@@ -187,6 +205,7 @@
       var coffeeName = $('#coffeeName').val();
       var newCoffee = new Coffee({
         name : coffeeName,
+        active : true,
         locations : coffeeLocations || undefined
       });
 
@@ -285,17 +304,26 @@
     });
 
     $('#removeCoffee').click(function(){
-      removeCoffeeFromAllLocations( $('#coffeesListForRemoveCoffee').val() )
-      .then(removeCoffee)
-      .then(
-        function(status){
-          refreshWithMessage("Successfully removed coffee: " + status);
+      var newCoffee = new Coffee({
+        coffee_id : $('#coffeesListForRemoveCoffee').val(),
+      });
+      newCoffee.set({
+        active : false
+      });
+      console.log(newCoffee);
+      newCoffee.save({
+
+        success: function(model){
+          refreshWithMessage("Successfully removed coffee " + $("#coffeesListForRemoveCoffee option:selected").text() + ".");
         },
-        function(){
-          console.log("Error removing coffee.");
+        error: function(model, error, options){ 
+          refreshWithMessage("Error: " + error.error);
+
         }
-      );
+      });
     });
+
+    
 });
 
 /* ]]> */
@@ -361,7 +389,10 @@
           <h4>Create New User:</h4>
           <label>Username:</label> <input id="username" type="text"></input>
           <label>Password:</label> <input id="password" type="password"></input>
-          <label>Works At:</label>
+          <label class="checkbox">
+            <input id="admin_checkbox" type="checkbox">Admin?</input>
+          </label>
+          <label>Works At (ignore for admin):</label>
           <select id="locationsListForAddUser"></select><br />
           <input id="newUser" class="btn btn-primary" type="button" value="Submit"></input>
         </div>
