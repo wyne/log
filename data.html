@@ -23,6 +23,8 @@
 
     // Global vars
     queriedRoasts = [];
+    queriedCoffees = [];
+    admins = [];
 
     $(document).ready(function(){
       hideAllButtons();
@@ -36,9 +38,19 @@
               $('<option></option>').val(model.get('location_id')).html(model.get('name'))
             );
           });
-     },
-     error: function(){ console.log("bad locations query"); }
-   });
+      },
+      error: function(){ console.log("bad locations query"); }
+      });
+
+      roles.fetch({
+        success : function (collection) {
+          console.log('fetched admins');
+          admins = collection.models[0].get('members');
+        },
+        error : function(error){
+          console.log('error fetching admins ' + error);
+        }
+      });
 
       /*
     var qCoffees = new StackMob.Collection.Query();
@@ -114,6 +126,7 @@
       coffees.query(qCoffees, {
       success: function(results){
         if (results.size() != 0) {
+          queriedCoffees = results;
           results.each(function(model){
             $("#coffeesList").append(
               $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
@@ -198,20 +211,21 @@
       'drawdown_time':'Drawdown Time',
       'score':'Overall Score',
       'roast':'Roast Date',
-      'roast_id':'Roast ID'
+      'roast_id':'Roast ID',
+      'coffee':'Coffee'
     };
 
-    var arrayOfEspressoFields = ['sm_owner','barista_name','roast','preparation_date','shift','espresso_prep_type','dial_in_difficulty','weight_of_dose','weight_of_yield','temp_of_water','preinfuse_time','pre_infuse_pressure','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes', 'negative_notes'];
+    var arrayOfEspressoFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','espresso_prep_type','dial_in_difficulty','weight_of_dose','weight_of_yield','temp_of_water','preinfuse_time','pre_infuse_pressure','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes', 'negative_notes'];
 
-    var arrayOfDripFields = ['sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes', 'negative_notes'];
+    var arrayOfDripFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes', 'negative_notes'];
 
-    var arrayOfSiphonFields = ['sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','weight_of_water','temp_of_water','grind','brewing_time','steep_time','drawdown_time','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes','negative_notes'];
+    var arrayOfSiphonFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','weight_of_water','temp_of_water','grind','brewing_time','steep_time','drawdown_time','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes','negative_notes'];
 
-    var arrayOfNelFields = ['sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes', 'negative_notes'];
+    var arrayOfNelFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes', 'negative_notes'];
 
-    var arrayOfChemexFields = ['sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes', 'negative_notes'];
+    var arrayOfChemexFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes', 'negative_notes'];
 
-    var arrayOfCuppingFields = ['sm_owner','barista_name','roast','roast_id','preparation_date','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes','negative_notes','score'];
+    var arrayOfCuppingFields = ['coffee','sm_owner','barista_name','roast','roast_id','preparation_date','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes','negative_notes','score'];
 
     var timeFields = ['preinfuse_time', 'total_extraction_time', 'bloom_time', 'brewing_time', 'steep_time', 'drawdown_time'];
 
@@ -226,7 +240,15 @@
           return "user/" + $(this).html();
         });
 
-        qEspressoNotes.mustBeOneOf('sm_owner', $.makeArray(arrayOfLocations));
+        var mustBeOneOfArray = [];
+        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+          var adminArray = admins.map(function(item) { return 'user/' + item;});
+          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
+        } else {
+          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+        }
+
+        qEspressoNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
 
         espressoNotes.query(qEspressoNotes, {
           success : function(results){
@@ -240,18 +262,26 @@
               _.each(arrayOfEspressoFields, function(idx, item){
                 var field = arrayOfEspressoFields[item];
                 var entry;
-                if (field == "preparation_date") {
-                  var newDate = new Date(model.get(field));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "sm_owner") {
-                  entry = model.get(field).split("/")[1];
-                } else if (timeFields.indexOf(field) != -1){
+                if (timeFields.indexOf(field) != -1){
                   var ms = model.get(field);
                   if (ms) {
                     entry = millisecondsToDurationString(ms);
                   } else {
                     entry = undefined;
                   }
+                } else if (field == "sm_owner") {
+                  entry = model.get(field).split("/")[1];
+                } else if (field == "coffee") {
+                  var roastResult = queriedRoasts.find(function(item){ 
+                    return item.get('roast_id') == model.get('roast'); 
+                  });
+                  var coffeeResult = queriedCoffees.find(function(item){
+                    return item.get('coffee_id') == roastResult.get('coffee');
+                  });
+                  entry = coffeeResult.get('name');
+                } else if (field == "preparation_date") {
+                  var newDate = new Date(model.get(field));
+                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "roast") {
                   var result = queriedRoasts.find(function(item){ 
                     return item.get('roast_id') == model.get('roast'); 
@@ -307,7 +337,16 @@
               _.each(arrayOfDripFields, function(idx, item){
                 var field = arrayOfDripFields[item];
                 var entry;
-                if (field == "preparation_date") {
+                
+                if (field == "coffee") {
+                  var roastResult = queriedRoasts.find(function(item){ 
+                    return item.get('roast_id') == model.get('roast'); 
+                  });
+                  var coffeeResult = queriedCoffees.find(function(item){
+                    return item.get('coffee_id') == roastResult.get('coffee');
+                  });
+                  entry = coffeeResult.get('name');
+                } else if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (timeFields.indexOf(field) != -1){
@@ -377,7 +416,16 @@
               _.each(arrayOfSiphonFields, function(idx, item){
                 var field = arrayOfSiphonFields[item];
                 var entry;
-                if (field == "preparation_date") {
+
+                if (field == "coffee") {
+                  var roastResult = queriedRoasts.find(function(item){ 
+                    return item.get('roast_id') == model.get('roast'); 
+                  });
+                  var coffeeResult = queriedCoffees.find(function(item){
+                    return item.get('coffee_id') == roastResult.get('coffee');
+                  });
+                  entry = coffeeResult.get('name');
+                } else if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "sm_owner") {
@@ -444,7 +492,16 @@
               _.each(arrayOfNelFields, function(idx, item){
                 var field = arrayOfNelFields[item];
                 var entry;
-                if (field == "preparation_date") {
+
+                if (field == "coffee") {
+                  var roastResult = queriedRoasts.find(function(item){ 
+                    return item.get('roast_id') == model.get('roast'); 
+                  });
+                  var coffeeResult = queriedCoffees.find(function(item){
+                    return item.get('coffee_id') == roastResult.get('coffee');
+                  });
+                  entry = coffeeResult.get('name');
+                } else if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "sm_owner") {
@@ -511,7 +568,16 @@
               _.each(arrayOfChemexFields, function(idx, item){
                 var field = arrayOfChemexFields[item];
                 var entry;
-                if (field == "preparation_date") {
+                
+                if (field == "coffee") {
+                  var roastResult = queriedRoasts.find(function(item){ 
+                    return item.get('roast_id') == model.get('roast'); 
+                  });
+                  var coffeeResult = queriedCoffees.find(function(item){
+                    return item.get('coffee_id') == roastResult.get('coffee');
+                  });
+                  entry = coffeeResult.get('name');
+                } else if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "sm_owner") {
@@ -578,7 +644,15 @@
               _.each(arrayOfCuppingFields, function(idx, item){
                 var field = arrayOfCuppingFields[item];
                 var entry;
-                if (field == "preparation_date") {
+                if (field == "coffee") {
+                  var roastResult = queriedRoasts.find(function(item){ 
+                    return item.get('roast_id') == model.get('roast'); 
+                  });
+                  var coffeeResult = queriedCoffees.find(function(item){
+                    return item.get('coffee_id') == roastResult.get('coffee');
+                  });
+                  entry = coffeeResult.get('name');
+                } else if (field == "preparation_date") {
                   var newDate = new Date(model.get(field));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "sm_owner") {
@@ -845,7 +919,7 @@
     <p></p>
     <br/><br/>
     <div class="row-fluid">
-      <label>Include Admin: (I don't do anything yet)</label>
+      <label>Include Admin:</label>
       <label class="checkbox inline">
         <input id="all_admin_checkbox" type="checkbox" checked="checked">All</input>
       </label>
