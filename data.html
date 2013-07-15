@@ -210,7 +210,7 @@
 
     var arrayOfChemexFields = ['sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes', 'negative_notes'];
 
-    var arrayOfCuppingFields = ['sm_owner','barista_name','roast','preparation_date','total_extraction_time','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes','negative_notes','score'];
+    var arrayOfCuppingFields = ['sm_owner','barista_name','roast','preparation_date','fragrance_aroma','acidity','mouthfeel','flavor','aftertaste','positive_notes','negative_notes','score'];
 
     var timeFields = ['preinfuse_time', 'total_extraction_time', 'bloom_time', 'brewing_time', 'steep_time', 'drawdown_time'];
 
@@ -844,6 +844,22 @@
     <p></p>
     <br/><br/>
     <div class="row-fluid">
+      <label>Include Admin:</label>
+      <label class="checkbox inline">
+        <input id="espresso_checkbox" type="checkbox">matt</input>
+      </label>
+      <label class="checkbox inline">
+        <input id="drip_checkbox" type="checkbox">bennett</input>
+      </label>
+      <label class="checkbox inline">
+        <input id="siphon_checkbox" type="checkbox">james</input>
+      </label>
+      <label class="checkbox inline">
+        <input id="siphon_checkbox" type="checkbox">All</input>
+      </label>
+    </div>
+    <br/><br/>
+    <div class="row-fluid">
       <label>Type Of Note:</label>
       <label class="checkbox inline">
         <input id="espresso_checkbox" type="checkbox" checked="checked">Espresso</input>
@@ -925,7 +941,7 @@
       <table border="1" id="dripTableData" class="table table-bordered table-hover"></table>
     </div>
 
-    <input id="export_drip_data" class="btn btn-info export-button" type="button" value="Export Drip Data to CSV" data-target="dripTableData" />
+    <input id="export_drip_data" class="btn btn-info export-button" type="button" value="Export Bonmac Data to CSV" data-target="dripTableData" />
 
     <div class="divider"></div>
 
