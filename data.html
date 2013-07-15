@@ -736,6 +736,7 @@
 
     }
 
+    // TODO do we need this?
     $('#admin_notes_checkbox').change(function(){
       if ($('#admin_notes_checkbox').is(':checked')) {
         showAllCoffees();
@@ -821,9 +822,12 @@
         <select size="10" id="locationsList" multiple></select><br/>
         <input class="btn select-all" type="button" value="Select All"></input>
         <input class="btn select-none" type="button" value="Select None"></input><br/>
+        
+        <!--
         <label class="checkbox inline">
         <input id="admin_notes_checkbox" type="checkbox">View Admin Notes</input>
         </label>
+      -->
       </div>
       <div class="span4">
         <label>Choose Coffees:</label><select size="10" id="coffeesList" multiple></select><br/>
