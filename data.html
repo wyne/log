@@ -212,20 +212,21 @@
       'score':'Overall Score',
       'roast':'Roast Date',
       'roast_id':'Roast ID',
-      'coffee':'Coffee'
+      'coffee':'Coffee',
+      'offset' : 'Days Since Roast'
     };
 
-    var arrayOfEspressoFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','espresso_prep_type','dial_in_difficulty','weight_of_dose','weight_of_yield','temp_of_water','preinfuse_time','total_extraction_time','positive_notes','negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
+    var arrayOfEspressoFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','espresso_prep_type','dial_in_difficulty','weight_of_dose','weight_of_yield','temp_of_water','preinfuse_time','total_extraction_time','positive_notes','negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
 
-    var arrayOfDripFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
+    var arrayOfDripFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
 
-    var arrayOfSiphonFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','weight_of_water','temp_of_water','grind','brewing_time','steep_time','drawdown_time','total_extraction_time','positive_notes','negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
+    var arrayOfSiphonFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','weight_of_water','temp_of_water','grind','brewing_time','steep_time','drawdown_time','total_extraction_time','positive_notes','negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
 
-    var arrayOfNelFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
+    var arrayOfNelFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','offset','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
 
-    var arrayOfChemexFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
+    var arrayOfChemexFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
 
-    var arrayOfCuppingFields = ['coffee','sm_owner','barista_name','roast','roast_id','preparation_date','positive_notes','negative_notes','score'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
+    var arrayOfCuppingFields = ['coffee','sm_owner','barista_name','roast','roast_id','preparation_date','offset','positive_notes','negative_notes','score'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
 
     var timeFields = ['preinfuse_time', 'total_extraction_time', 'bloom_time', 'brewing_time', 'steep_time', 'drawdown_time'];
 
@@ -253,7 +254,8 @@
         espressoNotes.query(qEspressoNotes, {
           success : function(results){
             console.log('Successfully got all espresso notes');
-            
+            var roast;
+
             if (results.length > 0) {
               $('#export_espresso_data').show();
               populateEspressoTable();
@@ -286,8 +288,11 @@
                   var result = queriedRoasts.find(function(item){ 
                     return item.get('roast_id') == model.get('roast'); 
                   });
+                  roast = result.get('date');
                   var newDate = new Date(result.get('date'));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                } else if (field == "offset") {
+                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
                 } else {
                   entry = model.get(field);
                 }
@@ -328,6 +333,7 @@
         dripNotes.query(qDripNotes, {
           success : function(results){
             console.log('Successfully got all drip notes');
+            var roast;
 
             if (results.length > 0) {
               $('#export_drip_data').show();
@@ -364,8 +370,11 @@
                   var result = queriedRoasts.find(function(item){ 
                     return item.get('roast_id') == model.get('roast'); 
                   });
+                  roast = result.get('date');
                   var newDate = new Date(result.get('date'));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                }  else if (field == "offset") {
+                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
                 } else {
                   entry = model.get(field);
                 }
@@ -407,7 +416,8 @@
         siphonNotes.query(qSiphonNotes, {
           success : function(results){
             console.log('Successfully got all siphon notes');
-            
+            var roast;
+
             if (results.length > 0) {
               $('#export_siphon_data').show();
               populateSiphonTable();
@@ -441,8 +451,11 @@
                   var result = queriedRoasts.find(function(item){ 
                     return item.get('roast_id') == model.get('roast'); 
                   });
+                  roast = result.get('date');
                   var newDate = new Date(result.get('date'));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                } else if (field == "offset") {
+                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
                 } else {
                   entry = model.get(field);
                 }
@@ -483,6 +496,7 @@
         nelNotes.query(qNelNotes, {
           success : function(results){
             console.log('Successfully got all nel notes');
+            var roast;
 
             if (results.length > 0) {
               $('#export_nel_data').show();
@@ -517,8 +531,11 @@
                   var result = queriedRoasts.find(function(item){ 
                     return item.get('roast_id') == model.get('roast'); 
                   });
+                  roast = result.get('date');
                   var newDate = new Date(result.get('date'));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                } else if (field == "offset") {
+                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
                 } else {
                   entry = model.get(field);
                 }
@@ -559,6 +576,7 @@
         chemexNotes.query(qChemexNotes, {
           success : function(results){
             console.log('Successfully got all chemex notes');
+            var roast;
 
             if (results.length > 0) {
               $('#export_chemex_data').show();
@@ -593,8 +611,11 @@
                   var result = queriedRoasts.find(function(item){ 
                     return item.get('roast_id') == model.get('roast'); 
                   });
+                  roast = result.get('date');
                   var newDate = new Date(result.get('date'));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                } else if (field == "offset") {
+                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
                 } else {
                   entry = model.get(field);
                 }
@@ -635,6 +656,7 @@
         cuppingNotes.query(qCuppingNotes, {
           success : function(results){
             console.log('Successfully got all cupping notes');
+            var roast;
 
             if (results.length > 0) {
               $('#export_cupping_data').show();
@@ -668,8 +690,11 @@
                   var result = queriedRoasts.find(function(item){ 
                     return item.get('roast_id') == model.get('roast'); 
                   });
+                  roast = result.get('date');
                   var newDate = new Date(result.get('date'));
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                } else if (field == "offset") {
+                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
                 } else {
                   entry = model.get(field);
                 }
