@@ -234,9 +234,13 @@
       if ($('#espresso_checkbox').is(':checked')) {
         console.log("Querying all espresso notes for roast date");
         var qEspressoNotes = new StackMob.Collection.Query();
-        // Add OR support for multiple roasts selected
         qEspressoNotes.mustBeOneOf('roast', $('#roastsList').val());
-        qEspressoNotes.orderDesc('createddate');
+        /*
+        $('input:checkbox:checked.sort_checkbox').each(function(idx,obj){ 
+          qEspressoNotes.orderDesc($(obj).val()); 
+        });
+*/
+        qEspressoNotes.orderDesc('preparation_date');
         var arrayOfLocations = $('#locationsList option').map( function(){
           return "user/" + $(this).html();
         });
@@ -323,7 +327,7 @@
         console.log("Querying all drip notes for roast date");
         var qDripNotes = new StackMob.Collection.Query();
         qDripNotes.mustBeOneOf('roast', $('#roastsList').val());
-        qDripNotes.orderDesc('createddate');
+        qDripNotes.orderDesc('preparation_date');
         var arrayOfLocations = $('#locationsList option').map( function(){
           return "user/" + $(this).html();
         });
@@ -405,7 +409,7 @@
         console.log("Querying all siphon notes for roast date");
         var qSiphonNotes = new StackMob.Collection.Query();
         qSiphonNotes.mustBeOneOf('roast', $('#roastsList').val());
-        qSiphonNotes.orderDesc('createddate');
+        qSiphonNotes.orderDesc('preparation_date');
         var arrayOfLocations = $('#locationsList option').map( function(){
           return "user/" + $(this).html();
         });
@@ -492,7 +496,7 @@
         });
 
         qNelNotes.mustBeOneOf('sm_owner', $.makeArray(arrayOfLocations));
-        qNelNotes.orderDesc('createddate');
+        qNelNotes.orderDesc('preparation_date');
         nelNotes.query(qNelNotes, {
           success : function(results){
             console.log('Successfully got all nel notes');
@@ -566,7 +570,7 @@
         console.log("Querying all chemex notes for roast date");
         var qChemexNotes = new StackMob.Collection.Query();
         qChemexNotes.mustBeOneOf('roast', $('#roastsList').val());
-        qChemexNotes.orderDesc('createddate');
+        qChemexNotes.orderDesc('preparation_date');
         var arrayOfLocations = $('#locationsList option').map( function(){
           return "user/" + $(this).html();
         });
@@ -652,7 +656,7 @@
         });
 
         qCuppingNotes.mustBeOneOf('sm_owner', $.makeArray(arrayOfLocations));
-        qCuppingNotes.orderDesc('createddate');
+        qCuppingNotes.orderDesc('preparation_date');
         cuppingNotes.query(qCuppingNotes, {
           success : function(results){
             console.log('Successfully got all cupping notes');
@@ -977,6 +981,7 @@
     <p></p>
     <!--
     <label>Sort By:</label>
+    
     <label class="checkbox inline">
         <input id="acidity_checkbox" class="sort_checkbox" type="checkbox" value="acidity">Acidity</input>
     </label>
