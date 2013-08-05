@@ -22,6 +22,7 @@
   /* <![CDATA[ */
 
     // Global vars
+    allLocations = [];
     queriedRoasts = [];
     queriedCoffees = [];
     admins = [];
@@ -33,6 +34,7 @@
       qLocations.orderAsc('name');
       locations.query(qLocations, {
       success: function(results){
+         allLocations = results;
          results.each(function(model){
             $("#locationsList").append(
               $('<option></option>').val(model.get('location_id')).html(model.get('name'))
@@ -242,9 +244,16 @@
         });
 */
         qEspressoNotes.orderDesc('preparation_date');
-        var arrayOfLocations = $('#locationsList option').map( function(){
-          return "user/" + $(this).html();
-        });
+
+        var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
+          });
+        }
 
         var mustBeOneOfArray = [];
         if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
@@ -329,9 +338,16 @@
         var qDripNotes = new StackMob.Collection.Query();
         qDripNotes.mustBeOneOf('roast', $('#roastsList').val());
         qDripNotes.orderDesc('preparation_date');
-        var arrayOfLocations = $('#locationsList option').map( function(){
-          return "user/" + $(this).html();
-        });
+        
+        var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
+          });
+        }
 
         var mustBeOneOfArray = [];
         if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
@@ -419,9 +435,16 @@
         var qSiphonNotes = new StackMob.Collection.Query();
         qSiphonNotes.mustBeOneOf('roast', $('#roastsList').val());
         qSiphonNotes.orderDesc('preparation_date');
-        var arrayOfLocations = $('#locationsList option').map( function(){
-          return "user/" + $(this).html();
-        });
+        
+        var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
+          });
+        }
 
         var mustBeOneOfArray = [];
         if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
@@ -508,9 +531,15 @@
         var qNelNotes = new StackMob.Collection.Query();
         qNelNotes.mustBeOneOf('roast', $('#roastsList').val());
         
-        var arrayOfLocations = $('#locationsList option').map( function(){
-          return "user/" + $(this).html();
-        });
+        var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
+          });
+        }
 
         var mustBeOneOfArray = [];
         if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
@@ -597,9 +626,16 @@
         var qChemexNotes = new StackMob.Collection.Query();
         qChemexNotes.mustBeOneOf('roast', $('#roastsList').val());
         qChemexNotes.orderDesc('preparation_date');
-        var arrayOfLocations = $('#locationsList option').map( function(){
-          return "user/" + $(this).html();
-        });
+        
+        var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
+          });
+        }
 
         var mustBeOneOfArray = [];
         if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
@@ -685,9 +721,15 @@
         var qCuppingNotes = new StackMob.Collection.Query();
         qCuppingNotes.mustBeOneOf('roast', $('#roastsList').val());
         
-        var arrayOfLocations = $('#locationsList option').map( function(){
-          return "user/" + $(this).html();
-        });
+        var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
+          });
+        }
 
         var mustBeOneOfArray = [];
         if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
