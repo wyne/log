@@ -213,7 +213,8 @@
       'roast':'Roast Date',
       'roast_id':'Roast ID',
       'coffee':'Coffee',
-      'offset' : 'Days Since Roast'
+      'offset' : 'Days Since Roast',
+      'true_to_intent' : 'True To Intent'
     };
 
     var arrayOfEspressoFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','espresso_prep_type','dial_in_difficulty','weight_of_dose','weight_of_yield','temp_of_water','preinfuse_time','total_extraction_time','positive_notes','negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
@@ -226,7 +227,7 @@
 
     var arrayOfChemexFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
 
-    var arrayOfCuppingFields = ['coffee','sm_owner','barista_name','roast','roast_id','preparation_date','offset','positive_notes','negative_notes','score'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
+    var arrayOfCuppingFields = ['coffee','sm_owner','barista_name','roast','roast_id','preparation_date','offset','positive_notes','negative_notes','true_to_intent','score'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
 
     var timeFields = ['preinfuse_time', 'total_extraction_time', 'bloom_time', 'brewing_time', 'steep_time', 'drawdown_time'];
 
@@ -332,7 +333,15 @@
           return "user/" + $(this).html();
         });
 
-        qDripNotes.mustBeOneOf('sm_owner', $.makeArray(arrayOfLocations));
+        var mustBeOneOfArray = [];
+        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+          var adminArray = admins.map(function(item) { return 'user/' + item;});
+          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
+        } else {
+          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+        }
+
+        qDripNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
 
         dripNotes.query(qDripNotes, {
           success : function(results){
@@ -414,7 +423,15 @@
           return "user/" + $(this).html();
         });
 
-        qSiphonNotes.mustBeOneOf('sm_owner', $.makeArray(arrayOfLocations));
+        var mustBeOneOfArray = [];
+        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+          var adminArray = admins.map(function(item) { return 'user/' + item;});
+          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
+        } else {
+          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+        }
+
+        qSiphonNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
 
 
         siphonNotes.query(qSiphonNotes, {
@@ -495,7 +512,16 @@
           return "user/" + $(this).html();
         });
 
-        qNelNotes.mustBeOneOf('sm_owner', $.makeArray(arrayOfLocations));
+        var mustBeOneOfArray = [];
+        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+          var adminArray = admins.map(function(item) { return 'user/' + item;});
+          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
+        } else {
+          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+        }
+
+        qNelNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
+
         qNelNotes.orderDesc('preparation_date');
         nelNotes.query(qNelNotes, {
           success : function(results){
@@ -575,7 +601,15 @@
           return "user/" + $(this).html();
         });
 
-        qChemexNotes.mustBeOneOf('sm_owner', $.makeArray(arrayOfLocations));
+        var mustBeOneOfArray = [];
+        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+          var adminArray = admins.map(function(item) { return 'user/' + item;});
+          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
+        } else {
+          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+        }
+
+        qChemexNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
 
         chemexNotes.query(qChemexNotes, {
           success : function(results){
@@ -655,7 +689,16 @@
           return "user/" + $(this).html();
         });
 
-        qCuppingNotes.mustBeOneOf('sm_owner', $.makeArray(arrayOfLocations));
+        var mustBeOneOfArray = [];
+        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+          var adminArray = admins.map(function(item) { return 'user/' + item;});
+          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
+        } else {
+          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+        }
+
+        qCuppingNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
+
         qCuppingNotes.orderDesc('preparation_date');
         cuppingNotes.query(qCuppingNotes, {
           success : function(results){
@@ -699,6 +742,12 @@
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "offset") {
                   entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
+                } else if (field == 'true_to_intent') {
+                  if (model.get(field) == undefined) {
+                    entry = undefined;
+                  } else {
+                    entry = model.get(field) ? "YES" : "NO";
+                  }
                 } else {
                   entry = model.get(field);
                 }
@@ -983,7 +1032,7 @@
       <label>To:</label> <input type="text" name="to" class="date-input">
     </div>
   -->
-  
+
     <!--
     <label>Sort By:</label>
     

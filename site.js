@@ -414,6 +414,8 @@ function parseInputs(inputs){
       case "radio":
         if ($(this).hasClass("milk") && $(this).is(":checked")) {
           jsonForm[name] = (val == "YES") ? true : false;
+        } else if ($(this).hasClass("true_to_intent") && $(this).is(":checked")) {
+          jsonForm[name] = (val == "YES") ? true : false;
         } else if ( $(this).is(":checked") ) {
           jsonForm[name] = val;
         }
