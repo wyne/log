@@ -66,6 +66,11 @@ var DripNote = StackMob.Model.extend({ schemaName: 'drip_note' });
 var DripNotes = StackMob.Collection.extend({ model: DripNote });
 var dripNotes = new DripNotes();
 
+// Beehouse Note
+var BeehouseNote = StackMob.Model.extend({ schemaName: 'beehouse_note' });
+var BeehouseNotes = StackMob.Collection.extend({ model: BeehouseNote });
+var beehouseNotes = new BeehouseNotes();
+
 // Siphon Note
 var SiphonNote = StackMob.Model.extend({ schemaName: 'siphon_note' });
 var SiphonNotes = StackMob.Collection.extend({ model: SiphonNote });

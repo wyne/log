@@ -76,6 +76,7 @@
     function clearAllTableData(){
       $('#espressoTableData').html("");
       $('#dripTableData').html("");
+      $('#beehouseTableData').html("");
       $('#siphonTableData').html("");
       $('#nelTableData').html("");
       $('#chemexTableData').html("");
@@ -84,6 +85,7 @@
     function hideAllButtons(){
       $('#export_espresso_data').hide();
       $('#export_drip_data').hide();
+      $('#export_beehouse_data').hide();
       $('#export_siphon_data').hide();
       $('#export_nel_data').hide();
       $('#export_chemex_data').hide();
@@ -222,6 +224,8 @@
     var arrayOfEspressoFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','espresso_prep_type','dial_in_difficulty','weight_of_dose','weight_of_yield','temp_of_water','preinfuse_time','total_extraction_time','positive_notes','negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
 
     var arrayOfDripFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
+
+    var arrayOfBeehouseFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes'];
 
     var arrayOfSiphonFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','weight_of_water','temp_of_water','grind','brewing_time','steep_time','drawdown_time','total_extraction_time','positive_notes','negative_notes'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
 
@@ -411,6 +415,103 @@
                 columnData.push($('<td></td>').html(entry));
               });
               $('#dripTableData').append(
+                $('<tr></tr>').append(
+                  columnData
+                )
+              )
+              });
+            }
+            
+            queryBeehouseNotesBasedOnRoast();
+          },
+          error : function(model, response){
+            console.log(response);
+          }
+        });
+      } else {
+        queryBeehouseNotesBasedOnRoast();
+      }
+    };
+
+    function queryBeehouseNotesBasedOnRoast(){
+      if ($('#beehouse_checkbox').is(':checked')) {
+        console.log("Querying all beehouse notes for roast date");
+        var qBeehouseNotes = new StackMob.Collection.Query();
+        qBeehouseNotes.mustBeOneOf('roast', $('#roastsList').val());
+        qBeehouseNotes.orderDesc('preparation_date');
+        
+        var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
+          });
+        }
+
+        var mustBeOneOfArray = [];
+        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+          var adminArray = admins.map(function(item) { return 'user/' + item;});
+          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
+        } else {
+          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+        }
+
+        qBeehouseNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
+
+        beehouseNotes.query(qBeehouseNotes, {
+          success : function(results){
+            console.log('Successfully got all beehouse notes');
+            var roast;
+
+            if (results.length > 0) {
+              $('#export_beehouse_data').show();
+              populateBeehouseTable();
+              results.each(function(model){
+              var columnData = [];
+              _.each(arrayOfBeehouseFields, function(idx, item){
+                var field = arrayOfBeehouseFields[item];
+                var entry;
+                
+                if (field == "coffee") {
+                  var roastResult = queriedRoasts.find(function(item){ 
+                    return item.get('roast_id') == model.get('roast'); 
+                  });
+                  var coffeeResult = queriedCoffees.find(function(item){
+                    return item.get('coffee_id') == roastResult.get('coffee');
+                  });
+                  entry = coffeeResult.get('name');
+                } else if (field == "preparation_date") {
+                  var newDate = new Date(model.get(field));
+                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                } else if (timeFields.indexOf(field) != -1){
+                  var ms = model.get(field);
+                  if (ms) {
+                    entry = millisecondsToDurationString(ms);
+                  } else {
+                    entry = undefined;
+                  }
+                } else if (field == "sm_owner") {
+                  entry = model.get(field).split("/")[1];
+                } else if (field == "milk") {
+                  entry = model.get(field) ? "YES" : "NO";
+                } else if (field == "roast") {
+                  var result = queriedRoasts.find(function(item){ 
+                    return item.get('roast_id') == model.get('roast'); 
+                  });
+                  roast = result.get('date');
+                  var newDate = new Date(result.get('date'));
+                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                }  else if (field == "offset") {
+                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
+                } else {
+                  entry = model.get(field);
+                }
+
+                columnData.push($('<td></td>').html(entry));
+              });
+              $('#beehouseTableData').append(
                 $('<tr></tr>').append(
                   columnData
                 )
@@ -841,6 +942,19 @@
       )
     };
 
+    function populateBeehouseTable() {
+      var columnHeaders = [];
+      _.each(arrayOfBeehouseFields, function(item, idx){
+        var entry = headerMappings[item];
+        columnHeaders.push($('<th nowrap></th>').html(entry));
+      })
+      $('#beehouseTableData').append(
+        $('<tr></tr>').append(
+          columnHeaders
+        )
+      )
+    };
+
     function populateSiphonTable() {
       var columnHeaders = [];
       _.each(arrayOfSiphonFields, function(item, idx){
@@ -1053,6 +1167,9 @@
         <input id="drip_checkbox" type="checkbox" checked="checked">Bonmac</input>
       </label>
       <label class="checkbox inline">
+        <input id="beehouse_checkbox" type="checkbox" checked="checked">Beehouse</input>
+      </label>
+      <label class="checkbox inline">
         <input id="siphon_checkbox" type="checkbox" checked="checked">Siphon</input>
       </label>
       <label class="checkbox inline">
@@ -1134,6 +1251,14 @@
     </div>
 
     <input id="export_drip_data" class="btn btn-info export-button" type="button" value="Export Bonmac Data to CSV" data-target="dripTableData" />
+
+    <div class="divider"></div>
+
+    <div class="table-wrapper">
+      <table border="1" id="beehouseTableData" class="table table-bordered table-hover"></table>
+    </div>
+
+    <input id="export_beehouse_data" class="btn btn-info export-button" type="button" value="Export Beehouse Data to CSV" data-target="beehouseTableData" />
 
     <div class="divider"></div>
 
