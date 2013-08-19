@@ -248,7 +248,6 @@
           qEspressoNotes.orderDesc($(obj).val()); 
         });
 */
-        qEspressoNotes.orderDesc('preparation_date');
 
         var arrayOfLocations = [];
         if ($('#locationsList').val()) {
@@ -269,6 +268,29 @@
         }
 
         qEspressoNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
+
+        if ($('#from_prep_date').val() != "") {
+          // Add error check
+          var from_time = new Date($('#from_prep_date').val()).getTime();
+          console.log(from_time);
+
+          var to_time;
+
+          if ($('#to_prep_date').val() != "") {
+            // Add error check
+            to_time = new Date($('#to_prep_date').val()).getTime();
+            console.log(to_time);
+          } else {
+            to_time = new Date().getTime();
+            console.log(to_time);
+          }
+
+          qEspressoNotes.gte('preparation_date', from_time);
+          qEspressoNotes.lte('preparation_date', to_time);
+
+        }
+
+        qEspressoNotes.orderDesc('preparation_date');
 
         espressoNotes.query(qEspressoNotes, {
           success : function(results){
@@ -1185,13 +1207,11 @@
     </div>
   </p>
 
-  <!---
-    <div class="row-fluid">
-      <label><b>Preparation Dates: (Leave blank for all)</b></label> 
-      <label>From:</label> <input type="text" name="from" class="date-input">
-      <label>To:</label> <input type="text" name="to" class="date-input">
-    </div>
-  -->
+  <div class="row-fluid">
+    <label><b>Preparation Dates: (Leave blank for all)</b></label> 
+    <label>From:</label> <input id="from_prep_date" type="text" name="from" class="date-input">
+    <label>To:</label> <input id="to_prep_date" type="text" name="to" class="date-input">
+  </div>
 
     <!--
     <label>Sort By:</label>
