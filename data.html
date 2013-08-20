@@ -238,6 +238,15 @@
 
     var timeFields = ['preinfuse_time', 'total_extraction_time', 'bloom_time', 'brewing_time', 'steep_time', 'drawdown_time'];
 
+    function sortByPrepDate(results){
+      results.comparator = function(model) {
+        return model.get("preparation_date");
+      };
+      results.sort();
+      results.models = results.models.reverse();
+      return results;
+    }
+
     function queryEspressoNotesBasedOnRoast(){
       if ($('#espresso_checkbox').is(':checked')) {
         console.log("Querying all espresso notes for roast date");
@@ -300,6 +309,7 @@
             if (results.length > 0) {
               $('#export_espresso_data').show();
               populateEspressoTable();
+              results = sortByPrepDate(results);
               results.each(function(model){
               var columnData = [];
               _.each(arrayOfEspressoFields, function(idx, item){
@@ -386,6 +396,27 @@
 
         qDripNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
 
+        if ($('#from_prep_date').val() != "") {
+          // Add error check
+          var from_time = new Date($('#from_prep_date').val()).getTime();
+          console.log(from_time);
+
+          var to_time;
+
+          if ($('#to_prep_date').val() != "") {
+            // Add error check
+            to_time = new Date($('#to_prep_date').val()).getTime();
+            console.log(to_time);
+          } else {
+            to_time = new Date().getTime();
+            console.log(to_time);
+          }
+
+          qDripNotes.gte('preparation_date', from_time);
+          qDripNotes.lte('preparation_date', to_time);
+
+        }
+
         dripNotes.query(qDripNotes, {
           success : function(results){
             console.log('Successfully got all drip notes');
@@ -394,6 +425,7 @@
             if (results.length > 0) {
               $('#export_drip_data').show();
               populateDripTable();
+              results = sortByPrepDate(results);
               results.each(function(model){
               var columnData = [];
               _.each(arrayOfDripFields, function(idx, item){
@@ -483,6 +515,27 @@
 
         qBeehouseNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
 
+        if ($('#from_prep_date').val() != "") {
+          // Add error check
+          var from_time = new Date($('#from_prep_date').val()).getTime();
+          console.log(from_time);
+
+          var to_time;
+
+          if ($('#to_prep_date').val() != "") {
+            // Add error check
+            to_time = new Date($('#to_prep_date').val()).getTime();
+            console.log(to_time);
+          } else {
+            to_time = new Date().getTime();
+            console.log(to_time);
+          }
+
+          qBeehouseNotes.gte('preparation_date', from_time);
+          qBeehouseNotes.lte('preparation_date', to_time);
+
+        }
+
         beehouseNotes.query(qBeehouseNotes, {
           success : function(results){
             console.log('Successfully got all beehouse notes');
@@ -491,6 +544,7 @@
             if (results.length > 0) {
               $('#export_beehouse_data').show();
               populateBeehouseTable();
+              results = sortByPrepDate(results);
               results.each(function(model){
               var columnData = [];
               _.each(arrayOfBeehouseFields, function(idx, item){
@@ -580,6 +634,27 @@
 
         qSiphonNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
 
+        if ($('#from_prep_date').val() != "") {
+          // Add error check
+          var from_time = new Date($('#from_prep_date').val()).getTime();
+          console.log(from_time);
+
+          var to_time;
+
+          if ($('#to_prep_date').val() != "") {
+            // Add error check
+            to_time = new Date($('#to_prep_date').val()).getTime();
+            console.log(to_time);
+          } else {
+            to_time = new Date().getTime();
+            console.log(to_time);
+          }
+
+          qSiphonNotes.gte('preparation_date', from_time);
+          qSiphonNotes.lte('preparation_date', to_time);
+
+        }
+
 
         siphonNotes.query(qSiphonNotes, {
           success : function(results){
@@ -589,6 +664,7 @@
             if (results.length > 0) {
               $('#export_siphon_data').show();
               populateSiphonTable();
+              results = sortByPrepDate(results);
               results.each(function(model){
               var columnData = [];
               _.each(arrayOfSiphonFields, function(idx, item){
@@ -675,6 +751,27 @@
 
         qNelNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
 
+        if ($('#from_prep_date').val() != "") {
+          // Add error check
+          var from_time = new Date($('#from_prep_date').val()).getTime();
+          console.log(from_time);
+
+          var to_time;
+
+          if ($('#to_prep_date').val() != "") {
+            // Add error check
+            to_time = new Date($('#to_prep_date').val()).getTime();
+            console.log(to_time);
+          } else {
+            to_time = new Date().getTime();
+            console.log(to_time);
+          }
+
+          qNelNotes.gte('preparation_date', from_time);
+          qNelNotes.lte('preparation_date', to_time);
+
+        }
+
         qNelNotes.orderDesc('preparation_date');
         nelNotes.query(qNelNotes, {
           success : function(results){
@@ -684,6 +781,7 @@
             if (results.length > 0) {
               $('#export_nel_data').show();
               populateNelTable();
+              results = sortByPrepDate(results);
               results.each(function(model){
               var columnData = [];
               _.each(arrayOfNelFields, function(idx, item){
@@ -771,6 +869,27 @@
 
         qChemexNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
 
+        if ($('#from_prep_date').val() != "") {
+          // Add error check
+          var from_time = new Date($('#from_prep_date').val()).getTime();
+          console.log(from_time);
+
+          var to_time;
+
+          if ($('#to_prep_date').val() != "") {
+            // Add error check
+            to_time = new Date($('#to_prep_date').val()).getTime();
+            console.log(to_time);
+          } else {
+            to_time = new Date().getTime();
+            console.log(to_time);
+          }
+
+          qChemexNotes.gte('preparation_date', from_time);
+          qChemexNotes.lte('preparation_date', to_time);
+
+        }
+
         chemexNotes.query(qChemexNotes, {
           success : function(results){
             console.log('Successfully got all chemex notes');
@@ -779,6 +898,7 @@
             if (results.length > 0) {
               $('#export_chemex_data').show();
               populateChemexTable();
+              results = sortByPrepDate(results);
               results.each(function(model){
               var columnData = [];
               _.each(arrayOfChemexFields, function(idx, item){
@@ -865,6 +985,27 @@
 
         qCuppingNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
 
+        if ($('#from_prep_date').val() != "") {
+          // Add error check
+          var from_time = new Date($('#from_prep_date').val()).getTime();
+          console.log(from_time);
+
+          var to_time;
+
+          if ($('#to_prep_date').val() != "") {
+            // Add error check
+            to_time = new Date($('#to_prep_date').val()).getTime();
+            console.log(to_time);
+          } else {
+            to_time = new Date().getTime();
+            console.log(to_time);
+          }
+
+          qCuppingNotes.gte('preparation_date', from_time);
+          qCuppingNotes.lte('preparation_date', to_time);
+
+        }
+
         qCuppingNotes.orderDesc('preparation_date');
         cuppingNotes.query(qCuppingNotes, {
           success : function(results){
@@ -874,6 +1015,7 @@
             if (results.length > 0) {
               $('#export_cupping_data').show();
               populateCuppingTable();
+              results = sortByPrepDate(results);
               results.each(function(model){
               var columnData = [];
               _.each(arrayOfCuppingFields, function(idx, item){
