@@ -157,6 +157,9 @@
       qRoasts.orderDesc('date');
 
       qRoasts.mustBeOneOf("coffee", selectedCoffee);
+
+      // Hard limit of 100 roasts
+      qRoasts.setRange(0,99);
       /*
       for (var item in selectedCoffee) {
         var newQuery = new StackMob.Collection.Query().equals("coffee", item);
@@ -194,6 +197,7 @@
       'dial_in_difficulty':'Dial In Difficulty',
       'weight_of_dose':'Weight Of Dose',
       'weight_of_yield':'Weight Of Yield',
+      'weight_of_water':'Weight Of Water',
       'temp_of_water':'Temp Of Water',
       'preinfuse_time':'Pre-Infuse Time',
       'pre_infuse_pressure':'Pre-Infuse Pressure',
@@ -1309,7 +1313,8 @@
         <input class="btn select-none" type="button" value="Select None"></input>
       </div>
       <div class="span4">
-        <label><b>Choose Roast Dates:</b></label><select size="10" id="roastsList" multiple></select><br/>
+        <label><b>Choose Roast Dates:</b></label>
+        <select size="10" id="roastsList" multiple></select><br/>
         <input class="btn select-all" type="button" value="Select All"></input>
         <input class="btn select-none" type="button" value="Select None"></input>
       </div>
