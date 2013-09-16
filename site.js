@@ -220,7 +220,7 @@ function removeLocationFromAllCoffees(location){
         function(status) { dfd.resolve(location) },
         function(status) { dfd.reject(location) }
       );
-      
+
     },
     error: function(){
       console.log("Error removing location from coffees.");
@@ -330,7 +330,7 @@ function removeCoffeeFromAllLocations(coffee){
         function(status) { dfd.resolve(coffee) },
         function(status) { dfd.reject(coffee) }
       );
-      
+
     },
     error: function(){
       console.log("Error removing coffee from locations.");
@@ -387,7 +387,7 @@ function millisecondsToDurationString(ms){
       m = (sec%(60*60)-s)/60,
       h = (sec-(m*60)-s)/60/60;
 
-  
+
   var timeArray = [h, m, s];
 
   timeArray = _.map(timeArray,function(time){
@@ -465,8 +465,21 @@ $(document).ready(function(){
  */
 function saveFile(str){
   if (navigator.appName != 'Microsoft Internet Explorer'){
-    window.open('data:text/csv;charset=utf-8,' + escape(str));
+    // window.open('data:text/csv;charset=utf-8,' + escape(str));
+
+    // This is a workaround so that we get a filename
+
+    var uri = 'data:text/csv;charset=utf-8,' + escape(str);
+
+    var downloadLink = document.createElement("a");
+    downloadLink.href = uri;
+    downloadLink.download = "data.csv";
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   } else{
+    console.log("not ie");
     var popup = window.open('','csv','');
     popup.document.body.innerHTML = '<pre>' + str + '</pre>';
   }
