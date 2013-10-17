@@ -14,11 +14,11 @@ function getParameterByName(name){
 StackMob.init({
     appName: "coffeelog",
     clientSubdomain: "bennettbluebottlecoffeecom",
-    //publicKey: "e8f36db3-d231-438c-b6f7-4f7affed07ce",
-   // apiVersion: 1,
+    publicKey: "e8f36db3-d231-438c-b6f7-4f7affed07ce",
+    apiVersion: 1
    // useRelativePathForAjax: false
-    publicKey: "8480bb0b-99bc-4acc-abc9-0a19bd5eab1e",
-    apiVersion: 0
+    //publicKey: "8480bb0b-99bc-4acc-abc9-0a19bd5eab1e",
+    //apiVersion: 0
 });
 
 
