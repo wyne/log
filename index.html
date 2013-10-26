@@ -227,7 +227,7 @@
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
         jsonForm["espresso_prep_type"] = $("#espresso_prep_type").val();
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_espresso").val();
         var roastQuery = new StackMob.Collection.Query();
 
         if (!jsonForm.roast_date) {
@@ -268,7 +268,7 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_drip").val();
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -311,7 +311,7 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_beehouse").val();
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -354,7 +354,7 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_siphon").val();
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -397,7 +397,7 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_nel").val();
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -440,7 +440,7 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_chemex").val();
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -483,7 +483,6 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty").val();
 
         console.log(jsonForm);
         var roastQuery = new StackMob.Collection.Query();
@@ -604,7 +603,7 @@
                       <option value="Macchiato">Macchiato</option>
                     </select>
                     <label>Dial In Difficulty:</label>
-                    <select id="dial_in_difficulty">
+                    <select id="dial_in_difficulty_espresso">
                       <option value="Extremely Easy">Very Easy</option>
                       <option value="Easy">Easy</option>
                       <option value="Moderate">Moderate</option>
@@ -663,7 +662,7 @@
                     </label>
 
                     <label>Dial In Difficulty:</label>
-                    <select id="dial_in_difficulty">
+                    <select id="dial_in_difficulty_drip">
                       <option value="Extremely Easy">Very Easy</option>
                       <option value="Easy">Easy</option>
                       <option value="Moderate">Moderate</option>
@@ -731,7 +730,7 @@
                     </label>
 
                     <label>Dial In Difficulty:</label>
-                    <select id="dial_in_difficulty">
+                    <select id="dial_in_difficulty_beehouse">
                       <option value="Extremely Easy">Very Easy</option>
                       <option value="Easy">Easy</option>
                       <option value="Moderate">Moderate</option>
@@ -799,7 +798,7 @@
                     </label>
 
                     <label>Dial In Difficulty:</label>
-                    <select id="dial_in_difficulty">
+                    <select id="dial_in_difficulty_siphon">
                       <option value="Extremely Easy">Very Easy</option>
                       <option value="Easy">Easy</option>
                       <option value="Moderate">Moderate</option>
@@ -860,7 +859,7 @@
                     </label>
 
                     <label>Dial In Difficulty:</label>
-                    <select id="dial_in_difficulty">
+                    <select id="dial_in_difficulty_nel">
                       <option value="Extremely Easy">Very Easy</option>
                       <option value="Easy">Easy</option>
                       <option value="Moderate">Moderate</option>
@@ -929,7 +928,7 @@
                     </label>
 
                     <label>Dial In Difficulty:</label>
-                    <select id="dial_in_difficulty">
+                    <select id="dial_in_difficulty_chemex">
                       <option value="Extremely Easy">Very Easy</option>
                       <option value="Easy">Easy</option>
                       <option value="Moderate">Moderate</option>
