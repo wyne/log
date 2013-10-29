@@ -226,18 +226,35 @@
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
+        // Validation
+        if (!jsonForm.barista_name) {
+          window.alert("Please enter a barista name!");
+          return;
+        }
+        if (!jsonForm.roastdate) {
+          window.alert("Please enter a roast date!");
+          return;
+        }
+        if (!jsonForm.preparation_date) {
+          window.alert("Please enter a preparation date!");
+          return;
+        }
+
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
         jsonForm["espresso_prep_type"] = $("#espresso_prep_type").val();
         jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_espresso").val();
         var roastQuery = new StackMob.Collection.Query();
 
-        if (!jsonForm.roast_date) {
+        if (!jsonForm.roastdate) {
           // Handle error
-        }
+          window.alert("Please enter a roast date.");
+        } else {
+          submitEspressoNote(jsonForm);
+          // Replacing all of this
+          /*
+          roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
 
-        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
-
-
-        roasts.query(roastQuery, {
+          roasts.query(roastQuery, {
           success: function(col){
             if (col.length == 0) {
               // Create new roast
@@ -260,7 +277,10 @@
             }
           },
           error : function(model, response){}
-        });
+          });
+          */
+
+        }
 
       });
 
@@ -582,7 +602,7 @@
                 <div class="row-fluid">
                   <div class="span6">
                     <label>Barista Name:</label><input type="text" name="barista_name">
-                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Roast Date:</label> <input type="text" name="roastdate" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
                     <div class="clear"></div>

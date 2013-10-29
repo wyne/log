@@ -29,6 +29,8 @@
 
     $(document).ready(function(){
       hideAllButtons();
+
+      // Show all locations
       var qLocations = new StackMob.Collection.Query();
       qLocations.equals("active", true);
       qLocations.orderAsc('name');
@@ -150,7 +152,53 @@
     }
 
     function populateRoasts(){
+
       $('#roastsList').html("");
+
+      var selectedCoffees = $('#coffeesList').val();
+      var selectedLocations = $('#locationsList').val();
+
+      // Query espresso notes where coffee[in]selectedCoffees && roastdate > 1 month ago && (prep date range) && sm_owner[in]selectedLocations
+
+      // map selectedLocations to user/<location>
+      arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+          var fullLocationObject = allLocations.find(function(item){
+            return item.get('location_id') == loc_id;
+          });
+          return "user/" + fullLocationObject.get('name');
+      });
+
+      var qEspressoNotes = new StackMob.Collection.Query();
+      qEspressoNotes.mustBeOneOf("coffee", selectedCoffees);
+      qEspressoNotes.mustBeOneOf("sm_owner", arrayOfLocations);
+
+      // get a roast date a month ago
+      var dt = new Date();
+      var withoutTime = new Date(dt.getFullYear(), dt.getMonth()-1, dt.getDate());
+      var roasttime = withoutTime.getTime();
+
+      qEspressoNotes.gt("roastdate", roasttime);
+
+      espressoNotes.query(qEspressoNotes, {
+        success : function(results) {
+          console.log(results);
+          var dates = [];
+          results.each(function(model){
+              var newDate = new Date(model.get('roastdate'));
+              dates.push(newDate);
+            })
+          console.log(dates);
+        },
+        error : function(model, response) {
+          console.log(response);
+        }
+      });
+
+      // Parse notes for roast dates
+
+
+      // Replacing this
+      /*
       var selectedCoffee = $('#coffeesList').val();
 
       var qRoasts = new StackMob.Collection.Query();
@@ -160,12 +208,7 @@
 
       // Hard limit of 100 roasts
       qRoasts.setRange(0,99);
-      /*
-      for (var item in selectedCoffee) {
-        var newQuery = new StackMob.Collection.Query().equals("coffee", item);
-        qRoasts = qRoasts.or(newQuery);
-      }
-      */
+ 
        roasts.query(qRoasts, {
         success : function(results) {
           if (results.size() != 0) {
@@ -185,6 +228,7 @@
           console.log(response);
         }
       });
+      */
 
     };
 
