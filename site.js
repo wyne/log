@@ -59,6 +59,11 @@ var Roast = StackMob.Model.extend({ schemaName: 'roast' });
 var Roasts = StackMob.Collection.extend({ model: Roast });
 var roasts = new Roasts();
 
+// Notes
+var Note = StackMob.Model.extend({ schemaName: 'note' });
+var Notes = StackMob.Collection.extend({ model: Note });
+var notes = new Notes();
+
 // Espresso Note
 var EspressoNote = StackMob.Model.extend({ schemaName: 'espresso_note' });
 var EspressoNotes = StackMob.Collection.extend({ model: EspressoNote });
