@@ -54,6 +54,7 @@
       }
 
       var locationCoffees;
+      var currentLocation;
 
       StackMob.getLoggedInUser( {
         success: function(name){
@@ -75,6 +76,10 @@
                   $('#usersLocation').append(
                     "Logged in at " + locationObject.get("name")
                   );
+
+                  // Assign location name variable
+                  currentLocation = locationObject.get("name");
+
                   q.mustBeOneOf("locations", locationObject.get('location_id'));
                 } else {
                   console.log('No Location object found');
@@ -83,6 +88,7 @@
                   $('#usersLocation').append(
                       "Logged in as an admin."
                   ); 
+                  currentLocation = "N/A";
               }
               var coffees = new Coffees();
               coffees.query(q, {
@@ -223,6 +229,9 @@
 
       function submitNote(json){
         console.log('submitting note');
+
+        // assign location name
+        json["location_name"] = currentLocation;
         var newNote = new Note(json);
         newNote.create({
           success : function (model) {

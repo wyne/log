@@ -46,6 +46,58 @@
       error: function(){ console.log("bad locations query"); }
       });
 
+      // Load roasts in background
+      qNotes = new StackMob.Collection.Query();
+
+      // Determine roastdate parameter
+      var dateToFetchSince;
+
+      if(typeof(Storage)=="undefined") {
+          // TODO update
+        // Read the past month
+        console.debug("NO STORAGE AVAILBLE ON THIS BROWSER!");
+        var today = new Date();
+        var oneMonthAgo = new Date(today.getFullYear(), today.getMonth()-1, today.getDate());
+        var dateToFetchSince = oneMonthAgo.getTime();
+
+      } else {
+
+        var today = new Date();
+        var oneMonthAgo = new Date(today.getFullYear(), today.getMonth()-1, today.getDate());
+        var dateToFetchSince = oneMonthAgo.getTime();
+        qNotes.gte("roastdate", dateToFetchSince);
+        /*
+        // Check local storage for last fetched date
+        var lastFetchedDate = localStorage.lastFetchedDate;
+        if (!lastFetchedDate) {
+
+          // A month ago
+          
+        } else {
+
+          var today = new Date();
+          var todayWithoutMinutes = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          var dateToFetchSince = todayWithoutMinutes.getTime();
+          qNotes.gte("roastdate", dateToFetchSince);
+        }
+        */
+      }
+
+      
+
+      notes.query(qNotes, {
+        success : function(results) {
+          
+          storeNotes(results);
+
+          localStorage.lastFetchedDate = dateToFetchSince;
+          
+        },
+        error : function(model, response) {
+          console.debug(response);
+        }
+      });
+
       roles.fetch({
         success : function (collection) {
           console.log('fetched admins');
@@ -56,24 +108,14 @@
         }
       });
 
-      /*
-    var qCoffees = new StackMob.Collection.Query();
-    qCoffees.orderAsc('name');
-    coffees.query(qCoffees, {
-      success: function(results){
-        $("#coffeesList").append(
-            $('<option></option>').val('ALL').html('All Coffees')
-        );
-       results.each(function(model){
-        $("#coffeesList").append(
-          $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
-        );
-       });
-       populateRoasts();
-     },
-     error: function(){ console.log("bad coffee query"); }
-   });
-*/
+    function storeNotes(fetchedNotes) {
+
+      var jsonNotes = fetchedNotes.toJSON();
+      var stringifiedNotes = JSON.stringify(jsonNotes);
+      localStorage.storedNotes = stringifiedNotes;
+      
+    }
+
 
     function clearAllTableData(){
       $('#espressoTableData').html("");
@@ -155,47 +197,73 @@
 
       $('#roastsList').html("");
 
+      var storedNotes = localStorage.storedNotes;
+      if (!storedNotes) {
+        // Handle
+      }
+
+      var jsonNotes;
+      try {
+        jsonNotes = JSON.parse(storedNotes);
+        var allRoastDates = _.map(jsonNotes, function(object){
+          return object["roastdate"];
+        });
+        console.log(allRoastDates);
+
+        var uniqueRoastDates = _.uniq(allRoastDates);
+        console.log(uniqueRoastDates);
+
+        uniqueRoastDates.sort(function(a, b) {
+          return a < b;
+        });
+
+        _.each(uniqueRoastDates, function(item){
+          var newDate = new Date(item);
+            $("#roastsList").append(
+              $('<option></option>').val(item).html((newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear())
+          );
+        });
+
+      } catch (e) {
+        console.debug(e);
+      }
+
+      /*
+      Additional stuff
       var selectedCoffees = $('#coffeesList').val();
       var selectedLocations = $('#locationsList').val();
 
-      // Query espresso notes where coffee[in]selectedCoffees && roastdate > 1 month ago && (prep date range) && sm_owner[in]selectedLocations
-
       // map selectedLocations to user/<location>
-      arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
-          var fullLocationObject = allLocations.find(function(item){
-            return item.get('location_id') == loc_id;
+      var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
           });
-          return "user/" + fullLocationObject.get('name');
-      });
+        }
 
-      var qEspressoNotes = new StackMob.Collection.Query();
-      qEspressoNotes.mustBeOneOf("coffee", selectedCoffees);
-      qEspressoNotes.mustBeOneOf("sm_owner", arrayOfLocations);
+        var mustBeOneOfArray = [];
+        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+          var adminArray = admins.map(function(item) { return 'user/' + item;});
+          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
+        } else {
+          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+        }
+
+      // Query notes where coffee[in]selectedCoffees && roastdate > 1 month ago && (prep date range) && sm_owner[in]selectedLocations
+      qNotes = new StackMob.Collection.Query();
+      qNotes.mustBeOneOf("coffee", selectedCoffees);
+      qNotes.mustBeOneOf("sm_owner", mustBeOneOfArray);
 
       // get a roast date a month ago
       var dt = new Date();
       var withoutTime = new Date(dt.getFullYear(), dt.getMonth()-1, dt.getDate());
-      var roasttime = withoutTime.getTime();
+      var roastTime = withoutTime.getTime();
 
-      qEspressoNotes.gt("roastdate", roasttime);
-
-      espressoNotes.query(qEspressoNotes, {
-        success : function(results) {
-          console.log(results);
-          var dates = [];
-          results.each(function(model){
-              var newDate = new Date(model.get('roastdate'));
-              dates.push(newDate);
-            })
-          console.log(dates);
-        },
-        error : function(model, response) {
-          console.log(response);
-        }
-      });
-
-      // Parse notes for roast dates
-
+      qNotes.gt("roastdate", roastTime);
+      */
 
       // Replacing this
       /*
@@ -233,7 +301,7 @@
     };
 
     var headerMappings = {
-      'sm_owner':'Location',
+      'location_name':'Location',
       'barista_name':'Barista',
       'preparation_date':'Prep Date',
       'shift':'Shift',
@@ -262,7 +330,7 @@
       'steep_time':'Steep Time',
       'drawdown_time':'Drawdown Time',
       'score':'Overall Score',
-      'roast':'Roast Date',
+      'roastdate':'Roast Date',
       'roast_id':'Roast ID',
       'coffee':'Coffee',
       'offset' : 'Days Since Roast',
@@ -272,7 +340,7 @@
       'agitation_notes' : 'Agitation Notes'
     };
 
-    var arrayOfEspressoFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','espresso_prep_type','dial_in_difficulty','weight_of_dose','weight_of_yield','temp_of_water','preinfuse_time','total_extraction_time','positive_notes','negative_notes', 'additional_comments'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
+    var arrayOfEspressoFields = ['coffee','location_name','barista_name','roastdate','preparation_date','offset','shift','espresso_prep_type','dial_in_difficulty','weight_of_dose','weight_of_yield','temp_of_water','preinfuse_time','total_extraction_time','positive_notes','negative_notes', 'additional_comments'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
 
     var arrayOfDripFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes', 'additional_comments'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
 
@@ -295,6 +363,122 @@
       results.sort();
       results.models = results.models.reverse();
       return results;
+    }
+
+    function queryLocalNotes(){
+      // Load notes
+      var rawNotes = localStorage.storedNotes;
+
+      var localNotes = [];
+      try {
+        localNotes = JSON.parse(rawNotes);
+      } catch (e) {
+        console.debug(e);
+      }
+
+      // Define conditions
+      var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
+          });
+      }
+
+      var selectedLocations = [];
+      if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+        var adminArray = admins.map(function(item) { return 'user/' + item;});
+        selectedLocations = $.merge($.makeArray(arrayOfLocations), adminArray);
+      } else {
+        selectedLocations = $.makeArray(arrayOfLocations);
+      }
+
+      var selectedCoffees = $("#coffeesList").val();
+
+      var selectedRoasts = $("#roastsList").val();
+
+      // 1/1/1970
+      var from_time = new Date(0).getTime();
+
+      // now
+      var to_time = new Date().getTime();
+
+      if ($('#from_prep_date').val() != "") {
+          // Add error check
+          var from_time = new Date($('#from_prep_date').val()).getTime();
+          console.log(from_time);
+
+          var to_time;
+
+          if ($('#to_prep_date').val() != "") {
+            // Add error check
+            to_time = new Date($('#to_prep_date').val()).getTime();
+            console.log(to_time);
+          } else {
+            to_time = new Date().getTime();
+            console.log(to_time);
+          }
+
+      }
+
+      // check if filteredNotes = []
+
+      // Filter notes based on conditions
+      var filteredNotes = _.filter(localNotes, function(note){
+        return (selectedLocations.indexOf(note["sm_owner"]) != -1) && (selectedCoffees.indexOf(note["coffee"]) != -1) && (selectedRoasts.indexOf(JSON.stringify(note["roastdate"])) != -1) && note["preparation_date"] >= from_time && note["preparation_date"] <= to_time;
+      });
+
+      var type;
+      if ($('#espresso_checkbox').is(':checked')) {
+        type = "espresso";
+        var espressoNotes = _.filter(filteredNotes, function(note){
+          return note["prep_method"] == "espresso";
+        });
+        
+        if (espressoNotes.length > 0) {
+          $('#export_espresso_data').show();
+          populateEspressoTable();
+          // SORT
+          // results = sortByPrepDate(espressoNotes);
+          _.each(espressoNotes, function(note){
+              var columnData = [];
+              _.each(arrayOfEspressoFields, function(idx, item){
+                var field = arrayOfEspressoFields[item];
+                var entry;
+                if (timeFields.indexOf(field) != -1){
+                  var ms = note[field];
+                  if (ms) {
+                    entry = millisecondsToDurationString(ms);
+                  } else {
+                    entry = undefined;
+                  }
+                } else if (field == "coffee") {
+                  var coffeeResult = queriedCoffees.find(function(item){
+                    return item.get('coffee_id') == note["coffee"];
+                  });
+                  entry = coffeeResult.get('name');
+                } else if (field == "preparation_date" || field == "roastdate") {
+                  var newDate = new Date(note[field]);
+                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+                } else if (field == "offset") {
+                  entry = ((note["preparation_date"] - note["roastdate"]) / 1000) / (24 * 60 * 60);
+                } else {
+                  entry = note[field];
+                }
+
+                columnData.push($('<td></td>').html(entry));
+            });
+            $('#espressoTableData').append(
+              $('<tr></tr>').append(
+                columnData
+              )
+            )
+          });
+        }
+      }
+
     }
 
     function queryEspressoNotesBasedOnRoast(){
@@ -1273,11 +1457,15 @@
         }
       }
     });
+
+    // Click on locations list
     $('#locationsList').change(function(){
       $('#coffeesList').html("");
       $('#roastsList').html("");
       populateCoffees();
     });
+
+    // Click on coffee list
     $('#coffeesList').change(function(){
       $('#roastsList').html("");
       populateRoasts();
@@ -1303,7 +1491,7 @@
       $('#showingNotesForRostDate').html("");
       $('#showingNotesForRostDate').append("Showing notes for " + $('#roastsList').find(":selected").text() + "  roast of " + $('#coffeesList').find(":selected").text() + ".");
       */
-      queryEspressoNotesBasedOnRoast();
+      queryLocalNotes();
     });
 
     $(".export-button").click(function(){
