@@ -68,7 +68,7 @@
         qNotes.gte("roastdate", dateToFetchSince);
         /*
         // Check local storage for last fetched date
-        var lastFetchedDate = localStorage.lastFetchedDate;
+        var lastFetchedDate = localStorage.getItem("lastFetchedDate");
         if (!lastFetchedDate) {
 
           // A month ago
@@ -90,7 +90,8 @@
           
           storeNotes(results);
 
-          localStorage.lastFetchedDate = dateToFetchSince;
+          localStorage.setItem("COFFEE-LOG-LAST-FETCHED-DATE", dateToFetchSince);
+          localStorage.setItem("COFFEE-LOG-LAST-FETCHED-TIME", new Date().getTime());
           
         },
         error : function(model, response) {
@@ -112,7 +113,7 @@
 
       var jsonNotes = fetchedNotes.toJSON();
       var stringifiedNotes = JSON.stringify(jsonNotes);
-      localStorage.storedNotes = stringifiedNotes;
+      localStorage.setItem("COFFEE-LOG-LOCAL-NOTES", stringifiedNotes);
       
     }
 
@@ -197,24 +198,46 @@
 
       $('#roastsList').html("");
 
-      var storedNotes = localStorage.storedNotes;
+      var storedNotes = localStorage.getItem("COFFEE-LOG-LOCAL-NOTES");
       if (!storedNotes) {
-        // Handle
+        // TODO Handle
       }
 
       var jsonNotes;
       try {
         jsonNotes = JSON.parse(storedNotes);
-        var allRoastDates = _.map(jsonNotes, function(object){
+
+        var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
+          });
+        }
+
+        var selectedLocations = [];
+        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+          var adminArray = admins.map(function(item) { return 'user/' + item;});
+          selectedLocations = $.merge($.makeArray(arrayOfLocations), adminArray);
+        } else {
+          selectedLocations = $.makeArray(arrayOfLocations);
+        }
+
+        var selectedCoffees = $("#coffeesList").val();
+
+        var allApplicableNotes = _.filter(jsonNotes, function(note){
+          return (selectedLocations.indexOf(note["sm_owner"]) != -1) && (selectedCoffees.indexOf(note["coffee"]) != -1);
+        });
+
+        var allRoastDates = _.map(allApplicableNotes, function(object){
           return object["roastdate"];
         });
-        console.log(allRoastDates);
 
-        var uniqueRoastDates = _.uniq(allRoastDates);
-        console.log(uniqueRoastDates);
-
-        uniqueRoastDates.sort(function(a, b) {
-          return a < b;
+        var uniqueRoastDates = _.sortBy(_.uniq(allRoastDates), function(num){
+          // DESC order
+          return -num;
         });
 
         _.each(uniqueRoastDates, function(item){
@@ -226,6 +249,7 @@
 
       } catch (e) {
         console.debug(e);
+        // TODO show console message?
       }
 
       /*
@@ -367,7 +391,7 @@
 
     function queryLocalNotes(){
       // Load notes
-      var rawNotes = localStorage.storedNotes;
+      var rawNotes = localStorage.getItem("COFFEE-LOG-LOCAL-NOTES");
 
       var localNotes = [];
       try {
@@ -423,7 +447,7 @@
 
       }
 
-      // check if filteredNotes = []
+      // TODO check if filteredNotes = []
 
       // Filter notes based on conditions
       var filteredNotes = _.filter(localNotes, function(note){
