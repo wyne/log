@@ -241,7 +241,9 @@
         });
 
         _.each(uniqueRoastDates, function(item){
-          var newDate = new Date(item);
+          var dateForOffset = new Date();
+          var offsetTime = item + (dateForOffset.getTimezoneOffset() * 60000);
+          var newDate = new Date(offsetTime);
             $("#roastsList").append(
               $('<option></option>').val(item).html((newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear())
           );
@@ -424,25 +426,25 @@
       var selectedRoasts = $("#roastsList").val();
 
       // 1/1/1970
+      var offsetDate = new Date();
+      var offsetTime = offsetDate.getTimezoneOffset() * 60000;
       var from_time = new Date(0).getTime();
 
-      // now
-      var to_time = new Date().getTime();
+      // today
+      var today = new Date(offsetDate.getFullYear(), offsetDate.getMonth(), offsetDate.getDate());
+      var to_time = today.getTime() - offsetTime;
 
       if ($('#from_prep_date').val() != "") {
           // Add error check
-          var from_time = new Date($('#from_prep_date').val()).getTime();
-          console.log(from_time);
-
-          var to_time;
+          var offsetFromTime = new Date($('#from_prep_date').val()).getTime() - offsetTime;
+          from_time = new Date(offsetFromTime).getTime();
 
           if ($('#to_prep_date').val() != "") {
             // Add error check
-            to_time = new Date($('#to_prep_date').val()).getTime();
-            console.log(to_time);
+            var offsetToTime = new Date($('#to_prep_date').val()).getTime() - offsetTime;
+            to_time = new Date(offsetToTime).getTime();
           } else {
-            to_time = new Date().getTime();
-            console.log(to_time);
+            to_time = today.getTime() - offsetTime;
           }
 
       }
@@ -484,10 +486,12 @@
                   });
                   entry = coffeeResult.get('name');
                 } else if (field == "preparation_date" || field == "roastdate") {
-                  var newDate = new Date(note[field]);
+                  var dateForOffset = new Date();
+                  var offsetTime = note[field] + (dateForOffset.getTimezoneOffset() * 60000);
+                  var newDate = new Date(offsetTime);
                   entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
                 } else if (field == "offset") {
-                  entry = ((note["preparation_date"] - note["roastdate"]) / 1000) / (24 * 60 * 60);
+                  entry = parseInt(((note["preparation_date"] - note["roastdate"]) / 1000) / (24 * 60 * 60));
                 } else {
                   entry = note[field];
                 }
