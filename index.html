@@ -521,12 +521,37 @@
 
       });
 
+      // Read messages
+      var query = new StackMob.Collection.Query();
+      query.equals("messages_id", "1234");
+      messages.query(query, {
+        success: function(results) {
+          var allMessages = results.toJSON();
+          if (allMessages.length != 1) {
+            console.debug("Messages count off");
+          } else {
+            var message = allMessages[0];
+            if (message["maintenance"]) {
+              $("#maintenanceBar").html(message["maintenance"]).slideDown(300);
+            }
+            if (message["update"]) {
+              $(".navbar").css("margin-bottom", 0);
+              $("#updateBar").html(message["update"]).show();
+            }
+          }
+        },
+        error: function(model, response) {
+          console.debug("Could not read messages with response " + repsonse);
+        }
+      });
+
     });
   /* ]]> */
   </script>
 
 </head>
 <body>
+  <div id="maintenanceBar" class="maintenanceBar"></div>
   <div class="navbar">
     <div class="navbar-inner">
       <div class="container">
@@ -548,6 +573,8 @@
       </div>
     </div>
   </div>
+
+  <div id="updateBar" class="updateBar"></div>
 
   <div class="row-fluid">
     <div class="span12">
