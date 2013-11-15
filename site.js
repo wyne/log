@@ -99,6 +99,10 @@ var CuppingNote = StackMob.Model.extend({ schemaName: 'cupping_note' });
 var CuppingNotes = StackMob.Collection.extend({ model: CuppingNote });
 var cuppingNotes = new CuppingNotes();
 
+// Messages
+var Message = StackMob.Model.extend({ schemaName: 'messages' });
+var Messages = StackMob.Collection.extend({ model: Message });
+var messages = new Messages();
 
 var qAll = new StackMob.Collection.Query();
 

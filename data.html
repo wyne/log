@@ -1524,7 +1524,27 @@
 
     $(".export-button").click(function(){
       saveTable( $(this).data("target") );
-    })
+    });
+
+    // Read messages
+      var query = new StackMob.Collection.Query();
+      query.equals("messages_id", "1234");
+      messages.query(query, {
+        success: function(results) {
+          var allMessages = results.toJSON();
+          if (allMessages.length != 1) {
+            console.debug("Messages count off");
+          } else {
+            var message = allMessages[0];
+            if (message["maintenance"]) {
+              $("#maintenanceBar").html(message["maintenance"]).slideDown(300);
+            }
+          }
+        },
+        error: function(model, response) {
+          console.debug("Could not read messages with response " + repsonse);
+        }
+      });
 
   });
   /* ]]> */
@@ -1532,7 +1552,7 @@
 
 </head>
 <body>
-
+  <div id="maintenanceBar" class="maintenanceBar"></div>
   <div class="navbar">
     <div class="navbar-inner">
       <div class="container">
