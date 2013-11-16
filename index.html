@@ -82,7 +82,7 @@
 
                   q.mustBeOneOf("locations", locationObject.get('location_id'));
                 } else {
-                  console.log('No Location object found');
+                  console.error('No Location object found');
                 }
               } else {
                   $('#usersLocation').append(
@@ -107,21 +107,22 @@
                   }
                 },
                 error: function(model, response) {
-                  console.log("Bad coffee query");
+                  console.error("Error fetching coffees: " + response.error);
                 }
               });
             },
             error : function(model, response){
-              console.log("Error: " + response);
+              console.error("Error getting user: " + response.error);
             }
 
           });
         },
         error : function(model, response) {
-          console.log("Error: " + response);
+          console.error("Error getting logged in user: " + response.error);
         }
       });
 
+      /*
       function submitEspressoNote(json){
         console.log('submitting espresso note');
         $("#espresso_note_submission_message").html("");
@@ -226,6 +227,7 @@
           }
         })
       }
+      */
 
       function submitNote(json){
         console.log('submitting note');
@@ -236,12 +238,11 @@
         newNote.create({
           success : function (model) {
             // Pull note
-            refreshWithMessage("Successfully created new espresso note");
+            refreshWithMessage("Successfully created new espresso note.");
           },
           error : function(model, response) {
-            console.debug("Error" + response);
-            // Add banner message?
-            // $("#espresso_note_submission_message").append("Error creating new espresso note.");
+            console.error("Error creating note: " + response.error);
+            $("#status").addClass("alert alert-error").html("Error creating note.");
           }
         })
       };
@@ -277,16 +278,14 @@
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
-        // Validation
         if(!isValidated(jsonForm)) {
-          return;
+          return 0;
         }
 
         jsonForm["prep_method"] = "espresso";
         jsonForm["coffee"] = $("#coffeesListForLocation").val();
         jsonForm["espresso_prep_type"] = $("#espresso_prep_type").val();
         jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_espresso").val();
-
         submitNote(jsonForm);
 
       });
@@ -295,42 +294,16 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_drip").val();
 
-        console.log(jsonForm);
-        var roastQuery = new StackMob.Collection.Query();
-
-        if (!jsonForm.roast_date) {
-          // Handle error
+        if(!isValidated(jsonForm)) {
+          return 0;
         }
 
-        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
+        jsonForm["prep_method"] = "drip";
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_drip").val();
 
-
-        roasts.query(roastQuery, {
-          success: function(col){
-            if (col.length == 0) {
-              // Create new roast
-              console.log("Creating new roast");
-              var newRoast = new Roast({
-                date : jsonForm.roast_date,
-                coffee : $("#coffeesListForLocation").val()
-              });
-              newRoast.create({
-                success : function(model){
-                  jsonForm["roast"] = model.get('roast_id');
-                  submitDripNote(jsonForm);
-                },
-                error : function(model, response){}
-              });
-            } else {
-              // make check for 1 item only
-              jsonForm["roast"] = col.at(0).get('roast_id');
-              submitDripNote(jsonForm);
-            }
-          },
-          error : function(model, response){}
-        });
+        submitNote(jsonForm);
 
       });
 
@@ -338,42 +311,16 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_beehouse").val();
 
-        console.log(jsonForm);
-        var roastQuery = new StackMob.Collection.Query();
-
-        if (!jsonForm.roast_date) {
-          // Handle error
+        if(!isValidated(jsonForm)) {
+          return 0;
         }
 
-        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
+        jsonForm["prep_method"] = "beehouse";
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_beehouse").val();
 
-
-        roasts.query(roastQuery, {
-          success: function(col){
-            if (col.length == 0) {
-              // Create new roast
-              console.log("Creating new roast");
-              var newRoast = new Roast({
-                date : jsonForm.roast_date,
-                coffee : $("#coffeesListForLocation").val()
-              });
-              newRoast.create({
-                success : function(model){
-                  jsonForm["roast"] = model.get('roast_id');
-                  submitBeehouseNote(jsonForm);
-                },
-                error : function(model, response){}
-              });
-            } else {
-              // make check for 1 item only
-              jsonForm["roast"] = col.at(0).get('roast_id');
-              submitBeehouseNote(jsonForm);
-            }
-          },
-          error : function(model, response){}
-        });
+        submitNote(jsonForm);
 
       });
 
@@ -381,42 +328,16 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_siphon").val();
 
-        console.log(jsonForm);
-        var roastQuery = new StackMob.Collection.Query();
-
-        if (!jsonForm.roast_date) {
-          // Handle error
+        if(!isValidated(jsonForm)) {
+          return 0;
         }
 
-        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
+        jsonForm["prep_method"] = "siphon";
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_siphon").val();
 
-
-        roasts.query(roastQuery, {
-          success: function(col){
-            if (col.length == 0) {
-              // Create new roast
-              console.log("Creating new roast");
-              var newRoast = new Roast({
-                date : jsonForm.roast_date,
-                coffee : $("#coffeesListForLocation").val()
-              });
-              newRoast.create({
-                success : function(model){
-                  jsonForm["roast"] = model.get('roast_id');
-                  submitSiphonNote(jsonForm);
-                },
-                error : function(model, response){}
-              });
-            } else {
-              // make check for 1 item only
-              jsonForm["roast"] = col.at(0).get('roast_id');
-              submitSiphonNote(jsonForm);
-            }
-          },
-          error : function(model, response){}
-        });
+        submitNote(jsonForm);
 
       });
 
@@ -424,42 +345,16 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_nel").val();
 
-        console.log(jsonForm);
-        var roastQuery = new StackMob.Collection.Query();
-
-        if (!jsonForm.roast_date) {
-          // Handle error
+        if(!isValidated(jsonForm)) {
+          return 0;
         }
 
-        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
+        jsonForm["prep_method"] = "nel";
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_nel").val();
 
-
-        roasts.query(roastQuery, {
-          success: function(col){
-            if (col.length == 0) {
-              // Create new roast
-              console.log("Creating new roast");
-              var newRoast = new Roast({
-                date : jsonForm.roast_date,
-                coffee : $("#coffeesListForLocation").val()
-              });
-              newRoast.create({
-                success : function(model){
-                  jsonForm["roast"] = model.get('roast_id');
-                  submitNelNote(jsonForm);
-                },
-                error : function(model, response){}
-              });
-            } else {
-              // make check for 1 item only
-              jsonForm["roast"] = col.at(0).get('roast_id');
-              submitNelNote(jsonForm);
-            }
-          },
-          error : function(model, response){}
-        });
+        submitNote(jsonForm);
 
       });
 
@@ -467,42 +362,16 @@
         e.preventDefault();
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
-        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_chemex").val();
 
-        console.log(jsonForm);
-        var roastQuery = new StackMob.Collection.Query();
-
-        if (!jsonForm.roast_date) {
-          // Handle error
+        if(!isValidated(jsonForm)) {
+          return 0;
         }
 
-        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
+        jsonForm["prep_method"] = "chemex";
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+        jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_chemex").val();
 
-
-        roasts.query(roastQuery, {
-          success: function(col){
-            if (col.length == 0) {
-              // Create new roast
-              console.log("Creating new roast");
-              var newRoast = new Roast({
-                date : jsonForm.roast_date,
-                coffee : $("#coffeesListForLocation").val()
-              });
-              newRoast.create({
-                success : function(model){
-                  jsonForm["roast"] = model.get('roast_id');
-                  submitChemexNote(jsonForm);
-                },
-                error : function(model, response){}
-              });
-            } else {
-              // make check for 1 item only
-              jsonForm["roast"] = col.at(0).get('roast_id');
-              submitChemexNote(jsonForm);
-            }
-          },
-          error : function(model, response){}
-        });
+        submitNote(jsonForm);
 
       });
 
@@ -511,40 +380,15 @@
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
-        console.log(jsonForm);
-        var roastQuery = new StackMob.Collection.Query();
-
-        if (!jsonForm.roast_date) {
-          // Handle error
+        // Validation
+        if(!isValidated(jsonForm)) {
+          return 0;
         }
 
-        roastQuery.equals('date', jsonForm.roast_date).equals('coffee', $("#coffeesListForLocation").val());
+        jsonForm["prep_method"] = "cupping";
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
 
-
-        roasts.query(roastQuery, {
-          success: function(col){
-            if (col.length == 0) {
-              // Create new roast
-              console.log("Creating new roast");
-              var newRoast = new Roast({
-                date : jsonForm.roast_date,
-                coffee : $("#coffeesListForLocation").val()
-              });
-              newRoast.create({
-                success : function(model){
-                  jsonForm["roast"] = model.get('roast_id');
-                  submitCuppingNote(jsonForm);
-                },
-                error : function(model, response){}
-              });
-            } else {
-              // make check for 1 item only
-              jsonForm["roast"] = col.at(0).get('roast_id');
-              submitCuppingNote(jsonForm);
-            }
-          },
-          error : function(model, response){}
-        });
+        submitNote(jsonForm);
 
       });
 
@@ -568,7 +412,7 @@
           }
         },
         error: function(model, response) {
-          console.debug("Could not read messages with response " + repsonse);
+          console.debug("Could not read messages with response " + response);
         }
       });
 
@@ -671,13 +515,6 @@
                     <label>Temp Of Water:</label> <input type="number" step="any" name="temp_of_water"> &deg;F
                     <label>Preinfuse Time:</label> <input type="text" size="10" class="time_entry_sec" name="preinfuse_time">
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_sec" name="total_extraction_time">
-                    <!--
-                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
-                    <label>Acidity:</label> <input type="text" name="acidity">
-                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
-                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                  -->
                     <label>Positive Tasting Attributes:</label> <textarea type="text" name="positive_notes"></textarea>
                     <label>Negative Tasting Attributes:</label> <textarea type="text" name="negative_notes"></textarea>
                     <label>Additional Comments:</label> <textarea type="text" name="additional_comments"></textarea>
@@ -686,7 +523,6 @@
                 <div class="row">
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Espresso Note"></input>
-                    <p></p><p id="espresso_note_submission_message"></p><p></p>
                   </div>
                 </div>
 
@@ -702,7 +538,7 @@
                 <div class="row-fluid">
                   <div class="span6">
                     <label>Barista Name:</label><input type="text" name="barista_name">
-                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Roast Date:</label> <input type="text" name="roastdate" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
                     <div class="clear"></div>
@@ -739,13 +575,6 @@
                     </label>
                     <p></p>
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
-                    <!--
-                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
-                    <label>Acidity:</label> <input type="text" name="acidity">
-                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
-                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                  -->
                     <label>Positive Tasting Attributes:</label> <textarea type="text" name="positive_notes"></textarea>
                     <label>Negative Tasting Attributes:</label> <textarea type="text" name="negative_notes"></textarea>
                     <label>Additional Comments:</label> <textarea type="text" name="additional_comments"></textarea>
@@ -754,7 +583,6 @@
                 <div class="row">
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Bonmac Note"></input>
-                    <p></p><p id="drip_note_submission_message"></p><p></p>
                   </div>
                 </div>
 
@@ -770,7 +598,7 @@
                 <div class="row-fluid">
                   <div class="span6">
                     <label>Barista Name:</label><input type="text" name="barista_name">
-                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Roast Date:</label> <input type="text" name="roastdate" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
                     <div class="clear"></div>
@@ -807,13 +635,6 @@
                     </label>
                     <p></p>
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
-                    <!--
-                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
-                    <label>Acidity:</label> <input type="text" name="acidity">
-                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
-                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                  -->
                     <label>Positive Tasting Attributes:</label> <textarea type="text" name="positive_notes"></textarea>
                     <label>Negative Tasting Attributes:</label> <textarea type="text" name="negative_notes"></textarea>
                     <label>Additional Comments:</label> <textarea type="text" name="additional_comments"></textarea>
@@ -822,7 +643,6 @@
                 <div class="row">
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Beehouse Note"></input>
-                    <p></p><p id="beehouse_note_submission_message"></p><p></p>
                   </div>
                 </div>
 
@@ -838,7 +658,7 @@
                 <div class="row-fluid">
                   <div class="span6">
                     <label>Barista Name:</label><input type="text" name="barista_name">
-                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Roast Date:</label> <input type="text" name="roastdate" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
                     <div class="clear"></div>
@@ -868,13 +688,6 @@
                     <label>Off Heat Time:</label> <input type="text" size="10" class="time_entry_min" name="off_heat_time">
                     <label>Agitation Notes:</label> <textarea type="text" name="agitation_notes"></textarea>
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
-                    <!--
-                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
-                    <label>Acidity:</label> <input type="text" name="acidity">
-                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
-                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                  -->
                     <label>Positive Tasting Attributes:</label> <textarea type="text" name="positive_notes"></textarea>
                     <label>Negative Tasting Attributes:</label> <textarea type="text" name="negative_notes"></textarea>
                     <label>Additional Comments:</label> <textarea type="text" name="additional_comments"></textarea>
@@ -883,7 +696,6 @@
                 <div class="row">
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Siphon Note"></input>
-                    <p></p><p id="siphon_note_submission_message"></p><p></p>
                   </div>
                 </div>
 
@@ -899,7 +711,7 @@
                 <div class="row-fluid">
                   <div class="span6">
                     <label>Barista Name:</label><input type="text" name="barista_name">
-                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Roast Date:</label> <input type="text" name="roastdate" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
                     <div class="clear"></div>
@@ -937,13 +749,6 @@
                     </label>
                     <p></p>
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
-                    <!--
-                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
-                    <label>Acidity:</label> <input type="text" name="acidity">
-                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
-                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                  -->
                     <label>Positive Tasting Attributes:</label> <textarea type="text" name="positive_notes"></textarea>
                     <label>Negative Tasting Attributes:</label> <textarea type="text" name="negative_notes"></textarea>
                     <label>Additional Comments:</label> <textarea type="text" name="additional_comments"></textarea>
@@ -952,7 +757,6 @@
                 <div class="row">
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Nel Note"></input>
-                    <p></p><p id="nel_note_submission_message"></p><p></p>
                   </div>
                 </div>
 
@@ -968,7 +772,7 @@
                 <div class="row-fluid">
                   <div class="span6">
                     <label>Barista Name:</label><input type="text" name="barista_name">
-                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Roast Date:</label> <input type="text" name="roastdate" class="date-input">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
 
                     <div class="clear"></div>
@@ -1007,13 +811,6 @@
                     </label>
                     <p></p>
                     <label>Total Extraction Time:</label> <input type="text" size="10" class="time_entry_min" name="total_extraction_time">
-                    <!--
-                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
-                    <label>Acidity:</label> <input type="text" name="acidity">
-                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
-                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                  -->
                     <label>Positive Tasting Attributes:</label> <textarea type="text" name="positive_notes"></textarea>
                     <label>Negative Tasting Attributes:</label> <textarea type="text" name="negative_notes"></textarea>
                     <label>Additional Comments:</label> <textarea type="text" name="additional_comments"></textarea>
@@ -1022,7 +819,6 @@
                 <div class="row">
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Chemex Note"></input>
-                    <p></p><p id="chemex_note_submission_message"></p><p></p>
                   </div>
                 </div>
 
@@ -1038,21 +834,11 @@
                 <div class="row-fluid">
                   <div class="span6">
                     <label>Barista Name:</label><input type="text" name="barista_name">
-                    <label>Roast Date:</label> <input type="text" name="roast_date" class="date-input">
+                    <label>Roast Date:</label> <input type="text" name="roastdate" class="date-input">
                     <label>Roast ID:</label> <input type="number" name="roast_id">
                     <label>Preparation Date:</label> <input type="text" name="preparation_date" class="date-input">
-                    <!--
-                    <label>Fragrance / Aroma:</label> <input type="text" name="fragrance_aroma">
-                    <label>Acidity:</label> <input type="text" name="acidity">
-                    <label>Mouthfeel:</label> <input type="text" name="mouthfeel">
-                    -->
                   </div>
                   <div class="span6">
-                    <!--
-                    <label>Flavor:</label> <textarea type="text" name="flavor"></textarea>
-                    <label>Aftertaste:</label> <input type="text" name="aftertaste">
-                  -->
-
                     <label>Positive Tasting Attributes:</label> <textarea type="text" name="positive_notes"></textarea>
                     <label>Negative Tasting Attributes:</label> <textarea type="text" name="negative_notes"></textarea>
                     <label>Additional Comments:</label> <textarea type="text" name="additional_comments"></textarea>
@@ -1072,7 +858,6 @@
                 <div class="row">
                   <div class="span6 offset6">
                     <input class="login btn btn-primary" type="submit" value="Submit Cupping Note"></input>
-                    <p></p><p id="cupping_note_submission_message"></p><p></p>
                   </div>
                 </div>
 
