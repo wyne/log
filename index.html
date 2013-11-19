@@ -122,113 +122,6 @@
         }
       });
 
-      /*
-      function submitEspressoNote(json){
-        console.log('submitting espresso note');
-        $("#espresso_note_submission_message").html("");
-        json.roast_date = undefined;
-        var newNote = new EspressoNote(json);
-        newNote.create({
-          success : function (model) {
-            refreshWithMessage("Successfully created new espresso note");
-          },
-          error : function(model, response) {
-            $("#espresso_note_submission_message").append("Error creating new espresso note.");
-          }
-        })
-      };
-
-      function submitDripNote(json){
-        console.log('submitting bonmac note');
-        $("#drip_note_submission_message").html("");
-        json.roast_date = undefined;
-        var newNote = new DripNote(json);
-        newNote.create({
-          success : function (model) {
-            refreshWithMessage("Successfully created new drip note");
-          },
-          error : function(model, response) {
-            $("#drip_note_submission_message").append("Error creating new drip note.");
-          }
-        })
-      };
-
-      function submitBeehouseNote(json){
-        console.log('submitting beehouse note');
-        $("#beehouse_note_submission_message").html("");
-        json.roast_date = undefined;
-        var newNote = new BeehouseNote(json);
-        newNote.create({
-          success : function (model) {
-            refreshWithMessage("Successfully created new beehouse note");
-          },
-          error : function(model, response) {
-            $("#beehouse_note_submission_message").append("Error creating new beehouse note.");
-          }
-        })
-      };
-
-      function submitSiphonNote(json){
-        console.log('submitting siphon note');
-        $("#siphon_note_submission_message").html("");
-        json.roast_date = undefined;
-        var newNote = new SiphonNote(json);
-        newNote.create({
-          success : function (model) {
-            refreshWithMessage("Successfully created new siphon note");
-          },
-          error : function(model, response) {
-            $("#siphon_note_submission_message").append("Error creating new siphon note!");
-          }
-        })
-      };
-
-      function submitNelNote (json) {
-        console.log('submitting nel note');
-        $("#nel_note_submission_message").html("");
-        json.roast_date = undefined;
-        var newNote = new NelNote(json);
-        newNote.create({
-          success : function (model) {
-            refreshWithMessage("Successfully created new nel note");
-          },
-          error : function(model, response) {
-            $("#nel_note_submission_message").append("Error creating new nel note.");
-          }
-        })
-      }
-
-      function submitChemexNote (json) {
-        console.log('submitting chemex note');
-        $("#chemex_note_submission_message").html("");
-        json.roast_date = undefined;
-        var newNote = new ChemexNote(json);
-        newNote.create({
-          success : function (model) {
-            refreshWithMessage("Successfully created new chemex note");
-          },
-          error : function(model, response) {
-            $("#chemex_note_submission_message").append("Error creating new chemex note.");
-          }
-        })
-      }
-
-      function submitCuppingNote(json) {
-        console.log('submitting cupping note');
-        $("#cupping_note_submission_message").html("");
-        json.roast_date = undefined;
-        var newNote = new CuppingNote(json);
-        newNote.create({
-          success : function (model) {
-            refreshWithMessage("Successfully created new cupping note.");
-          },
-          error : function(model, response) {
-            $("#cupping_note_submission_message").append("Error creating new cupping note.");
-          }
-        })
-      }
-      */
-
       function submitNote(json){
         console.log('submitting note');
 
@@ -248,25 +141,29 @@
       };
 
       function isValidated(form) {
+        if (form.coffee == "none") {
+          window.alert("Please select a coffee.");
+          return false;
+        }
         if (!form.barista_name) {
-          window.alert("Please enter a barista name!");
+          window.alert("Please enter a barista name.");
           return false;
         }
         if (!form.roastdate) {
-          window.alert("Please enter a roast date!");
+          window.alert("Please enter a roast date.");
           return false;
         }
         var today = new Date().getTime();
         if (form.roastdate > today) {
-          window.alert("The roast date you chose is in the future!");
+          window.alert("The roast date you chose is in the future.");
           return false;
         }
         if (!form.preparation_date) {
-          window.alert("Please enter a preparation date!");
+          window.alert("Please enter a preparation date.");
           return false;
         }
         if (form.preparation_date > today) {
-          window.alert("The preparation date you chose is in the future!");
+          window.alert("The preparation date you chose is in the future.");
           return false;
         }
 
@@ -278,12 +175,13 @@
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+
         if(!isValidated(jsonForm)) {
           return 0;
         }
 
         jsonForm["prep_method"] = "espresso";
-        jsonForm["coffee"] = $("#coffeesListForLocation").val();
         jsonForm["espresso_prep_type"] = $("#espresso_prep_type").val();
         jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_espresso").val();
         submitNote(jsonForm);
@@ -295,12 +193,13 @@
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+
         if(!isValidated(jsonForm)) {
           return 0;
         }
 
         jsonForm["prep_method"] = "drip";
-        jsonForm["coffee"] = $("#coffeesListForLocation").val();
         jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_drip").val();
 
         submitNote(jsonForm);
@@ -312,12 +211,13 @@
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+
         if(!isValidated(jsonForm)) {
           return 0;
         }
 
         jsonForm["prep_method"] = "beehouse";
-        jsonForm["coffee"] = $("#coffeesListForLocation").val();
         jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_beehouse").val();
 
         submitNote(jsonForm);
@@ -329,12 +229,13 @@
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+
         if(!isValidated(jsonForm)) {
           return 0;
         }
 
         jsonForm["prep_method"] = "siphon";
-        jsonForm["coffee"] = $("#coffeesListForLocation").val();
         jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_siphon").val();
 
         submitNote(jsonForm);
@@ -346,12 +247,13 @@
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+
         if(!isValidated(jsonForm)) {
           return 0;
         }
 
         jsonForm["prep_method"] = "nel";
-        jsonForm["coffee"] = $("#coffeesListForLocation").val();
         jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_nel").val();
 
         submitNote(jsonForm);
@@ -363,12 +265,13 @@
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+
         if(!isValidated(jsonForm)) {
           return 0;
         }
 
         jsonForm["prep_method"] = "chemex";
-        jsonForm["coffee"] = $("#coffeesListForLocation").val();
         jsonForm["dial_in_difficulty"] = $("#dial_in_difficulty_chemex").val();
 
         submitNote(jsonForm);
@@ -380,13 +283,14 @@
 
         var jsonForm = parseInputs( $(this).find('input, textarea') );
 
+        jsonForm["coffee"] = $("#coffeesListForLocation").val();
+
         // Validation
         if(!isValidated(jsonForm)) {
           return 0;
         }
 
         jsonForm["prep_method"] = "cupping";
-        jsonForm["coffee"] = $("#coffeesListForLocation").val();
 
         submitNote(jsonForm);
 
@@ -459,7 +363,7 @@
         <h4 class="current-location"></h4>
         <h4 id="usersLocation"></h4>
         <h4>Pick your coffee:</h4>
-        <select id="coffeesListForLocation"></select><br />
+        <select id="coffeesListForLocation"><option value="none">Select Coffee</option></select><br />
 
         <ul class="nav nav-tabs" id="myTab" data-tabs="tabs">
           <li class="active"><a href="#espresso" data-toggle="tab">Espresso</a></li>
