@@ -28,7 +28,7 @@
     admins = [];
     allNotes = [];
 
-    types = ["espresso", "drip"];
+    types = ["espresso", "drip", "beehouse", "nel", "siphon", "chemex", "cupping"];
 
     headerMappings = {
       'location_name':'Location',
@@ -254,11 +254,13 @@
       $('#roastsList').html("");
 
       var storedNotes;
+
       if(typeof(Storage) != "undefined") {
         storedNotes = localStorage.getItem("COFFEE-LOG-LOCAL-NOTES");
       } else {
         storedNotes = allNotes;
       }
+
       if (!storedNotes) {
         console.error("No notes found");
         return 0;
@@ -420,8 +422,9 @@
       
       populateTableHeaders(type);
 
+      // desc order
       notes.sort(function(note1, note2) {
-        return note1["preparation_date"] < note2["preparation_date"];
+        return note2["preparation_date"] - note1["preparation_date"];
       });
 
       _.each(notes, function(note){

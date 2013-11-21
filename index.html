@@ -56,6 +56,9 @@
       var locationCoffees;
       var currentLocation;
 
+      // Set current date as default for prep date
+      $("[name=preparation_date]").val($.datepicker.formatDate('mm/dd/yy', new Date()));
+
       StackMob.getLoggedInUser( {
         success: function(name){
           var user = new StackMob.User({
@@ -125,13 +128,18 @@
       function submitNote(json){
         console.log('submitting note');
 
+        var type = json["prep_method"];
+        if (type == "drip") {
+          type = "bonmac";
+        }
+        
         // assign location name
         json["location_name"] = currentLocation;
         var newNote = new Note(json);
         newNote.create({
           success : function (model) {
             // Pull note
-            refreshWithMessage("Successfully created new espresso note.");
+            refreshWithMessage("Successfully created new " + type + " note.");
           },
           error : function(model, response) {
             console.error("Error creating note: " + response.error);
@@ -141,14 +149,22 @@
       };
 
       function isValidated(form) {
+        // At this point fields have been parsed into a json dictionary
+        // prep_method, dial_in_difficulty and espresso_prep_type have not been added
+
+        // no coffee
         if (form.coffee == "none") {
           window.alert("Please select a coffee.");
           return false;
         }
+
+        // no barista
         if (!form.barista_name) {
           window.alert("Please enter a barista name.");
           return false;
         }
+
+        // incorrect roastdate
         if (!form.roastdate) {
           window.alert("Please enter a roast date.");
           return false;
@@ -158,12 +174,26 @@
           window.alert("The roast date you chose is in the future.");
           return false;
         }
+        if (form.roastdate <= 0) {
+          window.alert("The roast date you chose is too far in the past");
+          return false;
+        }
+
+        // incorrect prepdate
         if (!form.preparation_date) {
           window.alert("Please enter a preparation date.");
           return false;
         }
         if (form.preparation_date > today) {
           window.alert("The preparation date you chose is in the future.");
+          return false;
+        }
+        if (form.preparation_date <= 0) {
+          window.alert("The preparation date you chose is too far in the past.");
+          return false;
+        }
+        if (form.preparation_date < form.roastdate) {
+          window.alert("The preparation date cannot be before the roast date.");
           return false;
         }
 
