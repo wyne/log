@@ -32,7 +32,9 @@ body > .container{
 	font-weight: bold;
 }
 
-
+.dialog {
+	display: none;
+}
 
 .maintenanceBar {
 	background-color: #fcf8e3;
