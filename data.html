@@ -173,12 +173,6 @@
       _.each(types, function(type) {
         $('#' + type + '-table-data').html("");
         $('#' + type + '-note-count').html("");
-        //$('#export_' + type + '_data').hide();
-        /*
-        if ($('#' + type + 'TableDivider')) {
-          $('#' + type + 'TableDivider').hide();
-        }
-        */
       });
     }
 
@@ -422,20 +416,20 @@
 
       if (notes.length == 0) {
         $("#export-" + type + "-data").hide();
+        $("#" + type + "-table-div").hide();
         $("#" + type + "-note-count").html("No " + noteName + " notes.");
         console.log("No " + noteName + " notes.");
         return 0;
       }
 
       $("#export-" + type + "-data").show();
+      $("#" + type + "-table-div").show();
 
       if (notes.length == 1) {
         notePlural = "note";
       }
       $("#" + type + "-note-count").html(notes.length + " " + noteName + " " + notePlural + ":");
       
-      //$(".note-table").show();
-      //$("#export_" + type + "_data").show();
       populateTableHeaders(type);
 
       // desc order
@@ -704,7 +698,7 @@
         <div class="span6"><p id="espresso-note-count" class="boldText"></p></div>
         <div class="span6"><input id="export-espresso-data" class="btn btn-info export-button" type="button" value="Export Espresso Data to CSV" data-target="espresso-table-data" /></div>
       </div>
-      <div class="table-wrapper">
+      <div class="table-wrapper" id="espresso-table-div">
         <table border="1" id="espresso-table-data" class="table table-bordered table-hover"></table>
       </div>
     </div>
@@ -716,7 +710,7 @@
         <div class="span6"><p id="drip-note-count" class="boldText"></p></div>
         <div class="span6"><input id="export-drip-data" class="btn btn-info export-button" type="button" value="Export Bonmac Data to CSV" data-target="drip-table-data" /></div>
       </div>
-      <div class="table-wrapper">
+      <div class="table-wrapper" id="drip-table-div">
         <table border="1" id="drip-table-data" class="table table-bordered table-hover"></table>
       </div>
     </div>
@@ -727,7 +721,7 @@
         <div class="span6"><p id="beehouse-note-count" class="boldText"></p></div>
         <div class="span6"><input id="export-beehouse-data" class="btn btn-info export-button" type="button" value="Export Beehouse Data to CSV" data-target="beehouse-table-data" /></div>
       </div>
-      <div class="table-wrapper">
+      <div class="table-wrapper" id="beehouse-table-div">
         <table border="1" id="beehouse-table-data" class="table table-bordered table-hover"></table>
       </div>
     </div>
@@ -738,7 +732,7 @@
         <div class="span6"><p id="siphon-note-count" class="boldText"></p></div>
         <div class="span6"><input id="export-siphon-data" class="btn btn-info export-button" type="button" value="Export Siphon Data to CSV" data-target="siphon-table-data" /></div>
       </div>
-      <div class="table-wrapper">
+      <div class="table-wrapper" id="siphon-table-div">
         <table border="1" id="siphon-table-data" class="table table-bordered table-hover"></table>
       </div>
     </div>
@@ -749,7 +743,7 @@
         <div class="span6"><p id="nel-note-count" class="boldText"></p></div>
         <div class="span6"><input id="export-nel-data" class="btn btn-info export-button" type="button" value="Export Nel Data to CSV" data-target="nel-table-data" /></div>
       </div>
-      <div class="table-wrapper">
+      <div class="table-wrapper" id="nel-table-div">
         <table border="1" id="nel-table-data" class="table table-bordered table-hover"></table>
       </div>
     </div>
@@ -760,7 +754,7 @@
         <div class="span6"><p id="chemex-note-count" class="boldText"></p></div>
         <div class="span6"><input id="export-chemex-data" class="btn btn-info export-button" type="button" value="Export Chemex Data to CSV" data-target="chemex-table-data" /></div>
       </div>
-      <div class="table-wrapper">
+      <div class="table-wrapper" id="chemex-table-div">
         <table border="1" id="chemex-table-data" class="table table-bordered table-hover"></table>
       </div>
     </div>
@@ -771,7 +765,7 @@
         <div class="span6"><p id="cupping-note-count" class="boldText"></p></div>
         <div class="span6"><input id="export-cupping-data" class="btn btn-info export-button" type="button" value="Export Cupping Data to CSV" data-target="cupping-table-data" /></div>
       </div>
-      <div class="table-wrapper">
+      <div class="table-wrapper" id="cupping-table-div">
         <table border="1" id="cupping-table-data" class="table table-bordered table-hover"></table>
       </div>
     </div>
