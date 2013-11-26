@@ -468,6 +468,20 @@ $(document).ready(function(){
 
   $(".date-input").datepicker();
 
+  $(".dialog").dialog({
+        dialogClass: "alert",
+        draggable: false,
+        autoOpen: false,
+        modal: true,
+        buttons: {
+          "OK": function() {
+            $(this).dialog("close");
+          }
+        },
+        title: "Alert",
+        resizable: false
+  });
+
   // q.mustBeOneOf('members', )
 
   ifAdmin().then(

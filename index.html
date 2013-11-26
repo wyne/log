@@ -154,7 +154,8 @@
 
         // no coffee
         if (form.coffee == "none") {
-          window.alert("Please select a coffee.");
+          $("#coffee-dialog").dialog("open");
+          //window.alert("Please select a coffee.");
           return false;
         }
 
@@ -356,6 +357,9 @@
 
 </head>
 <body>
+
+  <div class="dialog" id="coffee-dialog"><p>Please select a coffee.</p></div>
+
   <div id="maintenanceBar" class="maintenanceBar"></div>
   <div class="navbar">
     <div class="navbar-inner">
