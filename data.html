@@ -26,170 +26,12 @@
     queriedRoasts = [];
     queriedCoffees = [];
     admins = [];
+    allNotes = [];
 
-    $(document).ready(function(){
-      hideAllButtons();
-      var qLocations = new StackMob.Collection.Query();
-      qLocations.equals("active", true);
-      qLocations.orderAsc('name');
-      locations.query(qLocations, {
-      success: function(results){
-         allLocations = results;
-         results.each(function(model){
-            $("#locationsList").append(
-              $('<option></option>').val(model.get('location_id')).html(model.get('name'))
-            );
-          });
-      },
-      error: function(){ console.log("bad locations query"); }
-      });
+    types = ["espresso", "drip", "beehouse", "nel", "siphon", "chemex", "cupping"];
 
-      roles.fetch({
-        success : function (collection) {
-          console.log('fetched admins');
-          admins = collection.models[0].get('members');
-        },
-        error : function(error){
-          console.log('error fetching admins ' + error);
-        }
-      });
-
-      /*
-    var qCoffees = new StackMob.Collection.Query();
-    qCoffees.orderAsc('name');
-    coffees.query(qCoffees, {
-      success: function(results){
-        $("#coffeesList").append(
-            $('<option></option>').val('ALL').html('All Coffees')
-        );
-       results.each(function(model){
-        $("#coffeesList").append(
-          $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
-        );
-       });
-       populateRoasts();
-     },
-     error: function(){ console.log("bad coffee query"); }
-   });
-*/
-
-    function clearAllTableData(){
-      $('#espressoTableData').html("");
-      $('#dripTableData').html("");
-      $('#beehouseTableData').html("");
-      $('#siphonTableData').html("");
-      $('#nelTableData').html("");
-      $('#chemexTableData').html("");
-      $('#cuppingTableData').html("");
-    }
-    function hideAllButtons(){
-      $('#export_espresso_data').hide();
-      $('#export_drip_data').hide();
-      $('#export_beehouse_data').hide();
-      $('#export_siphon_data').hide();
-      $('#export_nel_data').hide();
-      $('#export_chemex_data').hide();
-      $('#export_cupping_data').hide();
-    }
-    function showAllCoffees(){
-      $('#coffeesList').html("");
-
-      var qCoffees = new StackMob.Collection.Query();
-      qCoffees.equals("active", true);
-      qCoffees.orderAsc('name');
-      coffees.query(qCoffees, {
-      success: function(results){
-        if (results.size() != 0) {
-          results.each(function(model){
-            $("#coffeesList").append(
-              $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
-              );
-          });
-        } else {
-          $("#coffeesList").append(
-            $('<option></option>').val('NONE').html('No Coffees')
-          );
-          $('#roastsList').html("");
-        }
-        
-     },
-     error: function(){ console.log("bad coffee query"); }
-     });
-
-    }
-
-    function populateCoffees(){
-      $('#coffeesList').html("");
-      var selectedLocation = $('#locationsList').val();
-
-      var qCoffees = new StackMob.Collection.Query();
-
-      qCoffees.mustBeOneOf('locations', selectedLocation);
-      qCoffees.equals("active", true);
-      qCoffees.orderAsc('name');
-      coffees.query(qCoffees, {
-      success: function(results){
-        if (results.size() != 0) {
-          queriedCoffees = results;
-          results.each(function(model){
-            $("#coffeesList").append(
-              $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
-              );
-          });
-        } else {
-          $("#coffeesList").append(
-            $('<option></option>').val('NONE').html('No Coffees')
-          );
-          $('#roastsList').html("");
-        }
-        
-     },
-     error: function(){ console.log("bad coffee query"); }
-     });
-
-    }
-
-    function populateRoasts(){
-      $('#roastsList').html("");
-      var selectedCoffee = $('#coffeesList').val();
-
-      var qRoasts = new StackMob.Collection.Query();
-      qRoasts.orderDesc('date');
-
-      qRoasts.mustBeOneOf("coffee", selectedCoffee);
-
-      // Hard limit of 100 roasts
-      qRoasts.setRange(0,99);
-      /*
-      for (var item in selectedCoffee) {
-        var newQuery = new StackMob.Collection.Query().equals("coffee", item);
-        qRoasts = qRoasts.or(newQuery);
-      }
-      */
-       roasts.query(qRoasts, {
-        success : function(results) {
-          if (results.size() != 0) {
-            queriedRoasts = results;
-            results.each(function(model){
-              var newDate = new Date(model.get('date'));
-              $("#roastsList").append(
-                $('<option></option>').val(model.get('roast_id')).html((newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear())
-              );
-            })
-          } else {
-            $("#roastsList").append( $('<option></option>').html("No Roasts") );
-          }
-          
-        },
-        error : function(model, response) {
-          console.log(response);
-        }
-      });
-
-    };
-
-    var headerMappings = {
-      'sm_owner':'Location',
+    headerMappings = {
+      'location_name':'Location',
       'barista_name':'Barista',
       'preparation_date':'Prep Date',
       'shift':'Shift',
@@ -218,7 +60,7 @@
       'steep_time':'Steep Time',
       'drawdown_time':'Drawdown Time',
       'score':'Overall Score',
-      'roast':'Roast Date',
+      'roastdate':'Roast Date',
       'roast_id':'Roast ID',
       'coffee':'Coffee',
       'offset' : 'Days Since Roast',
@@ -228,279 +70,207 @@
       'agitation_notes' : 'Agitation Notes'
     };
 
-    var arrayOfEspressoFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','espresso_prep_type','dial_in_difficulty','weight_of_dose','weight_of_yield','temp_of_water','preinfuse_time','total_extraction_time','positive_notes','negative_notes', 'additional_comments'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
-
-    var arrayOfDripFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes', 'additional_comments'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste'
-
-    var arrayOfBeehouseFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes', 'additional_comments'];
-
-    var arrayOfSiphonFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','weight_of_water','temp_of_water','grind', 'brewing_time','steep_time','drawdown_time', 'off_heat_time', 'agitation_notes', 'total_extraction_time','positive_notes','negative_notes', 'additional_comments'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
-
-    var arrayOfNelFields = ['coffee','sm_owner','barista_name','roast','preparation_date','shift','offset','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes', 'additional_comments'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
-
-    var arrayOfChemexFields = ['coffee','sm_owner','barista_name','roast','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes', 'additional_comments'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
-
-    var arrayOfCuppingFields = ['coffee','sm_owner','barista_name','roast','roast_id','preparation_date','offset','positive_notes','negative_notes','true_to_intent','score', 'additional_comments'];//'fragrance_aroma','acidity','mouthfeel','flavor','aftertaste',
-
-    var timeFields = ['preinfuse_time', 'total_extraction_time', 'bloom_time', 'brewing_time', 'steep_time', 'drawdown_time', 'off_heat_time'];
-
-    function sortByPrepDate(results){
-      results.comparator = function(model) {
-        return model.get("preparation_date");
-      };
-      results.sort();
-      results.models = results.models.reverse();
-      return results;
+    noteFields = {
+      "espresso" : ['coffee','location_name','barista_name','roastdate','preparation_date','offset','shift','espresso_prep_type','dial_in_difficulty','weight_of_dose','weight_of_yield','temp_of_water','preinfuse_time','total_extraction_time','positive_notes','negative_notes', 'additional_comments'],
+      "drip" : ['coffee','location_name','barista_name','roastdate','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes', 'additional_comments'],
+      "beehouse" : ['coffee','location_name','barista_name','roastdate','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes', 'additional_comments'],
+      "siphon" : ['coffee','location_name','barista_name','roastdate','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','weight_of_water','temp_of_water','grind', 'off_heat_time', 'agitation_notes', 'total_extraction_time','positive_notes','negative_notes', 'additional_comments'],
+      "nel" : ['coffee','location_name','barista_name','roastdate','preparation_date','shift','offset','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes', 'additional_comments'],
+      "chemex" : ['coffee','location_name','barista_name','roastdate','preparation_date','offset','shift','dial_in_difficulty','dose_of_coffee','dose_of_water','temp_of_water','grind','bloom_time','milk','total_extraction_time','positive_notes', 'negative_notes', 'additional_comments'],
+      "cupping" : ['coffee','location_name','barista_name','roastdate','roast_id','preparation_date','offset','positive_notes','negative_notes','true_to_intent','score', 'additional_comments']
     }
 
-    function queryEspressoNotesBasedOnRoast(){
-      if ($('#espresso_checkbox').is(':checked')) {
-        console.log("Querying all espresso notes for roast date");
-        var qEspressoNotes = new StackMob.Collection.Query();
-        qEspressoNotes.mustBeOneOf('roast', $('#roastsList').val());
+    timeFields = ['preinfuse_time', 'total_extraction_time', 'bloom_time', 'brewing_time', 'steep_time', 'drawdown_time', 'off_heat_time'];
+
+
+    $(document).ready(function(){
+
+      clearTableData();
+
+      // Show all locations
+      var qLocations = new StackMob.Collection.Query();
+      qLocations.equals("active", true);
+      qLocations.orderAsc('name');
+      locations.query(qLocations, {
+      success: function(results){
+        console.log("Fetched all locations.");
+        allLocations = results;
+        results.each(function(model){
+          $("#locationsList").append(
+            $('<option></option>').val(model.get('location_id')).html(model.get('name'))
+          );
+        });
+      },
+      error: function(model, response){ console.error("Error fetching all locations " + response.error); }
+      });
+
+      // Load all notes in background
+      qNotes = new StackMob.Collection.Query();
+
+      // Determine roastdate parameter
+      var dateToFetchSince;
+
+      if(typeof(Storage)=="undefined") {
+        // TODO update for only since last fetched date
+
+        // Read the past month
+        console.debug("NO STORAGE AVAILABLE ON THIS BROWSER!");
+        
+        var today = new Date();
+        var oneMonthAgo = new Date(today.getFullYear(), today.getMonth()-1, today.getDate());
+        var offsetTime = today.getTimezoneOffset() * 60000;
+        var dateToFetchSince = oneMonthAgo.getTime() - offsetTime;
+        qNotes.gte("roastdate", dateToFetchSince);
+
+      } else {
+          
+        var today = new Date();
+        var oneMonthAgo = new Date(today.getFullYear(), today.getMonth()-1, today.getDate());
+        var offsetTime = today.getTimezoneOffset() * 60000;
+        var dateToFetchSince = oneMonthAgo.getTime() - offsetTime;
+        qNotes.gte("roastdate", dateToFetchSince);
+        
+      }
+
+      notes.query(qNotes, {
+        success : function(results) {
+          console.log("Fetched all notes.");
+
+          allNotes = JSON.stringify(results.toJSON());
+
+          if(typeof(Storage) != "undefined") {
+            storeNotes(results);
+            localStorage.setItem("COFFEE-LOG-LAST-FETCHED-DATE", dateToFetchSince);
+            localStorage.setItem("COFFEE-LOG-LAST-FETCHED-TIME", new Date().getTime());
+          }
+          
+        },
+        error : function(model, response) {
+          console.error("Error fetching notes: " + response.error);
+        }
+      });
+
+      roles.fetch({
+        success : function (collection) {
+          console.log("Fetched all admins.");
+          admins = collection.models[0].get('members');
+        },
+        error : function(model, response){
+          console.error('Error fetching admins ' + response.error);
+        }
+      });
+
+    function storeNotes(fetchedNotes) {
+
+      var jsonNotes = fetchedNotes.toJSON();
+      var stringifiedNotes = JSON.stringify(jsonNotes);
+      localStorage.setItem("COFFEE-LOG-LOCAL-NOTES", stringifiedNotes);
+      
+    }
+
+    function clearTableData() {
+      $('.note-table').hide();
+      _.each(types, function(type) {
+        $('#' + type + '-table-data').html("");
+        $('#' + type + '-note-count').html("");
+        //$('#export_' + type + '_data').hide();
         /*
-        $('input:checkbox:checked.sort_checkbox').each(function(idx,obj){ 
-          qEspressoNotes.orderDesc($(obj).val()); 
-        });
-*/
+        if ($('#' + type + 'TableDivider')) {
+          $('#' + type + 'TableDivider').hide();
+        }
+        */
+      });
+    }
 
-        var arrayOfLocations = [];
-        if ($('#locationsList').val()) {
-          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
-            var fullLocationObject = allLocations.find(function(item){
-              return item.get('location_id') == loc_id;
-            });
-            return "user/" + fullLocationObject.get('name');
+    function showAllCoffees(){
+      $('#coffeesList').html("");
+
+      var qCoffees = new StackMob.Collection.Query();
+      qCoffees.equals("active", true);
+      qCoffees.orderAsc('name');
+      coffees.query(qCoffees, {
+      success: function(results){
+        console.log("Fetched all coffees");
+        if (results.size() != 0) {
+          results.each(function(model){
+            $("#coffeesList").append(
+              $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
+              );
           });
-        }
-
-        var mustBeOneOfArray = [];
-        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
-          var adminArray = admins.map(function(item) { return 'user/' + item;});
-          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
         } else {
-          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+          $("#coffeesList").append(
+            $('<option></option>').val('NONE').html('No Coffees')
+          );
         }
-
-        qEspressoNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
-
-        if ($('#from_prep_date').val() != "") {
-          // Add error check
-          var from_time = new Date($('#from_prep_date').val()).getTime();
-          console.log(from_time);
-
-          var to_time;
-
-          if ($('#to_prep_date').val() != "") {
-            // Add error check
-            to_time = new Date($('#to_prep_date').val()).getTime();
-            console.log(to_time);
-          } else {
-            to_time = new Date().getTime();
-            console.log(to_time);
-          }
-
-          qEspressoNotes.gte('preparation_date', from_time);
-          qEspressoNotes.lte('preparation_date', to_time);
-
-        }
-
-        qEspressoNotes.orderDesc('preparation_date');
-
-        espressoNotes.query(qEspressoNotes, {
-          success : function(results){
-            console.log('Successfully got all espresso notes');
-            var roast;
-
-            if (results.length > 0) {
-              $('#export_espresso_data').show();
-              populateEspressoTable();
-              results = sortByPrepDate(results);
-              results.each(function(model){
-              var columnData = [];
-              _.each(arrayOfEspressoFields, function(idx, item){
-                var field = arrayOfEspressoFields[item];
-                var entry;
-                if (timeFields.indexOf(field) != -1){
-                  var ms = model.get(field);
-                  if (ms) {
-                    entry = millisecondsToDurationString(ms);
-                  } else {
-                    entry = undefined;
-                  }
-                } else if (field == "sm_owner") {
-                  entry = model.get(field).split("/")[1];
-                } else if (field == "coffee") {
-                  var roastResult = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  var coffeeResult = queriedCoffees.find(function(item){
-                    return item.get('coffee_id') == roastResult.get('coffee');
-                  });
-                  entry = coffeeResult.get('name');
-                } else if (field == "preparation_date") {
-                  var newDate = new Date(model.get(field));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "roast") {
-                  var result = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  roast = result.get('date');
-                  var newDate = new Date(result.get('date'));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "offset") {
-                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
-                } else {
-                  entry = model.get(field);
-                }
-
-                columnData.push($('<td></td>').html(entry));
-              });
-              $('#espressoTableData').append(
-                $('<tr></tr>').append(
-                  columnData
-                )
-              )
-              });
-            }
-            
-            queryDripNotesBasedOnRoast();
-          },
-          error : function(model, response){
-            console.log(response);
-          }
-        });
-      } else {
-        queryDripNotesBasedOnRoast();
-      }
-    };
-
-    function queryDripNotesBasedOnRoast(){
-      if ($('#drip_checkbox').is(':checked')) {
-        console.log("Querying all drip notes for roast date");
-        var qDripNotes = new StackMob.Collection.Query();
-        qDripNotes.mustBeOneOf('roast', $('#roastsList').val());
-        qDripNotes.orderDesc('preparation_date');
         
-        var arrayOfLocations = [];
-        if ($('#locationsList').val()) {
-          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
-            var fullLocationObject = allLocations.find(function(item){
-              return item.get('location_id') == loc_id;
-            });
-            return "user/" + fullLocationObject.get('name');
+     },
+     error: function(model, response){ console.error("Error fetching coffees " + response.error); }
+     });
+
+    }
+
+    function populateCoffees(){
+      $('#coffeesList').html("");
+      var selectedLocation = $('#locationsList').val();
+
+      var qCoffees = new StackMob.Collection.Query();
+
+      qCoffees.mustBeOneOf('locations', selectedLocation);
+      qCoffees.equals("active", true);
+      qCoffees.orderAsc('name');
+
+      coffees.query(qCoffees, {
+      success: function(results){
+        console.log("Fetched coffees to populate");
+        if (results.size() != 0) {
+          queriedCoffees = results;
+          results.each(function(model){
+            $("#coffeesList").append(
+              $('<option></option>').val(model.get('coffee_id')).html(model.get('name'))
+              );
           });
-        }
-
-        var mustBeOneOfArray = [];
-        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
-          var adminArray = admins.map(function(item) { return 'user/' + item;});
-          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
         } else {
-          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+          $("#coffeesList").append(
+            $('<option></option>').val('NONE').html('No Coffees')
+          );
+          $('#roastsList').html("");
         }
-
-        qDripNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
-
-        if ($('#from_prep_date').val() != "") {
-          // Add error check
-          var from_time = new Date($('#from_prep_date').val()).getTime();
-          console.log(from_time);
-
-          var to_time;
-
-          if ($('#to_prep_date').val() != "") {
-            // Add error check
-            to_time = new Date($('#to_prep_date').val()).getTime();
-            console.log(to_time);
-          } else {
-            to_time = new Date().getTime();
-            console.log(to_time);
-          }
-
-          qDripNotes.gte('preparation_date', from_time);
-          qDripNotes.lte('preparation_date', to_time);
-
-        }
-
-        dripNotes.query(qDripNotes, {
-          success : function(results){
-            console.log('Successfully got all drip notes');
-            var roast;
-
-            if (results.length > 0) {
-              $('#export_drip_data').show();
-              populateDripTable();
-              results = sortByPrepDate(results);
-              results.each(function(model){
-              var columnData = [];
-              _.each(arrayOfDripFields, function(idx, item){
-                var field = arrayOfDripFields[item];
-                var entry;
-                
-                if (field == "coffee") {
-                  var roastResult = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  var coffeeResult = queriedCoffees.find(function(item){
-                    return item.get('coffee_id') == roastResult.get('coffee');
-                  });
-                  entry = coffeeResult.get('name');
-                } else if (field == "preparation_date") {
-                  var newDate = new Date(model.get(field));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (timeFields.indexOf(field) != -1){
-                  var ms = model.get(field);
-                  if (ms) {
-                    entry = millisecondsToDurationString(ms);
-                  } else {
-                    entry = undefined;
-                  }
-                } else if (field == "sm_owner") {
-                  entry = model.get(field).split("/")[1];
-                } else if (field == "milk") {
-                  entry = model.get(field) ? "YES" : "NO";
-                } else if (field == "roast") {
-                  var result = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  roast = result.get('date');
-                  var newDate = new Date(result.get('date'));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                }  else if (field == "offset") {
-                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
-                } else {
-                  entry = model.get(field);
-                }
-
-                columnData.push($('<td></td>').html(entry));
-              });
-              $('#dripTableData').append(
-                $('<tr></tr>').append(
-                  columnData
-                )
-              )
-              });
-            }
-            
-            queryBeehouseNotesBasedOnRoast();
-          },
-          error : function(model, response){
-            console.log(response);
-          }
-        });
-      } else {
-        queryBeehouseNotesBasedOnRoast();
-      }
-    };
-
-    function queryBeehouseNotesBasedOnRoast(){
-      if ($('#beehouse_checkbox').is(':checked')) {
-        console.log("Querying all beehouse notes for roast date");
-        var qBeehouseNotes = new StackMob.Collection.Query();
-        qBeehouseNotes.mustBeOneOf('roast', $('#roastsList').val());
-        qBeehouseNotes.orderDesc('preparation_date');
         
+     },
+     error: function(model, response){ console.error("Error fetching coffees " + response.error); }
+     });
+
+    }
+
+    function populateRoasts(){
+      console.log("Populating roasts.");
+
+      $('#roastsList').html("");
+
+      var storedNotes;
+
+      if(typeof(Storage) != "undefined") {
+        storedNotes = localStorage.getItem("COFFEE-LOG-LOCAL-NOTES");
+      } else {
+        storedNotes = allNotes;
+      }
+
+      if (!storedNotes) {
+        console.error("No notes found");
+        return 0;
+      }
+
+      var jsonNotes;
+
+      try {
+        jsonNotes = JSON.parse(storedNotes);
+
+        if (jsonNotes.length == 0) {
+          $("#roastsList").append(
+            $('<option></option>').val('NONE').html('No Roasts')
+          );
+        }
+
         var arrayOfLocations = [];
         if ($('#locationsList').val()) {
           arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
@@ -511,672 +281,223 @@
           });
         }
 
-        var mustBeOneOfArray = [];
+        var selectedLocations = [];
         if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
           var adminArray = admins.map(function(item) { return 'user/' + item;});
-          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
+          selectedLocations = $.merge($.makeArray(arrayOfLocations), adminArray);
         } else {
-          mustBeOneOfArray = $.makeArray(arrayOfLocations);
+          selectedLocations = $.makeArray(arrayOfLocations);
         }
 
-        qBeehouseNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
+        var selectedCoffees = $("#coffeesList").val();
 
-        if ($('#from_prep_date').val() != "") {
+        var allApplicableNotes = _.filter(jsonNotes, function(note){
+          return (selectedLocations.indexOf(note["sm_owner"]) != -1) && (selectedCoffees.indexOf(note["coffee"]) != -1);
+        });
+
+        var allRoastDates = _.map(allApplicableNotes, function(object){
+          return object["roastdate"];
+        });
+
+        var uniqueRoastDates = _.sortBy(_.uniq(allRoastDates), function(num){
+          // DESC order
+          return -num;
+        });
+
+        _.each(uniqueRoastDates, function(item){
+          var dateForOffset = new Date();
+          var offsetTime = item + (dateForOffset.getTimezoneOffset() * 60000);
+          var newDate = new Date(offsetTime);
+            $("#roastsList").append(
+              $('<option></option>').val(item).html((newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear())
+          );
+        });
+
+      } catch (e) {
+        console.error("Could not parse JSON " + e);
+        $('#roastsList').html("Error");
+      }
+
+    };
+
+    function queryLocalNotes(){
+      // Load notes
+      var rawNotes;
+      if (typeof(Storage) != "undefined") {
+        rawNotes = localStorage.getItem("COFFEE-LOG-LOCAL-NOTES");
+      } else {
+        rawNotes = allNotes;
+      }
+
+      var localNotes = [];
+      try {
+        localNotes = JSON.parse(rawNotes);
+      } catch (e) {
+        console.error("Could not parse JSON: " + e);
+      }
+
+      // Define conditions
+      var arrayOfLocations = [];
+        if ($('#locationsList').val()) {
+          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
+            var fullLocationObject = allLocations.find(function(item){
+              return item.get('location_id') == loc_id;
+            });
+            return "user/" + fullLocationObject.get('name');
+          });
+      }
+
+      var selectedLocations = [];
+      if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
+        var adminArray = admins.map(function(item) { return 'user/' + item;});
+        selectedLocations = $.merge($.makeArray(arrayOfLocations), adminArray);
+      } else {
+        selectedLocations = $.makeArray(arrayOfLocations);
+      }
+
+      var selectedCoffees = $("#coffeesList").val();
+
+      var selectedRoasts = $("#roastsList").val();
+
+      // 1/1/1970
+      var from_time = new Date(0).getTime();
+
+      // today
+      var today = new Date();
+      var todayTimezoneOffset = today.getTimezoneOffset() * 60000;
+      var todayWithoutMisc = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      var to_time = todayWithoutMisc.getTime() - todayTimezoneOffset;
+
+      if ($('#from_prep_date').val() != "") {
           // Add error check
-          var from_time = new Date($('#from_prep_date').val()).getTime();
-          console.log(from_time);
-
-          var to_time;
+          var offsetFromTime = new Date($('#from_prep_date').val()).getTime() - todayTimezoneOffset;
+          from_time = new Date(offsetFromTime).getTime();
 
           if ($('#to_prep_date').val() != "") {
             // Add error check
-            to_time = new Date($('#to_prep_date').val()).getTime();
-            console.log(to_time);
-          } else {
-            to_time = new Date().getTime();
-            console.log(to_time);
+            var offsetToTime = new Date($('#to_prep_date').val()).getTime() - todayTimezoneOffset;
+            to_time = new Date(offsetToTime).getTime();
           }
 
-          qBeehouseNotes.gte('preparation_date', from_time);
-          qBeehouseNotes.lte('preparation_date', to_time);
-
-        }
-
-        beehouseNotes.query(qBeehouseNotes, {
-          success : function(results){
-            console.log('Successfully got all beehouse notes');
-            var roast;
-
-            if (results.length > 0) {
-              $('#export_beehouse_data').show();
-              populateBeehouseTable();
-              results = sortByPrepDate(results);
-              results.each(function(model){
-              var columnData = [];
-              _.each(arrayOfBeehouseFields, function(idx, item){
-                var field = arrayOfBeehouseFields[item];
-                var entry;
-                
-                if (field == "coffee") {
-                  var roastResult = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  var coffeeResult = queriedCoffees.find(function(item){
-                    return item.get('coffee_id') == roastResult.get('coffee');
-                  });
-                  entry = coffeeResult.get('name');
-                } else if (field == "preparation_date") {
-                  var newDate = new Date(model.get(field));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (timeFields.indexOf(field) != -1){
-                  var ms = model.get(field);
-                  if (ms) {
-                    entry = millisecondsToDurationString(ms);
-                  } else {
-                    entry = undefined;
-                  }
-                } else if (field == "sm_owner") {
-                  entry = model.get(field).split("/")[1];
-                } else if (field == "milk") {
-                  entry = model.get(field) ? "YES" : "NO";
-                } else if (field == "roast") {
-                  var result = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  roast = result.get('date');
-                  var newDate = new Date(result.get('date'));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                }  else if (field == "offset") {
-                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
-                } else {
-                  entry = model.get(field);
-                }
-
-                columnData.push($('<td></td>').html(entry));
-              });
-              $('#beehouseTableData').append(
-                $('<tr></tr>').append(
-                  columnData
-                )
-              )
-              });
-            }
-            
-            querySiphonNotesBasedOnRoast();
-          },
-          error : function(model, response){
-            console.log(response);
-          }
-        });
-      } else {
-        querySiphonNotesBasedOnRoast();
       }
-    };
 
-    function querySiphonNotesBasedOnRoast(){
-      if ($('#siphon_checkbox').is(':checked')) {
-        console.log("Querying all siphon notes for roast date");
-        var qSiphonNotes = new StackMob.Collection.Query();
-        qSiphonNotes.mustBeOneOf('roast', $('#roastsList').val());
-        qSiphonNotes.orderDesc('preparation_date');
+      // Filter notes based on conditions
+      var filteredNotes = _.filter(localNotes, function(note){
+        return (selectedLocations.indexOf(note["sm_owner"]) != -1) && (selectedCoffees.indexOf(note["coffee"]) != -1) && (selectedRoasts.indexOf(JSON.stringify(note["roastdate"])) != -1) && note["preparation_date"] >= from_time && note["preparation_date"] <= to_time;
+      });
+
+      if (filteredNotes.length == 0) {
+        $("#noNotesLabel").append(
+          "No notes found."
+        )
+      }
+
+      _.each(types, function(noteType) {
+        if ($("#" + noteType + "_checkbox").is(':checked')) {
+          var notes = _.filter(filteredNotes, function(note){
+            return note["prep_method"] == noteType;
+          });
+
+          /*
+          if ($('#' + noteType + 'TableDivider')) {
+            $('#' + noteType + 'TableDivider').show();
+          }
+          */
         
-        var arrayOfLocations = [];
-        if ($('#locationsList').val()) {
-          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
-            var fullLocationObject = allLocations.find(function(item){
-              return item.get('location_id') == loc_id;
-            });
-            return "user/" + fullLocationObject.get('name');
-          });
+          showNotes(notes, noteType);
         }
+      });
 
-        var mustBeOneOfArray = [];
-        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
-          var adminArray = admins.map(function(item) { return 'user/' + item;});
-          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
-        } else {
-          mustBeOneOfArray = $.makeArray(arrayOfLocations);
-        }
+    }
 
-        qSiphonNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
+    function showNotes(notes, type) {
 
-        if ($('#from_prep_date').val() != "") {
-          // Add error check
-          var from_time = new Date($('#from_prep_date').val()).getTime();
-          console.log(from_time);
-
-          var to_time;
-
-          if ($('#to_prep_date').val() != "") {
-            // Add error check
-            to_time = new Date($('#to_prep_date').val()).getTime();
-            console.log(to_time);
-          } else {
-            to_time = new Date().getTime();
-            console.log(to_time);
-          }
-
-          qSiphonNotes.gte('preparation_date', from_time);
-          qSiphonNotes.lte('preparation_date', to_time);
-
-        }
-
-
-        siphonNotes.query(qSiphonNotes, {
-          success : function(results){
-            console.log('Successfully got all siphon notes');
-            var roast;
-
-            if (results.length > 0) {
-              $('#export_siphon_data').show();
-              populateSiphonTable();
-              results = sortByPrepDate(results);
-              results.each(function(model){
-              var columnData = [];
-              _.each(arrayOfSiphonFields, function(idx, item){
-                var field = arrayOfSiphonFields[item];
-                var entry;
-
-                if (field == "coffee") {
-                  var roastResult = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  var coffeeResult = queriedCoffees.find(function(item){
-                    return item.get('coffee_id') == roastResult.get('coffee');
-                  });
-                  entry = coffeeResult.get('name');
-                } else if (field == "preparation_date") {
-                  var newDate = new Date(model.get(field));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "sm_owner") {
-                  entry = model.get(field).split("/")[1];
-                } else if (timeFields.indexOf(field) != -1){
-                  var ms = model.get(field);
-                  if (ms) {
-                    entry = millisecondsToDurationString(ms);
-                  } else {
-                    entry = undefined;
-                  }
-                } else if (field == "roast") {
-                  var result = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  roast = result.get('date');
-                  var newDate = new Date(result.get('date'));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "offset") {
-                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
-                } else {
-                  entry = model.get(field);
-                }
-
-                columnData.push($('<td></td>').html(entry));
-              });
-              $('#siphonTableData').append(
-                $('<tr></tr>').append(
-                  columnData
-                )
-              )
-              });
-            }
-            
-            queryNelNotesBasedOnRoast();
-          },
-          error : function(model, response){
-            console.log(response);
-          }
-        });
-      } else {
-        queryNelNotesBasedOnRoast();
+      $("#" + type + "-note-table").show();
+      
+      var noteName = type;
+      var notePlural = "notes";
+      if (noteName == "drip") {
+        noteName = "bonmac";
       }
-    };
-    
-    function queryNelNotesBasedOnRoast(){
-      if ($('#nel_checkbox').is(':checked')) {
-        console.log("Querying all nel notes for roast date");
-        var qNelNotes = new StackMob.Collection.Query();
-        qNelNotes.mustBeOneOf('roast', $('#roastsList').val());
-        
-        var arrayOfLocations = [];
-        if ($('#locationsList').val()) {
-          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
-            var fullLocationObject = allLocations.find(function(item){
-              return item.get('location_id') == loc_id;
-            });
-            return "user/" + fullLocationObject.get('name');
-          });
-        }
 
-        var mustBeOneOfArray = [];
-        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
-          var adminArray = admins.map(function(item) { return 'user/' + item;});
-          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
-        } else {
-          mustBeOneOfArray = $.makeArray(arrayOfLocations);
-        }
-
-        qNelNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
-
-        if ($('#from_prep_date').val() != "") {
-          // Add error check
-          var from_time = new Date($('#from_prep_date').val()).getTime();
-          console.log(from_time);
-
-          var to_time;
-
-          if ($('#to_prep_date').val() != "") {
-            // Add error check
-            to_time = new Date($('#to_prep_date').val()).getTime();
-            console.log(to_time);
-          } else {
-            to_time = new Date().getTime();
-            console.log(to_time);
-          }
-
-          qNelNotes.gte('preparation_date', from_time);
-          qNelNotes.lte('preparation_date', to_time);
-
-        }
-
-        qNelNotes.orderDesc('preparation_date');
-        nelNotes.query(qNelNotes, {
-          success : function(results){
-            console.log('Successfully got all nel notes');
-            var roast;
-
-            if (results.length > 0) {
-              $('#export_nel_data').show();
-              populateNelTable();
-              results = sortByPrepDate(results);
-              results.each(function(model){
-              var columnData = [];
-              _.each(arrayOfNelFields, function(idx, item){
-                var field = arrayOfNelFields[item];
-                var entry;
-
-                if (field == "coffee") {
-                  var roastResult = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  var coffeeResult = queriedCoffees.find(function(item){
-                    return item.get('coffee_id') == roastResult.get('coffee');
-                  });
-                  entry = coffeeResult.get('name');
-                } else if (field == "preparation_date") {
-                  var newDate = new Date(model.get(field));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "sm_owner") {
-                  entry = model.get(field).split("/")[1];
-                } else if (timeFields.indexOf(field) != -1){
-                  var ms = model.get(field);
-                  if (ms) {
-                    entry = millisecondsToDurationString(ms);
-                  } else {
-                    entry = undefined;
-                  }
-                } else if (field == "roast") {
-                  var result = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  roast = result.get('date');
-                  var newDate = new Date(result.get('date'));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "offset") {
-                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
-                } else {
-                  entry = model.get(field);
-                }
-
-                columnData.push($('<td></td>').html(entry));
-              });
-              $('#nelTableData').append(
-                $('<tr></tr>').append(
-                  columnData
-                )
-              )
-              });
-            }
-            
-            queryChemexNotesBasedOnRoast();
-          },
-          error : function(model, response){
-            console.log(response);
-          }
-        });
-      } else {
-        queryChemexNotesBasedOnRoast();
+      if (notes.length == 0) {
+        $("#export-" + type + "-data").hide();
+        $("#" + type + "-note-count").html("No " + noteName + " notes.");
+        console.log("No " + noteName + " notes.");
+        return 0;
       }
-    };
 
-    function queryChemexNotesBasedOnRoast(){
-      if ($('#chemex_checkbox').is(':checked')) {
-        console.log("Querying all chemex notes for roast date");
-        var qChemexNotes = new StackMob.Collection.Query();
-        qChemexNotes.mustBeOneOf('roast', $('#roastsList').val());
-        qChemexNotes.orderDesc('preparation_date');
-        
-        var arrayOfLocations = [];
-        if ($('#locationsList').val()) {
-          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
-            var fullLocationObject = allLocations.find(function(item){
-              return item.get('location_id') == loc_id;
-            });
-            return "user/" + fullLocationObject.get('name');
-          });
-        }
+      $("#export-" + type + "-data").show();
 
-        var mustBeOneOfArray = [];
-        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
-          var adminArray = admins.map(function(item) { return 'user/' + item;});
-          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
-        } else {
-          mustBeOneOfArray = $.makeArray(arrayOfLocations);
-        }
-
-        qChemexNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
-
-        if ($('#from_prep_date').val() != "") {
-          // Add error check
-          var from_time = new Date($('#from_prep_date').val()).getTime();
-          console.log(from_time);
-
-          var to_time;
-
-          if ($('#to_prep_date').val() != "") {
-            // Add error check
-            to_time = new Date($('#to_prep_date').val()).getTime();
-            console.log(to_time);
-          } else {
-            to_time = new Date().getTime();
-            console.log(to_time);
-          }
-
-          qChemexNotes.gte('preparation_date', from_time);
-          qChemexNotes.lte('preparation_date', to_time);
-
-        }
-
-        chemexNotes.query(qChemexNotes, {
-          success : function(results){
-            console.log('Successfully got all chemex notes');
-            var roast;
-
-            if (results.length > 0) {
-              $('#export_chemex_data').show();
-              populateChemexTable();
-              results = sortByPrepDate(results);
-              results.each(function(model){
-              var columnData = [];
-              _.each(arrayOfChemexFields, function(idx, item){
-                var field = arrayOfChemexFields[item];
-                var entry;
-                
-                if (field == "coffee") {
-                  var roastResult = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  var coffeeResult = queriedCoffees.find(function(item){
-                    return item.get('coffee_id') == roastResult.get('coffee');
-                  });
-                  entry = coffeeResult.get('name');
-                } else if (field == "preparation_date") {
-                  var newDate = new Date(model.get(field));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "sm_owner") {
-                  entry = model.get(field).split("/")[1];
-                } else if (timeFields.indexOf(field) != -1){
-                  var ms = model.get(field);
-                  if (ms) {
-                    entry = millisecondsToDurationString(ms);
-                  } else {
-                    entry = undefined;
-                  }
-                } else if (field == "roast") {
-                  var result = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  roast = result.get('date');
-                  var newDate = new Date(result.get('date'));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "offset") {
-                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
-                } else {
-                  entry = model.get(field);
-                }
-
-                columnData.push($('<td></td>').html(entry));
-              });
-              $('#chemexTableData').append(
-                $('<tr></tr>').append(
-                  columnData
-                )
-              )
-              });
-            }
-            
-            queryCuppingNotesBasedOnRoast();
-          },
-          error : function(model, response){
-            console.log(response);
-          }
-        });
-      } else {
-        queryCuppingNotesBasedOnRoast();
+      if (notes.length == 1) {
+        notePlural = "note";
       }
-    };
+      $("#" + type + "-note-count").html(notes.length + " " + noteName + " " + notePlural + ":");
+      
+      //$(".note-table").show();
+      //$("#export_" + type + "_data").show();
+      populateTableHeaders(type);
 
-    function queryCuppingNotesBasedOnRoast(){
-      if ($('#cupping_checkbox').is(':checked')) {
-        console.log("Querying all cupping notes for roast date");
-        var qCuppingNotes = new StackMob.Collection.Query();
-        qCuppingNotes.mustBeOneOf('roast', $('#roastsList').val());
-        
-        var arrayOfLocations = [];
-        if ($('#locationsList').val()) {
-          arrayOfLocations = $('#locationsList').val().map(function(loc_id,idx){
-            var fullLocationObject = allLocations.find(function(item){
-              return item.get('location_id') == loc_id;
-            });
-            return "user/" + fullLocationObject.get('name');
-          });
-        }
+      // desc order
+      notes.sort(function(note1, note2) {
+        return note2["preparation_date"] - note1["preparation_date"];
+      });
 
-        var mustBeOneOfArray = [];
-        if ($('#all_admin_checkbox').is(':checked') && admins.length > 0) {
-          var adminArray = admins.map(function(item) { return 'user/' + item;});
-          mustBeOneOfArray = $.merge($.makeArray(arrayOfLocations), adminArray);
-        } else {
-          mustBeOneOfArray = $.makeArray(arrayOfLocations);
-        }
-
-        qCuppingNotes.mustBeOneOf('sm_owner', mustBeOneOfArray);
-
-        if ($('#from_prep_date').val() != "") {
-          // Add error check
-          var from_time = new Date($('#from_prep_date').val()).getTime();
-          console.log(from_time);
-
-          var to_time;
-
-          if ($('#to_prep_date').val() != "") {
-            // Add error check
-            to_time = new Date($('#to_prep_date').val()).getTime();
-            console.log(to_time);
-          } else {
-            to_time = new Date().getTime();
-            console.log(to_time);
-          }
-
-          qCuppingNotes.gte('preparation_date', from_time);
-          qCuppingNotes.lte('preparation_date', to_time);
-
-        }
-
-        qCuppingNotes.orderDesc('preparation_date');
-        cuppingNotes.query(qCuppingNotes, {
-          success : function(results){
-            console.log('Successfully got all cupping notes');
-            var roast;
-
-            if (results.length > 0) {
-              $('#export_cupping_data').show();
-              populateCuppingTable();
-              results = sortByPrepDate(results);
-              results.each(function(model){
-              var columnData = [];
-              _.each(arrayOfCuppingFields, function(idx, item){
-                var field = arrayOfCuppingFields[item];
-                var entry;
-                if (field == "coffee") {
-                  var roastResult = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  var coffeeResult = queriedCoffees.find(function(item){
-                    return item.get('coffee_id') == roastResult.get('coffee');
-                  });
-                  entry = coffeeResult.get('name');
-                } else if (field == "preparation_date") {
-                  var newDate = new Date(model.get(field));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "sm_owner") {
-                  entry = model.get(field).split("/")[1];
-                } else if (timeFields.indexOf(field) != -1){
-                  var ms = model.get(field);
-                  if (ms) {
-                    entry = millisecondsToDurationString(ms);
-                  } else {
-                    entry = undefined;
-                  }
-                } else if (field == "roast") {
-                  var result = queriedRoasts.find(function(item){ 
-                    return item.get('roast_id') == model.get('roast'); 
-                  });
-                  roast = result.get('date');
-                  var newDate = new Date(result.get('date'));
-                  entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
-                } else if (field == "offset") {
-                  entry = ((model.get('preparation_date') - roast) / 1000) / (24 * 60 * 60);
-                } else if (field == 'true_to_intent') {
-                  if (model.get(field) == undefined) {
-                    entry = undefined;
-                  } else {
-                    entry = model.get(field) ? "YES" : "NO";
-                  }
-                } else {
-                  entry = model.get(field);
-                }
-
-                columnData.push($('<td></td>').html(entry));
+      _.each(notes, function(note){
+          var columnData = [];
+          var fields = noteFields[type];
+          _.each(fields, function(idx, item){
+            var field = fields[item];
+            var entry;
+            if (timeFields.indexOf(field) != -1){
+              var ms = note[field];
+              if (ms) {
+                entry = millisecondsToDurationString(ms);
+              } else {
+                entry = undefined;
+              }
+            } else if (field == "coffee") {
+              var coffeeResult = queriedCoffees.find(function(item){
+                return item.get('coffee_id') == note["coffee"];
               });
-              $('#cuppingTableData').append(
-                $('<tr></tr>').append(
-                  columnData
-                )
-              )
-              });
+              entry = coffeeResult.get('name');
+            } else if (field == "preparation_date" || field == "roastdate") {
+              var dateForOffset = new Date();
+              var offsetTime = note[field] + (dateForOffset.getTimezoneOffset() * 60000);
+              var newDate = new Date(offsetTime);
+              entry = (newDate.getMonth() + 1) + "/" + newDate.getDate() + "/" + newDate.getFullYear();
+            } else if (field == "offset") {
+              entry = parseInt(((note["preparation_date"] - note["roastdate"]) / 1000) / (24 * 60 * 60));
+            } else if (field == "milk") {
+              entry = note[field] ? "YES" : "NO";
+            } else if (field == "true_to_intent") {
+              entry = note[field] ? "YES" : "NO";
+            } else {
+              entry = note[field];
             }
-            
-            //queryChemexNotesBasedOnRoast();
-          },
-          error : function(model, response){
-            console.log(response);
-          }
+
+            columnData.push($('<td></td>').html(entry));
         });
-      } else {
-        //queryChemexNotesBasedOnRoast();
-      }
-    };
+        $("#" + type + "-table-data").append(
+          $('<tr></tr>').append(
+            columnData
+          )
+        )
+      });
+    }
 
-    function populateEspressoTable() {
+    function populateTableHeaders(type){
       var columnHeaders = [];
-      _.each(arrayOfEspressoFields, function(item, idx){
+      _.each(noteFields[type], function(item, idx){
         var entry = headerMappings[item];
         columnHeaders.push($('<th nowrap></th>').html(entry));
-      })
-      $('#espressoTableData').append(
+      });
+      $("#" + type + "-table-data").append(
         $('<tr></tr>').append(
           columnHeaders
         )
       )
-    };
-
-    function populateDripTable() {
-      var columnHeaders = [];
-      _.each(arrayOfDripFields, function(item, idx){
-        var entry = headerMappings[item];
-        columnHeaders.push($('<th nowrap></th>').html(entry));
-      })
-      $('#dripTableData').append(
-        $('<tr></tr>').append(
-          columnHeaders
-        )
-      )
-    };
-
-    function populateBeehouseTable() {
-      var columnHeaders = [];
-      _.each(arrayOfBeehouseFields, function(item, idx){
-        var entry = headerMappings[item];
-        columnHeaders.push($('<th nowrap></th>').html(entry));
-      })
-      $('#beehouseTableData').append(
-        $('<tr></tr>').append(
-          columnHeaders
-        )
-      )
-    };
-
-    function populateSiphonTable() {
-      var columnHeaders = [];
-      _.each(arrayOfSiphonFields, function(item, idx){
-        var entry = headerMappings[item];
-        columnHeaders.push($('<th nowrap></th>').html(entry));
-      })
-      $('#siphonTableData').append(
-        $('<tr></tr>').append(
-          columnHeaders
-        )
-      )
-    };
-
-    function populateNelTable() {
-      var columnHeaders = [];
-      _.each(arrayOfNelFields, function(item, idx){
-        var entry = headerMappings[item];
-        columnHeaders.push($('<th nowrap></th>').html(entry));
-      })
-      $('#nelTableData').append(
-        $('<tr></tr>').append(
-          columnHeaders
-        )
-      )
-    };
-
-    function populateChemexTable() {
-      var columnHeaders = [];
-      _.each(arrayOfChemexFields, function(item, idx){
-        var entry = headerMappings[item];
-        columnHeaders.push($('<th nowrap></th>').html(entry));
-      })
-      $('#chemexTableData').append(
-        $('<tr></tr>').append(
-          columnHeaders
-        )
-      )
-    };
-
-    function populateCuppingTable() {
-      var columnHeaders = [];
-      _.each(arrayOfCuppingFields, function(item, idx){
-        var entry = headerMappings[item];
-        columnHeaders.push($('<th nowrap></th>').html(entry));
-      })
-      $('#cuppingTableData').append(
-        $('<tr></tr>').append(
-          columnHeaders
-        )
-      )
-    };
+    }
 
     function selectAllRoasts(){
 
@@ -1216,27 +537,25 @@
 
     }
 
-    // TODO do we need this?
-    $('#admin_notes_checkbox').change(function(){
-      if ($('#admin_notes_checkbox').is(':checked')) {
-        showAllCoffees();
-      } else {
-        if ($('#locationsList').val()) {
-          populateCoffees();
-        } else {
-          $('#coffeesList').html("");
-          $('#roastsList').html("");
-        }
-      }
+    $('#all_admin_checkbox').change(function(){
+      populateRoasts();
     });
+
+    // Click on locations list
     $('#locationsList').change(function(){
       $('#coffeesList').html("");
       $('#roastsList').html("");
-      populateCoffees();
+      if ($("#locationsList").val() != undefined) {
+        populateCoffees();
+      }
     });
+
+    // Click on coffee list
     $('#coffeesList').change(function(){
       $('#roastsList').html("");
-      populateRoasts();
+      if ($("#coffeesList").val() != undefined) {
+        populateRoasts();
+      }
     });
 
     $('.select-all').click(function(){
@@ -1253,38 +572,35 @@
 
     $('#getNotesFromRoast').click(function(e){
       e.preventDefault();
-      hideAllButtons();
-      clearAllTableData();
-      /*
-      $('#showingNotesForRostDate').html("");
-      $('#showingNotesForRostDate').append("Showing notes for " + $('#roastsList').find(":selected").text() + "  roast of " + $('#coffeesList').find(":selected").text() + ".");
-      */
-      queryEspressoNotesBasedOnRoast();
+      clearTableData();
+      if ($("#roastsList").val()) {
+        queryLocalNotes();
+      }
     });
 
     $(".export-button").click(function(){
       saveTable( $(this).data("target") );
     });
 
-    // Read messages
-      var query = new StackMob.Collection.Query();
-      query.equals("messages_id", "1234");
-      messages.query(query, {
-        success: function(results) {
-          var allMessages = results.toJSON();
-          if (allMessages.length != 1) {
-            console.debug("Messages count off");
-          } else {
-            var message = allMessages[0];
-            if (message["maintenance"]) {
-              $("#maintenanceBar").html(message["maintenance"]).slideDown(300);
-            }
+    // Read messages for banners
+    var query = new StackMob.Collection.Query();
+    query.equals("messages_id", "1234");
+    messages.query(query, {
+      success: function(results) {
+        var allMessages = results.toJSON();
+        if (allMessages.length != 1) {
+          console.debug("Messages count off");
+        } else {
+          var message = allMessages[0];
+          if (message["maintenance"]) {
+            $("#maintenanceBar").html(message["maintenance"]).slideDown(300);
           }
-        },
-        error: function(model, response) {
-          console.debug("Could not read messages with response " + repsonse);
         }
-      });
+      },
+      error: function(model, response) {
+        console.debug("Could not read messages with response " + repsonse.error);
+      }
+    });
 
   });
   /* ]]> */
@@ -1323,11 +639,6 @@
         <input class="btn select-all" type="button" value="Select All"></input>
         <input class="btn select-none" type="button" value="Select None"></input><br/>
         
-        <!--
-        <label class="checkbox inline">
-        <input id="admin_notes_checkbox" type="checkbox">View Admin Notes</input>
-        </label>
-      -->
       </div>
       <div class="span4">
         <label><b>Choose Coffees:</b></label><select size="10" id="coffeesList" multiple></select><br/>
@@ -1381,112 +692,91 @@
     <label>From:</label> <input id="from_prep_date" type="text" name="from" class="date-input">
     <label>To:</label> <input id="to_prep_date" type="text" name="to" class="date-input">
   </div>
-
-    <!--
-    <label>Sort By:</label>
-    
-    <label class="checkbox inline">
-        <input id="acidity_checkbox" class="sort_checkbox" type="checkbox" value="acidity">Acidity</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="aftertaste_checkbox" class="sort_checkbox" type="checkbox" value="aftertaste">Aftertaste</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="dose_weight_checkbox" class="sort_checkbox" type="checkbox" value="dose_weight">Dose Weight</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="flavor_checkbox" class="sort_checkbox" type="checkbox" value="flavor">Flavor</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="fragrance_aroma_checkbox" class="sort_checkbox" type="checkbox" value="fragrance_aroma">Fragrance Aroma</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="mouthfeel_checkbox" class="sort_checkbox" type="checkbox" value="mouthfeel">Mouthfeel</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="positive_notes_checkbox" class="sort_checkbox" type="checkbox" value="positive_notes">Positive Notes</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="negative_notes_checkbox" class="sort_checkbox" type="checkbox" value="negative_notes">Negative Notes</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="prep_date_checkbox" class="sort_checkbox" type="checkbox" value="prep_date">Prep Date</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="total_extraction_time_checkbox" class="sort_checkbox" type="checkbox" value="total_extraction_time">Total Extraction Time</input>
-    </label>
-    <label class="checkbox inline">
-        <input id="yield_date_checkbox" class="sort_checkbox" type="checkbox" value="yield_weight">Yield Weight</input>
-    </label>
-  -->
     
     <input id="getNotesFromRoast" class="btn btn-primary" type="button" value="Get Data"></input>
 
     <p></p>
+    <p id="noNotesLabel"></p>
 
-    <!--<p id="showingNotesForRostDate"></p>-->
-
-    <div class="divider"></div>
-
-    <div class="table-wrapper">
-      <table border="1" id="espressoTableData" class="table table-bordered table-hover"></table>
+    <br />
+    <div class="note-table" id="espresso-note-table">
+      <div class="row-fluid">
+        <div class="span6"><p id="espresso-note-count" class="boldText"></p></div>
+        <div class="span6"><input id="export-espresso-data" class="btn btn-info export-button" type="button" value="Export Espresso Data to CSV" data-target="espresso-table-data" /></div>
+      </div>
+      <div class="table-wrapper">
+        <table border="1" id="espresso-table-data" class="table table-bordered table-hover"></table>
+      </div>
     </div>
-
-    <input id="export_espresso_data" class="btn btn-info export-button" type="button" value="Export Espresso Data to CSV" data-target="espressoTableData" />
     
-    <div class="divider"></div>
-
-    <div class="table-wrapper">
-      <table border="1" id="dripTableData" class="table table-bordered table-hover"></table>
+    
+    <div class="note-table" id="drip-note-table">
+      <div class="divider" id="drip-table-divider"></div>
+      <div class="row-fluid">
+        <div class="span6"><p id="drip-note-count" class="boldText"></p></div>
+        <div class="span6"><input id="export-drip-data" class="btn btn-info export-button" type="button" value="Export Bonmac Data to CSV" data-target="drip-table-data" /></div>
+      </div>
+      <div class="table-wrapper">
+        <table border="1" id="drip-table-data" class="table table-bordered table-hover"></table>
+      </div>
+    </div>
+ 
+    <div class="note-table" id="beehouse-note-table">
+      <div class="divider" id="beehouse-table-divider"></div>
+      <div class="row-fluid">
+        <div class="span6"><p id="beehouse-note-count" class="boldText"></p></div>
+        <div class="span6"><input id="export-beehouse-data" class="btn btn-info export-button" type="button" value="Export Beehouse Data to CSV" data-target="beehouse-table-data" /></div>
+      </div>
+      <div class="table-wrapper">
+        <table border="1" id="beehouse-table-data" class="table table-bordered table-hover"></table>
+      </div>
     </div>
 
-    <input id="export_drip_data" class="btn btn-info export-button" type="button" value="Export Bonmac Data to CSV" data-target="dripTableData" />
-
-    <div class="divider"></div>
-
-    <div class="table-wrapper">
-      <table border="1" id="beehouseTableData" class="table table-bordered table-hover"></table>
+    <div class="note-table" id="siphon-note-table">
+      <div class="divider" id="siphon-table-divider"></div>
+      <div class="row-fluid">
+        <div class="span6"><p id="siphon-note-count" class="boldText"></p></div>
+        <div class="span6"><input id="export-siphon-data" class="btn btn-info export-button" type="button" value="Export Siphon Data to CSV" data-target="siphon-table-data" /></div>
+      </div>
+      <div class="table-wrapper">
+        <table border="1" id="siphon-table-data" class="table table-bordered table-hover"></table>
+      </div>
     </div>
 
-    <input id="export_beehouse_data" class="btn btn-info export-button" type="button" value="Export Beehouse Data to CSV" data-target="beehouseTableData" />
-
-    <div class="divider"></div>
-
-    <div class="table-wrapper">
-      <table border="1" id="siphonTableData" class="table table-bordered table-hover"></table>
+    <div class="note-table" id="nel-note-table">
+      <div class="divider" id="nel-table-divider"></div>
+      <div class="row-fluid">
+        <div class="span6"><p id="nel-note-count" class="boldText"></p></div>
+        <div class="span6"><input id="export-nel-data" class="btn btn-info export-button" type="button" value="Export Nel Data to CSV" data-target="nel-table-data" /></div>
+      </div>
+      <div class="table-wrapper">
+        <table border="1" id="nel-table-data" class="table table-bordered table-hover"></table>
+      </div>
     </div>
 
-    <input id="export_siphon_data" class="btn btn-info export-button" type="button" value="Export Siphon Data to CSV" data-target="siphonTableData" />
-
-    <div class="divider"></div>
-
-    <div class="table-wrapper">
-      <table border="1" id="nelTableData" class="table table-bordered table-hover"></table>
+    <div class="note-table" id="chemex-note-table">
+      <div class="divider" id="chemex-table-divider"></div>
+      <div class="row-fluid">
+        <div class="span6"><p id="chemex-note-count" class="boldText"></p></div>
+        <div class="span6"><input id="export-chemex-data" class="btn btn-info export-button" type="button" value="Export Chemex Data to CSV" data-target="chemex-table-data" /></div>
+      </div>
+      <div class="table-wrapper">
+        <table border="1" id="chemex-table-data" class="table table-bordered table-hover"></table>
+      </div>
     </div>
 
-    <input id="export_nel_data" class="btn btn-info export-button" type="button" value="Export Nel Data to CSV" data-target="nelTableData" />
-
-    <div class="divider"></div>
-
-    <div class="table-wrapper">
-      <table border="1" id="chemexTableData" class="table table-bordered table-hover"></table>
+    <div class="note-table" id="cupping-note-table">
+      <div class="divider" id="cupping-table-divider"></div>
+      <div class="row-fluid">
+        <div class="span6"><p id="cupping-note-count" class="boldText"></p></div>
+        <div class="span6"><input id="export-cupping-data" class="btn btn-info export-button" type="button" value="Export Cupping Data to CSV" data-target="cupping-table-data" /></div>
+      </div>
+      <div class="table-wrapper">
+        <table border="1" id="cupping-table-data" class="table table-bordered table-hover"></table>
+      </div>
     </div>
 
-    <input id="export_chemex_data" class="btn btn-info export-button" type="button" value="Export Chemex Data to CSV" data-target="chemexTableData" />
-
-    <div class="divider"></div>
-
-    <div class="table-wrapper">
-      <table border="1" id="cuppingTableData" class="table table-bordered table-hover"></table>
-    </div>
-
-    <input id="export_cupping_data" class="btn btn-info export-button" type="button" value="Export Cupping Data to CSV" data-target="cuppingTableData" />
   </div>
 
-  <!--
-    <label>Locations:</label><select size='10' id="locationsList" multiple><option value="None">N/A</option></select><br />
-    <label>Type:</label><select size='10' id="typeList" multiple><option value="None">N/A</option><option value="Espresso">Espresso</option><option value="Drip">Drip</option><option value="Siphon">Siphon</option></select><br />
-    <label>Data:</label><select size='10' id="dataList" multiple></select><br />
-  -->
 </body>
 </html>

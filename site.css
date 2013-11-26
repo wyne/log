@@ -5,6 +5,7 @@ body {
 
 .table-wrapper {
 	overflow: scroll;
+	margin-top: 15px;
 }
 
 .nav li.admin{
@@ -18,8 +19,20 @@ body > .container{
 }
 
 .divider {
-  margin: 15px 0;
+  margin: 15px 0px;
+  border-bottom: 1px solid #CCC;
+  padding-bottom: 15px;
 }
+
+.export-button {
+	float: right;
+}
+
+.boldText {
+	font-weight: bold;
+}
+
+
 
 .maintenanceBar {
 	background-color: #fcf8e3;

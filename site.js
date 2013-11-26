@@ -59,6 +59,11 @@ var Roast = StackMob.Model.extend({ schemaName: 'roast' });
 var Roasts = StackMob.Collection.extend({ model: Roast });
 var roasts = new Roasts();
 
+// Notes
+var Note = StackMob.Model.extend({ schemaName: 'note' });
+var Notes = StackMob.Collection.extend({ model: Note });
+var notes = new Notes();
+
 // Espresso Note
 var EspressoNote = StackMob.Model.extend({ schemaName: 'espresso_note' });
 var EspressoNotes = StackMob.Collection.extend({ model: EspressoNote });
@@ -439,7 +444,14 @@ function parseInputs(inputs){
 
       default:
         if ($(this).hasClass("date-input") ) {
-          jsonForm[name] = new Date(val).getTime();
+          var convertedDate = new Date(val);
+          var offset = convertedDate.getTimezoneOffset();
+          jsonForm[name] = convertedDate.getTime() - (offset * 60000);
+          if (name == "preparation_date") {
+            jsonForm["prep_date_string"] = convertedDate.toString();
+          } else if (name == "roastdate") {
+            jsonForm["roast_date_string"] = convertedDate.toString();
+          }
         } else if ( $(this).hasClass("time_entry_sec") || $(this).hasClass("time_entry_min")) {
           jsonForm[name] = durationStringToMilliseconds(val);
           console.log(jsonForm[name]);
