@@ -478,7 +478,7 @@ $(document).ready(function(){
             $(this).dialog("close");
           }
         },
-        title: "Alert",
+        title: "Error",
         resizable: false
   });
 

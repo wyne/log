@@ -154,47 +154,46 @@
 
         // no coffee
         if (form.coffee == "none") {
-          $("#coffee-dialog").dialog("open");
-          //window.alert("Please select a coffee.");
+          $("#no-coffee-dialog").dialog("open");
           return false;
         }
 
         // no barista
         if (!form.barista_name) {
-          window.alert("Please enter a barista name.");
+          $("#no-barista-dialog").dialog("open");
           return false;
         }
 
         // incorrect roastdate
         if (!form.roastdate) {
-          window.alert("Please enter a roast date.");
+          $("#no-roast-date-dialog").dialog("open");
           return false;
         }
         var today = new Date().getTime();
         if (form.roastdate > today) {
-          window.alert("The roast date you chose is in the future.");
+          $("#future-roast-date-dialog").dialog("open");
           return false;
         }
         if (form.roastdate <= 0) {
-          window.alert("The roast date you chose is too far in the past");
+          $("#past-roast-date-dialog").dialog("open");
           return false;
         }
 
         // incorrect prepdate
         if (!form.preparation_date) {
-          window.alert("Please enter a preparation date.");
+          $("#no-prep-date-dialog").dialog("open");
           return false;
         }
         if (form.preparation_date > today) {
-          window.alert("The preparation date you chose is in the future.");
+          $("#future-prep-date-dialog").dialog("open");
           return false;
         }
         if (form.preparation_date <= 0) {
-          window.alert("The preparation date you chose is too far in the past.");
+          $("#past-prep-date-dialog").dialog("open");
           return false;
         }
         if (form.preparation_date < form.roastdate) {
-          window.alert("The preparation date cannot be before the roast date.");
+          $("#mismatch-dates-dialog").dialog("open");
           return false;
         }
 
@@ -358,7 +357,16 @@
 </head>
 <body>
 
-  <div class="dialog" id="coffee-dialog"><p>Please select a coffee.</p></div>
+  <div class="dialog" id="no-coffee-dialog"><p>Please select a coffee.</p></div>
+  <div class="dialog" id="no-barista-dialog"><p>Please enter a barista name.</p></div>
+  <div class="dialog" id="no-roast-date-dialog"><p>Please enter a roast date.</p></div>
+  <div class="dialog" id="no-prep-date-dialog"><p>Please enter a prep date.</p></div>
+  <div class="dialog" id="future-roast-date-dialog"><p>The roast date you chose is in the future.</p></div>
+  <div class="dialog" id="past-roast-date-dialog"><p>The roast date you chose is too far in the past.</p></div>
+  <div class="dialog" id="future-prep-date-dialog"><p>The preparation date you chose is in the future.</p></div>
+  <div class="dialog" id="past-prep-date-dialog"><p>The preparation date you chose is too far in the past.</p></div>
+  <div class="dialog" id="mismatch-dates-dialog"><p>The preparation date cannot be before the roast date.</p></div>
+  
 
   <div id="maintenanceBar" class="maintenanceBar"></div>
   <div class="navbar">
